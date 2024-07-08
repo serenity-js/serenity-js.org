@@ -1,0 +1,11 @@
+{
+  // This file is not used in compilation. It is here just for a nice editor experience.
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": "./serenity-js.org",
+    "resolveJsonModule": true
+  },
+  "include": [
+    "node_modules/@serenity-js/*/lib/**/*.d.ts"
+  ],
+}
