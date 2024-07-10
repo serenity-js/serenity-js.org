@@ -1,15 +1,33 @@
-const { Joi } = require('@docusaurus/utils-validation');
-const logger = require('@docusaurus/logger');
-const fs = require('fs-extra');
-const glob = require('fast-glob');
-const path = require('path');
+import type { LoadContext, OptionValidationContext } from '@docusaurus/types';
+
+import { Joi } from '@docusaurus/utils-validation';
+import logger from '@docusaurus/logger';
+import fs from 'fs-extra';
+import glob from 'fast-glob';
+import path from 'path';
+
+export interface PluginOptions {
+    projectRoot: string;
+    include: string[];
+    caching: {
+        enabled: boolean;
+        duration: number;
+    };
+    sampling: {
+        enabled: boolean;
+        rate: number;
+    };
+}
 
 /**
  * @param {import('@docusaurus/types').LoadContext} context
  * @param options
  * @returns {import('@docusaurus/types').Plugin}
  */
-async function PresetsPlugin(context, options) {
+export default async function pluginPresets(
+    context: LoadContext,
+    options: PluginOptions,
+) {
 
     const { projectRoot, include, caching, sampling } = options;
 
@@ -91,23 +109,19 @@ async function PresetsPlugin(context, options) {
     };
 }
 
-const pluginOptionsSchema = Joi.object({
-    projectRoot: Joi.string().required(),
-    include:     Joi.array().items(Joi.string()).default([]),
-    caching:     Joi.object({
-        enabled:  Joi.boolean().default(true),
-        duration: Joi.number().default(60 * 60 * 1000),
-    }).default({}),
-    sampling:  Joi.object({
-        enabled:  Joi.boolean().default(true),
-        rate:     Joi.number().default(1),
-    }).default({}),
-});
+export function validateOptions({ validate, options }: OptionValidationContext<PluginOptions, PluginOptions>): PluginOptions {
+    const pluginOptionsSchema = Joi.object<PluginOptions>({
+        projectRoot: Joi.string().required(),
+        include: Joi.array().items(Joi.string()).default([]),
+        caching: Joi.object({
+            enabled: Joi.boolean().default(true),
+            duration: Joi.number().default(60 * 60 * 1000),
+        }).default({}),
+        sampling: Joi.object({
+            enabled: Joi.boolean().default(true),
+            rate: Joi.number().default(1),
+        }).default({}),
+    }).unknown();
 
-function validateOptions({ validate, options }) {
     return validate(pluginOptionsSchema, options);
 }
-
-PresetsPlugin.validateOptions = validateOptions;
-
-module.exports = PresetsPlugin;

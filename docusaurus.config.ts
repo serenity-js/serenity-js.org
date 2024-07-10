@@ -438,7 +438,7 @@ const config: Config = {
             }
         ],
         [
-            require.resolve('./src/plugins/presets/index.js'),
+            require.resolve('./src/plugins/presets'),
             {
                 projectRoot: __dirname,
                 include: [
