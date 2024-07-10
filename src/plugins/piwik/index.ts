@@ -1,18 +1,22 @@
-const { Joi } = require('@docusaurus/utils-validation');
+import { Joi } from '@docusaurus/utils-validation';
+import type { LoadContext, OptionValidationContext } from '@docusaurus/types';
 
-/**
- * @param {import('@docusaurus/types').LoadContext} context
- * @returns {import('@docusaurus/types').Plugin}
- */
-async function PiwikPlugin(context, options) {
+export interface PluginOptions {
+    id: string;
+    enable: boolean;
+}
 
+export default async function pluginPiwik(
+    context: LoadContext,
+    options: PluginOptions,
+) {
     const { id, enable } = options;
 
     return {
         name: 'docusaurus-plugin-piwik-analytics',
 
         injectHtmlTags() {
-            if (! enable) {
+            if (!enable) {
                 return {};
             }
             return {
@@ -36,15 +40,11 @@ tags.async=!0,tags.src="https://serenity.containers.piwik.pro/"+id+".js"+qPStrin
     };
 }
 
-const pluginOptionsSchema = Joi.object({
-    id:     Joi.string().required(),
-    enable: Joi.boolean().default(false),
-});
+export function validateOptions({ validate, options }: OptionValidationContext<PluginOptions, PluginOptions>): PluginOptions {
+    const pluginOptionsSchema = Joi.object({
+        id: Joi.string().required(),
+        enable: Joi.boolean().default(false),
+    });
 
-function validateOptions({ validate, options }) {
     return validate(pluginOptionsSchema, options);
 }
-
-PiwikPlugin.validateOptions = validateOptions;
-
-module.exports = PiwikPlugin;

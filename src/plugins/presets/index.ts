@@ -19,11 +19,6 @@ export interface PluginOptions {
     };
 }
 
-/**
- * @param {import('@docusaurus/types').LoadContext} context
- * @param options
- * @returns {import('@docusaurus/types').Plugin}
- */
 export default async function pluginPresets(
     context: LoadContext,
     options: PluginOptions,
