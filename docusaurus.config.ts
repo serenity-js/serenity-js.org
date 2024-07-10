@@ -431,7 +431,7 @@ const config: Config = {
             },
         ],
         [
-            require.resolve('./src/plugins/piwik/index.js'),
+            require.resolve('./src/plugins/piwik'),
             {
                 id: '8497b9df-f942-4fb6-9f4f-eade34bab231',
                 enable: true,
