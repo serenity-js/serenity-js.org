@@ -94,7 +94,7 @@ async function PresetsPlugin(context, options) {
 const pluginOptionsSchema = Joi.object({
     projectRoot: Joi.string().required(),
     include:     Joi.array().items(Joi.string()).default([]),
-    caching:    Joi.object({
+    caching:     Joi.object({
         enabled:  Joi.boolean().default(true),
         duration: Joi.number().default(60 * 60 * 1000),
     }).default({}),

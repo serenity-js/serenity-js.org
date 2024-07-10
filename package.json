@@ -1,6 +1,6 @@
 {
   "name": "serenity-js-org",
-  "version": "0.0.0",
+  "version": "3.0.0",
   "private": true,
   "license": "CC-BY-NC-SA-4.0",
   "author": {
@@ -18,32 +18,33 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "link": "npm install --install-links ../serenity-js/packages/*"
   },
   "dependencies": {
     "@docusaurus/core": "3.4.0",
-    "@docusaurus/theme-mermaid": "3.4.0",
     "@docusaurus/plugin-client-redirects": "3.4.0",
     "@docusaurus/plugin-content-docs": "3.4.0",
     "@docusaurus/plugin-ideal-image": "3.4.0",
     "@docusaurus/preset-classic": "3.4.0",
     "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
+    "@docusaurus/theme-mermaid": "3.4.0",
     "@giscus/react": "3.0.0",
     "@mdx-js/react": "3.0.1",
-    "@serenity-js/assertions": "3.25.0",
-    "@serenity-js/core": "3.25.0",
-    "@serenity-js/console-reporter": "3.25.0",
-    "@serenity-js/cucumber": "3.25.0",
-    "@serenity-js/jasmine": "3.25.0",
-    "@serenity-js/local-server": "3.25.0",
-    "@serenity-js/mocha": "3.25.0",
-    "@serenity-js/playwright": "3.25.0",
-    "@serenity-js/playwright-test": "3.25.0",
-    "@serenity-js/protractor": "3.25.0",
-    "@serenity-js/rest": "3.25.0",
-    "@serenity-js/serenity-bdd": "3.25.0",
-    "@serenity-js/web": "3.25.0",
-    "@serenity-js/webdriverio": "3.25.0",
+    "@serenity-js/assertions": "3.25.1",
+    "@serenity-js/core": "3.25.1",
+    "@serenity-js/console-reporter": "3.25.1",
+    "@serenity-js/cucumber": "3.25.1",
+    "@serenity-js/jasmine": "3.25.1",
+    "@serenity-js/local-server": "3.25.1",
+    "@serenity-js/mocha": "3.25.1",
+    "@serenity-js/playwright": "3.25.1",
+    "@serenity-js/playwright-test": "3.25.1",
+    "@serenity-js/protractor": "3.25.1",
+    "@serenity-js/rest": "3.25.1",
+    "@serenity-js/serenity-bdd": "3.25.1",
+    "@serenity-js/web": "3.25.1",
+    "@serenity-js/webdriverio": "3.25.1",
     "clsx": "2.1.1",
     "docusaurus-plugin-sass": "0.2.5",
     "docusaurus-plugin-typedoc-api": "4.2.0",
@@ -53,14 +54,16 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "sass": "1.77.6",
-    "typedoc": "0.26.3",
-    "typedoc-plugin-mdn-links": "3.2.3"
+    "typedoc": "0.25.13",
+    "typedoc-plugin-mdn-links": "3.2.3",
+    "typedoc-plugin-replace-text": "3.3.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.4.0",
     "@docusaurus/tsconfig": "3.4.0",
     "@docusaurus/types": "3.4.0",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "unist-util-visit": "5.0.0"
   },
   "browserslist": {
     "production": [

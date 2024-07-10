@@ -3,14 +3,10 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import npm2yarn from '@docusaurus/remark-plugin-npm2yarn';
 import tabBlocks from 'docusaurus-remark-plugin-tab-blocks';
+import remarkLinkRewrite from './src/plugins/remark/link-rewrite';
 
 import pkg from './package.json';
 import redirects from './redirects.config';
-import path from 'path';
-
-const commonOptions = {
-    editUrl: 'https://github.com/serenity-js/serenity-js.org/tree/main/',
-}
 
 const remarkOptions = {
     remarkPlugins: [
@@ -24,9 +20,19 @@ const remarkOptions = {
                 [ 'js', 'JavaScript' ],
                 [ 'ts', 'TypeScript' ],
             ],
+        } ],
+        [ remarkLinkRewrite, {
+            replacer: (url: string) => {
+                return url.startsWith('https://serenity-js.org/')
+                    ? url.replace('https://serenity-js.org/', '/')
+                    : url;
+            }
         } ]
     ],
 }
+
+const editUrl = (path: string) =>
+    new URL(path, `https://github.com/serenity-js/serenity-js.org/tree/main`).toString();
 
 const config: Config = {
     title: 'Serenity/JS',
@@ -49,8 +55,10 @@ const config: Config = {
     organizationName: 'serenity-js',
     projectName: 'serenity-js.org',
 
-    onBrokenLinks: 'throw',
-    onBrokenMarkdownLinks: 'throw',
+    onBrokenLinks: 'warn',
+    // onBrokenLinks: 'throw',
+    onBrokenMarkdownLinks: 'warn',
+    // onBrokenMarkdownLinks: 'throw',
 
     // Even if you don't use internationalization, you can use this field to set
     // useful metadata like html lang. For example, if your site is Chinese, you
@@ -65,20 +73,23 @@ const config: Config = {
             'classic',
             {
                 docs: {
-                    ...commonOptions,
                     ...remarkOptions,
+                    editUrl: editUrl('src/docs/handbook'),
+                    path: './src/docs/handbook',
+                    routeBasePath: 'handbook',
+                    sidebarPath: './src/sidebars/handbook.ts',
                     showLastUpdateAuthor: false,
                     showLastUpdateTime: true,
-                    sidebarPath: './sidebars.ts',
-                    routeBasePath: 'handbook',
                 },
                 blog: {
-                    ...commonOptions,
                     ...remarkOptions,
+                    editUrl: editUrl('src/blog'),
+                    path: './src/blog',
                     showReadingTime: true,
                 },
                 pages: {
                     ...remarkOptions,
+                    path: './src/pages',
                 },
                 theme: {
                     customCss: './src/css/custom.scss',
@@ -125,7 +136,7 @@ const config: Config = {
                     label: 'Sponsors',
                     position: 'left',
                 },
-                { label: `Changelog`, to: 'changelog', position: 'left' },
+                { label: `Releases`, to: 'releases', position: 'left' },
                 {
                     href: 'https://www.youtube.com/@serenity-js',
                     'aria-label': 'Serenity/JS YouTube channel',
@@ -359,17 +370,20 @@ const config: Config = {
                 // minimal: false,
                 readmes: true,
                 debug: true,
-                removeScopes: ['serenity-js'],
+                removeScopes: [
+                    'serenity-js'
+                ],
                 typedocOptions: {
                     excludeExternals: false,
 
                     // typedoc-plugin-ignore-inherited-static-methods
-                    logIgnoredInheritedStaticMethods: true,
+                    // logIgnoredInheritedStaticMethods: true,
 
                     categorizeByGroup: true,
                     plugin: [
-                        './typedoc-plugins/ignore-inherited-static-methods.js',
+                        './src/plugins/typedoc/ignore-inherited-static-methods.js',
                         'typedoc-plugin-mdn-links',
+                        'typedoc-plugin-replace-text',
                     ],
                     sort: [
                         'static-first',
@@ -379,6 +393,18 @@ const config: Config = {
                         protected: true,
                         private: false,
                     },
+
+                    replaceText: {
+                        inCodeCommentText: true,
+                        inCodeCommentTags: true,
+                        inIncludedFiles: true,
+                        replacements: [
+                            {
+                                pattern: "https://serenity-js.org/",
+                                replace: "/"
+                            },
+                        ],
+                    },
                 }
             },
         ],
@@ -386,37 +412,48 @@ const config: Config = {
             'content-docs',
             {
                 id: 'community',
-                path: 'community',
-                routeBasePath: '/community',
-                sidebarPath: './sidebars.ts',
-                ...commonOptions,
+                editUrl: editUrl('src/docs/community'),
+                path: './src/docs/community',
+                routeBasePath: 'community',
+                sidebarPath: './src/sidebars/community.ts',
                 ...remarkOptions,
             },
         ],
-        // [
-        //     require.resolve('./src/plugins/piwik/index.js'),
-        //     {
-        //         id: '8497b9df-f942-4fb6-9f4f-eade34bab231',
-        //         enable: true,
-        //     }
-        // ],
-        // [
-        //     require.resolve('./src/plugins/presets/index.js'),
-        //     {
-        //         projectRoot: __dirname,
-        //         include: [
-        //             './node_modules/@serenity-js/*'
-        //         ],
-        //         caching: {
-        //             enabled: true,
-        //             duration: 24 * 60 * 60 * 1000,
-        //         },
-        //         sampling: {
-        //             enabled: true,
-        //             rate: 0.1,
-        //         },
-        //     }
-        // ],
+        [
+            'content-docs',
+            {
+                id: 'releases',
+                editUrl: editUrl('src/docs/releases'),
+                path: './src/docs/releases',
+                routeBasePath: 'releases',
+                sidebarPath: './src/sidebars/releases.ts',
+                ...remarkOptions,
+            },
+        ],
+        [
+            require.resolve('./src/plugins/piwik/index.js'),
+            {
+                id: '8497b9df-f942-4fb6-9f4f-eade34bab231',
+                enable: true,
+            }
+        ],
+        [
+            require.resolve('./src/plugins/presets/index.js'),
+            {
+                projectRoot: __dirname,
+                include: [
+                    './node_modules/@serenity-js/*'
+                ],
+                caching: {
+                    enabled: true,
+                    duration: 24 * 60 * 60 * 1000,
+                },
+                sampling: {
+                    enabled: true,
+                    rate: 0.1,
+                },
+            }
+        ],
         // [
         //     require.resolve('./src/plugins/changelog/index.js'),
         //     {

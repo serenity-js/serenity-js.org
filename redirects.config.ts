@@ -16,6 +16,14 @@ export default {
         { from: '/handbook/about/installation/', to: '/handbook/getting-started/installation' },
         { from: '/handbook/about/serenity-js-v3/', to: '/handbook/getting-started/upgrading-to-serenity-js-3' },
 
+        // Old changelog
+        { from: '/changelog/', to: '/releases/' },
+        { from: '/changelog/3.24.0/', to: 'https://github.com/serenity-js/serenity-js/releases/tag/v3.24.0' },
+        { from: '/changelog/3.21.0/', to: 'https://github.com/serenity-js/serenity-js/releases/tag/v3.21.0' },
+        { from: '/changelog/3.15.0/', to: 'https://github.com/serenity-js/serenity-js/releases/tag/v3.15.0' },
+        { from: '/changelog/3.3.0/', to: 'https://github.com/serenity-js/serenity-js/releases/tag/v3.3.0/' },
+        { from: '/changelog/3.2.0/', to: 'https://github.com/serenity-js/serenity-js/releases/tag/v3.2.0/' },
+
         // Serenity/JS v2 website
         {
             from: '/handbook/thinking-in-serenity-js/screenplay-pattern.html',
@@ -57,7 +65,7 @@ export default {
         { from: '/handbook/integration/serenityjs-and-jasmine.html', to: '/handbook/test-runners/jasmine' },
         { from: '/handbook/integration/serenityjs-and-mocha.html', to: '/handbook/test-runners/mocha' },
         { from: '/handbook/integration/serenityjs-and-protractor.html', to: '/handbook/test-runners/protractor' },
-        { from: '/handbook/release-notes/index.html', to: '/changelog' },
+        { from: '/handbook/release-notes/index.html', to: '/releases/' },
 
         {
             from: [
@@ -86,7 +94,7 @@ export default {
         { from: '/handbook/thinking-in-serenity-js/testing-web-uis.html', to: '/handbook/web-testing/' },
 
         { from: '/license.html', to: '/legal/license/' },
-        { from: '/changelog.html', to: '/changelog' },
+        { from: '/changelog.html', to: '/releases' },
 
         // Serenity/JS v2 API docs
         { from: '/modules/assertions',          to: '/api/assertions' },
