@@ -128,7 +128,7 @@ const config: Config = {
             },
             items: [
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
-                { label: 'API', to: '/api/core', position: 'left' },
+                { label: 'API', to: '/api/', position: 'left' },
                 { to: '/blog', label: 'Blog', position: 'left' },
                 { to: '/community', label: 'Community', position: 'left' },
                 {
@@ -204,7 +204,7 @@ const config: Config = {
                 {
                     title: 'Developers',
                     items: [
-                        { label: 'API Docs', to: '/api/core' },
+                        { label: 'API Docs', to: '/api/' },
                         {
                             label: 'Project Templates',
                             to: 'https://github.com/serenity-js/?q=template&type=all&language=&sort='
@@ -266,10 +266,18 @@ const config: Config = {
     plugins: [
         'docusaurus-plugin-sass',
         [
-            'docusaurus-plugin-typedoc-api',
+            // 'docusaurus-plugin-typedoc-api',
+            require.resolve('./src/plugins/docusaurus-plugin-typedoc-api'),
             {
                 gitRefName: 'main',
                 projectRoot: __dirname,
+                categories: [
+                    { label: 'Core Modules', items: [ '@serenity-js/core', '@serenity-js/assertions' ] },
+                    { label: 'Web Testing', items: [ '@serenity-js/web', '@serenity-js/playwright', '@serenity-js/protractor', '@serenity-js/webdriverio' ] },
+                    { label: 'REST API Testing', items: [ '@serenity-js/rest', '@serenity-js/local-server' ] },
+                    { label: 'Reporting', items: [ '@serenity-js/console-reporter', '@serenity-js/serenity-bdd' ] },
+                    { label: 'Test Runners', items: [ '@serenity-js/cucumber', '@serenity-js/jasmine', '@serenity-js/mocha', '@serenity-js/playwright-test' ] },
+                ],
                 packages: [
                     {
                         path: './node_modules/@serenity-js/core',
@@ -279,6 +287,53 @@ const config: Config = {
                             events: { label: 'Domain Events', path: 'lib/events/index.d.ts' },
                         },
                     },
+                    {
+                        path: './node_modules/@serenity-js/assertions',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+
+                    {
+                        path: './node_modules/@serenity-js/web',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+                    {
+                        path: './node_modules/@serenity-js/playwright',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+                    {
+                        path: './node_modules/@serenity-js/protractor',
+                        entry: {
+                            index: { label: 'index', path: 'lib/index.d.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                        },
+                    },
+                    {
+                        path: './node_modules/@serenity-js/webdriverio',
+                        entry: {
+                            index: { label: 'index', path: 'lib/index.d.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                        },
+                    },
+
+                    {
+                        path: './node_modules/@serenity-js/rest',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+                    {
+                        path: './node_modules/@serenity-js/local-server',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+
+
+                    {
+                        path: './node_modules/@serenity-js/console-reporter',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+                    {
+                        path: './node_modules/@serenity-js/serenity-bdd',
+                        entry: { index: 'lib/index.d.ts' },
+                    },
+
                     {
                         path: './node_modules/@serenity-js/cucumber',
                         entry: {
@@ -306,73 +361,10 @@ const config: Config = {
                             index: { label: 'index', path: 'lib/index.d.ts' },
                         },
                     },
-                    {
-                        path: './node_modules/@serenity-js/protractor',
-                        entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
-                        },
-                    },
-                    {
-                        path: './node_modules/@serenity-js/webdriverio',
-                        entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
-                        },
-                    },
-                    ...[
-                        './node_modules/@serenity-js/assertions',
-                        './node_modules/@serenity-js/console-reporter',
-                        './node_modules/@serenity-js/local-server',
-                        './node_modules/@serenity-js/playwright',
-                        './node_modules/@serenity-js/rest',
-                        './node_modules/@serenity-js/serenity-bdd',
-                        './node_modules/@serenity-js/web',
-                    ].map(pathToPackage => ({
-                        path: pathToPackage,
-                        entry: {
-                            index: 'lib/index.d.ts',
-                        },
-                    }))
                 ],
-                sortPackages: (a, b) => {
-                    const packageOrder = [
-                        // Core
-                        '@serenity-js/core',
-                        '@serenity-js/assertions',
-
-                        // Web testing
-                        '@serenity-js/web',
-                        '@serenity-js/playwright',
-                        '@serenity-js/protractor',
-                        '@serenity-js/webdriverio',
-
-                        // Api testing
-                        '@serenity-js/rest',
-                        '@serenity-js/local-server',
-
-                        // Reporting
-                        '@serenity-js/console-reporter',
-                        '@serenity-js/serenity-bdd',
-
-                        // Test runner adapters
-                        '@serenity-js/cucumber',
-                        '@serenity-js/jasmine',
-                        '@serenity-js/mocha',
-                        '@serenity-js/playwright-test',
-                    ]
-
-                    return packageOrder.indexOf(a.packageName) - packageOrder.indexOf(b.packageName);
-                },
-                sortSidebar: (a, d) => {
-                    return a.localeCompare(d);
-                },
                 // minimal: false,
                 readmes: true,
                 debug: true,
-                removeScopes: [
-                    'serenity-js'
-                ],
                 typedocOptions: {
                     excludeExternals: false,
 

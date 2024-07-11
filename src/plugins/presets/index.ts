@@ -47,7 +47,7 @@ export default async function pluginPresets(
     ];
 
     return {
-        name: 'docusaurus-plugin-serenity-js-metadata',
+        name: 'docusaurus-plugin-serenity-js-presets',
 
         async postBuild({ siteConfig, routesPaths, outDir, head }) {
 
