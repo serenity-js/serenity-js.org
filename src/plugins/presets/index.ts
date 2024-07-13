@@ -9,6 +9,7 @@ import path from 'path';
 export interface PluginOptions {
     projectRoot: string;
     include: string[];
+    integrationsOfInterest: string[];
     caching: {
         enabled: boolean;
         duration: number;
@@ -33,19 +34,6 @@ export default async function pluginPresets(
         path.join(projectRoot, pattern, `package.json`)
     );
 
-    const integrationsOfInterest = [
-        'axios',
-        '@cucumber/cucumber',
-        'cucumber',
-        'jasmine',
-        'mocha',
-        'playwright-core',
-        '@playwright/test',
-        'protractor',
-        '@wdio/cli',
-        'webdriverio',
-    ];
-
     return {
         name: 'docusaurus-plugin-serenity-js-presets',
 
@@ -66,7 +54,7 @@ export default async function pluginPresets(
                 };
 
                 const packageIntegrations = Object.keys(dependencies)
-                    .filter(dependency => integrationsOfInterest.includes(dependency))
+                    .filter(dependency => options.integrationsOfInterest.includes(dependency))
                     .reduce((acc, key) => {
                         acc[key] = dependencies[key];
                         return acc;

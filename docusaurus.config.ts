@@ -31,6 +31,19 @@ const remarkOptions = {
     ],
 }
 
+const integrationsOfInterest = [
+    'axios',
+    '@cucumber/cucumber',
+    'cucumber',
+    'jasmine',
+    'mocha',
+    'playwright-core',
+    '@playwright/test',
+    'protractor',
+    '@wdio/cli',
+    'webdriverio',
+];
+
 const editUrl = (path: string) =>
     new URL(path, `https://github.com/serenity-js/serenity-js.org/tree/main`).toString();
 
@@ -272,12 +285,52 @@ const config: Config = {
                 gitRefName: 'main',
                 projectRoot: __dirname,
                 categories: [
-                    { label: 'Core Modules', items: [ '@serenity-js/core', '@serenity-js/assertions' ] },
-                    { label: 'Web Testing', items: [ '@serenity-js/web', '@serenity-js/playwright', '@serenity-js/protractor', '@serenity-js/webdriverio' ] },
-                    { label: 'REST API Testing', items: [ '@serenity-js/rest', '@serenity-js/local-server' ] },
-                    { label: 'Reporting', items: [ '@serenity-js/console-reporter', '@serenity-js/serenity-bdd' ] },
-                    { label: 'Test Runners', items: [ '@serenity-js/cucumber', '@serenity-js/jasmine', '@serenity-js/mocha', '@serenity-js/playwright-test' ] },
+                    {
+                        name: 'Core Modules',
+                        description: 'The heart of the Serenity/JS framework',
+                        items: [
+                            '@serenity-js/core',
+                            '@serenity-js/assertions',
+                        ],
+                    },
+                    {
+                        name: 'Web Testing',
+                        description: 'Serenity/JS Screenplay Pattern libraries for interacting with web-based user interfaces',
+                        items: [
+                            '@serenity-js/web',
+                            '@serenity-js/playwright',
+                            '@serenity-js/protractor',
+                            '@serenity-js/webdriverio',
+                        ],
+                    },
+                    {
+                        name: 'REST API Testing',
+                        description: 'Tools for testing RESTful APIs',
+                        items: [
+                            '@serenity-js/rest',
+                            '@serenity-js/local-server',
+                        ],
+                    },
+                    {
+                        name: 'Reporting',
+                        description: 'Tools for generating test reports',
+                        items: [
+                            '@serenity-js/console-reporter',
+                            '@serenity-js/serenity-bdd',
+                        ]
+                    },
+                    {
+                        name: 'Test Runners',
+                        description: 'Integrations with popular test runners',
+                        items: [
+                            '@serenity-js/cucumber',
+                            '@serenity-js/jasmine',
+                            '@serenity-js/mocha',
+                            '@serenity-js/playwright-test'
+                        ],
+                    },
                 ],
+                integrationsOfInterest,
                 packages: [
                     {
                         path: './node_modules/@serenity-js/core',
@@ -433,6 +486,7 @@ const config: Config = {
             require.resolve('./src/plugins/presets'),
             {
                 projectRoot: __dirname,
+                integrationsOfInterest,
                 include: [
                     './node_modules/@serenity-js/*'
                 ],

@@ -1,68 +1,86 @@
 import typedocApiPlugin from 'docusaurus-plugin-typedoc-api';
 import type { LoadContext, Plugin } from '@docusaurus/types';
 import { PluginContentLoadedActions } from '@docusaurus/types';
-import { DocusaurusPluginTypeDocApiOptions, LoadedContent } from 'docusaurus-plugin-typedoc-api/lib/types';
-import type { RouteConfig } from '@docusaurus/types/src/routing';
-import { PropSidebarItemCategory } from '@docusaurus/plugin-content-docs';
+import {
+    DocusaurusPluginTypeDocApiOptions,
+    LoadedContent,
+    PackageReflectionGroup
+} from 'docusaurus-plugin-typedoc-api/lib/types';
+import { RouteConfig, RouteModules } from '@docusaurus/types/src/routing';
 import path from 'path';
 import fs from 'fs';
+import { Categoriser, CategoryDescriptor } from './Categoriser';
+import { PackageConfig } from 'docusaurus-plugin-typedoc-api/src/types';
+import { PackageCategory, PackageCompatibility } from './types';
+import { normalizeUrl } from '@docusaurus/utils';
 
-const replacements = {
-    'ApiIndex.js': require.resolve('./components/ApiIndex.tsx'),
-};
+function augmentRoute(config: RouteConfig, replacements: Record<string, {
+    component: string,
+    modules?: RouteModules
+}>): RouteConfig {
+    const augmentation = replacements[path.basename(config.component)];
 
-function swapComponents(config: RouteConfig, replacements: Record<string, string>): RouteConfig {
-    if (config.component && replacements[path.basename(config.component)]) {
-        config.component = replacements[path.basename(config.component)];
+    if (config.component && augmentation) {
+        config.component = augmentation.component;
+        if (config.modules && augmentation.modules) {
+            config.modules = {
+                ...config.modules,
+                ...augmentation.modules
+            }
+        }
     }
 
     if (config.routes) {
-        config.routes.forEach(route => swapComponents(route, replacements));
+        config.routes.forEach(route => augmentRoute(route, replacements));
     }
 
     return config;
 }
 
-class CategorisedSidebars {
-    private readonly sidebars: PropSidebarItemCategory[] = [];
+export interface DocusaurusPluginTypeDocApiExtendedOptions extends DocusaurusPluginTypeDocApiOptions {
+    integrationsOfInterest: string[];
+    categories: CategoryDescriptor[];
+}
 
-    constructor(private readonly categories: Array<{ label: string, items: string[] }>) {
-        this.sidebars = categories.map(category => CategorisedSidebars.createCategorySidebar(category));
-    }
+function addPackageCompatibilityData(projectRoot: string, integrationsOfInterest: string[]): (packageDescriptor: PackageConfig | string) => PackageCompatibility {
+    return function (packageDescriptor: PackageConfig | string) {
+        const pathToPackage = typeof packageDescriptor === 'string'
+            ? packageDescriptor
+            : packageDescriptor.path;
 
-    addPackageSidebar(sidebar: PropSidebarItemCategory): CategorisedSidebars {
-        const found = this.categories.map((category, categoryIndex) => {
-            return {
-                sidebarIndex: category.items.indexOf(sidebar.label), // -1 if not found
-                categoryIndex,
-                category
-            }
-        }).filter(({ sidebarIndex }) => sidebarIndex > -1)[0];
+        const packageJson = JSON.parse(fs.readFileSync(path.join(projectRoot, pathToPackage, 'package.json')).toString('utf-8'));
 
-        if (found) {
-            this.sidebars[found.categoryIndex].items[found.sidebarIndex] = sidebar;
-        }
+        const dependencies = {
+            ...packageJson.dependencies,
+            ...packageJson.peerDependencies,
+        };
 
-        return this;
-    }
+        const compatibility = Object.keys(dependencies)
+            .filter(dependency => integrationsOfInterest.includes(dependency))
+            .reduce((acc, key) => {
+                acc[key] = dependencies[key];
+                return acc;
+            }, {});
 
-    toJSON() {
-        return this.sidebars;
-    }
-
-    private static createCategorySidebar(category: { label: string, items: string[] }): PropSidebarItemCategory {
         return {
-            label: category.label,
-            collapsed: false,
-            collapsible: false,
-            type: 'category',
-            items: Array.from({ length: category.items.length }),
+            name: packageJson.name,
+            label: packageJson.name,
+            version: packageJson.version,
+            description: packageJson.description,
+            compatibility,
         }
     }
 }
 
-export interface DocusaurusPluginTypeDocApiExtendedOptions extends DocusaurusPluginTypeDocApiOptions {
-    categories: Array<{ label: string, items: string[] }>;
+function addPackagePermalinks<P extends { name: string }>(packageReflectionGroups: PackageReflectionGroup[]): (pkg: P) => P & { permalink: string } {
+    return function (pkg: P) {
+        return {
+            ...pkg,
+            permalink: packageReflectionGroups.find(prg => prg.packageName === pkg.name)
+                ?.entryPoints.find(entryPoint => entryPoint.index)
+                ?.reflection.permalink ?? ''
+        }
+    }
 }
 
 export default function localTypedocApiPlugin(
@@ -87,12 +105,18 @@ export default function localTypedocApiPlugin(
                     type: 'link'
                 },
                 ...sidebars.reduce(
-                    (acc, current) => acc.addPackageSidebar(current),
-                    new CategorisedSidebars(pluginOptions.categories)
+                    (acc, current) => acc.add(current),
+                    new Categoriser(pluginOptions.categories, category => ({
+                        label: category.name,
+                        collapsed: false,
+                        collapsible: false,
+                        type: 'category',
+                        items: [],
+                    }))
                 ).toJSON()
             ];
 
-            fs.writeFileSync(pathToSidebars, `module.exports = ${JSON.stringify(categorisedSidebars, null, 2)};`)
+            fs.writeFileSync(pathToSidebars, `module.exports = ${ JSON.stringify(categorisedSidebars, null, 2) };`)
 
             loadedContent.loadedVersions[0].sidebars = categorisedSidebars;
 
@@ -100,13 +124,37 @@ export default function localTypedocApiPlugin(
         },
 
         async contentLoaded({ content, actions }) {
+            const packageCategories: Array<PackageCategory> = pluginOptions.packages
+                .map(addPackageCompatibilityData(pluginOptions.projectRoot, pluginOptions.integrationsOfInterest))
+                // .map(addPackageUrl(normalizeUrl([context.baseUrl, options.routeBasePath ?? 'api'])))
+                .map(addPackagePermalinks(content.loadedVersions[0].packages))
+                .reduce(
+                    (acc, current) => acc.add(current),
+                    new Categoriser<PackageCompatibility, PackageCategory>(pluginOptions.categories, category => ({
+                        label: category.name,
+                        description: category.description,
+                        items: [],
+                    }))
+                ).toJSON();
 
-            // fs.writeFileSync('content.jsoan', JSON.stringify(content.loadedVersions[0].packages, null, 4), { encoding: 'utf-8' })
+            const augmentations = {
+                'ApiIndex.js': {
+                    component: require.resolve('./components/ApiIndex.tsx'),
+                    modules: {
+                        categories: await actions.createData(
+                            `packages-categories.json`,
+                            JSON.stringify(packageCategories),
+                        ),
+                    }
+                },
+            };
 
             const actionsProxy: PluginContentLoadedActions = {
                 ...actions,
                 addRoute(config: RouteConfig): void {
-                    actions.addRoute(swapComponents(config, replacements));
+                    const routeConfig = augmentRoute(config, augmentations);
+
+                    actions.addRoute(routeConfig);
                 }
             }
 
