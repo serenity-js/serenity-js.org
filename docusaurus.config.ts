@@ -35,11 +35,15 @@ const integrationsOfInterest = [
     'axios',
     '@cucumber/cucumber',
     'cucumber',
+    'express',
     'jasmine',
+    '@hapi/hapi',
+    'koa',
     'mocha',
     'playwright-core',
     '@playwright/test',
     'protractor',
+    'restify',
     '@wdio/cli',
     'webdriverio',
 ];
@@ -287,7 +291,18 @@ const config: Config = {
                 categories: [
                     {
                         name: 'Core Modules',
-                        description: 'The heart of the Serenity/JS framework',
+                        description: `
+                            <p>
+                                <a href="/handbook/design/">Serenity/JS core modules</a> form the foundation of the Serenity/JS framework,
+                                providing essential functionality such as the Screenplay Pattern for structuring your automated tests,
+                                reporting infrastructure for capturing the activities of your actors and processing test results,
+                                and assertion libraries for verifying test outcomes.
+                            </p>
+                            <p>
+                                For practical examples of writing different kinds of automated tests using Serenity/JS, check out the 
+                                <a href="/handbook/getting-started/project-templates/">Serenity/JS Project Templates</a>.
+                            </p>
+                        `,
                         items: [
                             '@serenity-js/core',
                             '@serenity-js/assertions',
@@ -295,7 +310,18 @@ const config: Config = {
                     },
                     {
                         name: 'Web Testing',
-                        description: 'Serenity/JS Screenplay Pattern libraries for interacting with web-based user interfaces',
+                        description: `
+                            <p>
+                                <a href="/handbook/web-testing/">Serenity/JS web modules</a> offer a <strong>standardised abstraction layer</strong> on top
+                                of popular web integration tools, enabling you to write <strong>portable web automation code</strong>
+                                that follows the Screenplay Pattern and works just as well for end-to-end test scenarios as for UI component tests.
+                            </p>
+                            <p>
+                                For practical examples of writing web-based tests using Serenity/JS, check out the 
+                                <a href="/handbook/getting-started/project-templates/#web-testing">Serenity/JS Project Templates for web testing</a>
+                                and the <a href="/handbook/web-testing/your-first-web-scenario/">Serenity/JS web testing tutorial</a>.
+                            </p>
+                        `,
                         items: [
                             '@serenity-js/web',
                             '@serenity-js/playwright',
@@ -305,7 +331,18 @@ const config: Config = {
                     },
                     {
                         name: 'REST API Testing',
-                        description: 'Tools for testing RESTful APIs',
+                        description: `
+                            <p>
+                                <a href="/handbook/api-testing/">Serenity/JS REST modules</a> enable you to automate interactions
+                                with REST and other HTTP-based APIs, either as part of dedicated API test suites,
+                                or as part of web-based test scenarios. 
+                            </p>
+                            <p>
+                                For practical examples of writing API-based tests using Serenity/JS, check out the 
+                                <a href="/handbook/getting-started/project-templates/#resthttp-api-testing">Serenity/JS Project Templates for API testing</a>
+                                and the <a href="/handbook/api-testing/your-first-api-scenario/">Serenity/JS API testing tutorial</a>.
+                            </p>
+                        `,
                         items: [
                             '@serenity-js/rest',
                             '@serenity-js/local-server',
@@ -313,7 +350,13 @@ const config: Config = {
                     },
                     {
                         name: 'Reporting',
-                        description: 'Tools for generating test reports',
+                        description: `
+                            <p>
+                                <a href="/handbook/reporting/">Serenity/JS reporting modules</a> capture information
+                                about the activities performed by your actors during a test scenario and translate it
+                                into test reports and living documentation of your system.
+                            </p>
+                        `,
                         items: [
                             '@serenity-js/console-reporter',
                             '@serenity-js/serenity-bdd',
@@ -321,7 +364,12 @@ const config: Config = {
                     },
                     {
                         name: 'Test Runners',
-                        description: 'Integrations with popular test runners',
+                        description: `
+                            <p>
+                                <a href="/handbook/test-runners/">Serenity/JS test runner <a href=""></a>dapters</a> enable you to
+                                execute your Serenity/JS test scenarios using popular test runners.
+                            </p>
+                        `,
                         items: [
                             '@serenity-js/cucumber',
                             '@serenity-js/jasmine',

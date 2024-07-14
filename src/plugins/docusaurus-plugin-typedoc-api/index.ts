@@ -1,4 +1,5 @@
 import typedocApiPlugin from 'docusaurus-plugin-typedoc-api';
+import type mdxLoader from '@docusaurus/mdx-loader';
 import type { LoadContext, Plugin } from '@docusaurus/types';
 import { PluginContentLoadedActions } from '@docusaurus/types';
 import {
@@ -12,7 +13,6 @@ import fs from 'fs';
 import { Categoriser, CategoryDescriptor } from './Categoriser';
 import { PackageConfig } from 'docusaurus-plugin-typedoc-api/src/types';
 import { PackageCategory, PackageCompatibility } from './types';
-import { normalizeUrl } from '@docusaurus/utils';
 
 function augmentRoute(config: RouteConfig, replacements: Record<string, {
     component: string,
@@ -126,7 +126,6 @@ export default function localTypedocApiPlugin(
         async contentLoaded({ content, actions }) {
             const packageCategories: Array<PackageCategory> = pluginOptions.packages
                 .map(addPackageCompatibilityData(pluginOptions.projectRoot, pluginOptions.integrationsOfInterest))
-                // .map(addPackageUrl(normalizeUrl([context.baseUrl, options.routeBasePath ?? 'api'])))
                 .map(addPackagePermalinks(content.loadedVersions[0].packages))
                 .reduce(
                     (acc, current) => acc.add(current),

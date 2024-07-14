@@ -7,7 +7,6 @@ import { useDocsVersion } from '@docusaurus/theme-common/internal';
 import type { Props as DocItemProps } from '@theme/DocItem';
 import Heading from '@theme/Heading';
 import type { ApiOptions, PackageReflectionGroup } from 'docusaurus-plugin-typedoc-api/lib/types';
-import { removeScopes } from 'docusaurus-plugin-typedoc-api/lib/utils/links';
 import { Footer } from 'docusaurus-plugin-typedoc-api/lib/components/Footer'
 import { VersionBanner } from 'docusaurus-plugin-typedoc-api/lib/components/VersionBanner';
 import NpmIcon from './NpmIcon';
@@ -89,14 +88,28 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                             </header>
 
                             <section className="tsd-readme">
-                                <p>Hi</p>
+                                <p>
+                                    Serenity/JS is a <strong>modular</strong>, <strong>full-stack acceptance testing framework</strong> based on Node.js.
+                                    The official Serenity/JS Node modules are listed below and distributed via <a href="https://www.npmjs.com/">NPM</a> under
+                                    the <a href="https://www.npmjs.com/search?q=%40serenity-js"><code>@serenity-js/*</code> namespace</a>.
+                                </p>
+                                <p>
+                                    You can use as many or as few Serenity/JS modules as you need
+                                    to improve the reporting capabilities of your test suite,
+                                    integrate with the various interfaces of your system under test,
+                                    and introduce advanced code reuse patterns in your organisation.
+                                </p>
+                                <p>
+                                    Learn more about the <a href="/handbook/getting-started/architecture/">modular architecture of Serenity/JS</a>.
+                                </p>
                             </section>
 
                             <section>
                                 { categories.map(category => (
                                     <div className="tsd-panel-group" key={ category.label }>
                                         <h2>{ category.label }</h2>
-                                        <p>{ category.description }</p>
+                                        {/* eslint-disable-next-line react/no-danger, react-perf/jsx-no-new-object-as-prop */}
+                                        <div dangerouslySetInnerHTML={{ __html: category.description }} />
                                         { category.items.map(item => (
                                             <div className="tsd-panel" key={ item.label }>
                                                 <h3 className="tsd-panel-header">
@@ -112,7 +125,7 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                                 </div>
                                                 { Object.keys(item.compatibility).length > 0 && (
                                                     <div className="tsd-panel-content">
-                                                        <h4>Compatibility</h4>
+                                                        <h4>Compatible with:</h4>
                                                         <ul className={'tsd-signatures'}>
                                                             { Object.entries(item.compatibility).map(([ dependencyName, compatibleVersions ]) => (
                                                                 <li key={ dependencyName }>
@@ -122,20 +135,6 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                                                           title={ 'compatible versions' }>{ compatibleVersions }</span>
                                                                 </li>
                                                             )) }
-                                                            {/*                            { packages.map((pkg) => (*/ }
-                                                        {/*                                <li key={ pkg.packageName } className="tsd-truncate">*/ }
-                                                        {/*                                    <Link*/ }
-                                                        {/*                                        className="tsd-kind-icon"*/ }
-                                                        {/*                                        // to={pkg.entryPoints[0].reflection.permalink}*/ }
-                                                        {/*                                        // todo: submit fix to redirect to the index page of each package*/ }
-                                                        {/*                                        to={ pkg.entryPoints.find(entryPoint => entryPoint.index).reflection.permalink }*/ }
-                                                        {/*                                    >*/ }
-                                                        {/*                                        <span>{ removeScopes(pkg.packageName, options.scopes) }</span>*/ }
-                                                        {/*                                        <span*/ }
-                                                        {/*                                            className="tsd-signature-symbol">v{ pkg.packageVersion }</span>{ ' ' }*/ }
-                                                        {/*                                    </Link>*/ }
-                                                        {/*                                </li>*/ }
-                                                        {/*                            )) }*/ }
                                                         </ul>
                                                     </div>
                                                 ) }
