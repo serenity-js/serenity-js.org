@@ -53,7 +53,7 @@
     "prism-react-renderer": "2.3.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "sass": "1.77.7",
+    "sass": "1.77.8",
     "typedoc": "0.25.13",
     "typedoc-plugin-mdn-links": "3.2.3",
     "typedoc-plugin-replace-text": "3.3.0"
