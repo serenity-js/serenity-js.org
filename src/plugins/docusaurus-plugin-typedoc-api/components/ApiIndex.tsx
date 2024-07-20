@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Link from '@docusaurus/Link';
 import type { PropVersionMetadata } from '@docusaurus/plugin-content-docs';
 import type { GlobalVersion } from '@docusaurus/plugin-content-docs/client';
@@ -47,6 +47,10 @@ function addVersionToUrl(
     return url;
 }
 
+function headingId(text: string): string {
+    return text.toLocaleLowerCase().replace(/\s+/g, '-');
+}
+
 export default function ApiIndex({ options, packages, categories, history }: ApiIndexProps) {
     const latestVersion = useDocsVersion();
     const { preferredVersion } = useDocsPreferredVersion(latestVersion.pluginId);
@@ -89,27 +93,35 @@ export default function ApiIndex({ options, packages, categories, history }: Api
 
                             <section className="tsd-readme">
                                 <p>
-                                    Serenity/JS is a <strong>modular</strong>, <strong>full-stack acceptance testing framework</strong> based on Node.js.
-                                    The official Serenity/JS Node modules are listed below and distributed via <a href="https://www.npmjs.com/">NPM</a> under
-                                    the <a href="https://www.npmjs.com/search?q=%40serenity-js"><code>@serenity-js/*</code> namespace</a>.
+                                    Serenity/JS is a <strong>modular</strong>, <strong>full-stack acceptance testing
+                                    framework</strong> built on Node.js.
+                                    The official Serenity/JS Node modules are distributed
+                                    via <a href="https://www.npmjs.com/" title="Node.js Package Manager">NPM</a> under
+                                    the <a href="https://www.npmjs.com/search?q=%40serenity-js"><code>@serenity-js/*</code> namespace</a> and
+                                    offer comprehensive <strong>test authoring</strong>, <strong>test integration</strong> and <strong>test reporting</strong> capabilities.
                                 </p>
                                 <p>
-                                    You can use as many or as few Serenity/JS modules as you need
-                                    to improve the reporting capabilities of your test suite,
-                                    integrate with the various interfaces of your system under test,
-                                    and introduce advanced code reuse patterns in your organisation.
+                                    For <a href="/handbook/getting-started/"><strong>new test automation projects</strong></a>, consider
+                                    using <a href="/handbook/getting-started/project-templates/">Serenity/JS Project Templates</a>.
+                                    These templates combine popular configurations of Serenity/JS modules with essential integration and test automation tools,
+                                    providing an excellent starting point and a reference implementation for common test automation scenarios.
                                 </p>
                                 <p>
-                                    Learn more about the <a href="/handbook/getting-started/architecture/">modular architecture of Serenity/JS</a>.
+                                    For <strong>existing test automation projects</strong>, the <a href="/handbook/getting-started/architecture/">modular architecture of Serenity/JS</a> lets
+                                    you gradually introduce the framework into existing test suites, allowing for <strong>progressive modernisation</strong> without disrupting ongoing work.
+                                </p>
+                                <p>
+                                    Below, you'll find a list of all the official Serenity/JS modules and their API documentation.
+                                    These modules are designed to cover a wide range of test automation needs, ensuring you have the necessary tools to build, manage, and scale your test suites effectively.
                                 </p>
                             </section>
 
                             <section>
                                 { categories.map(category => (
                                     <div className="tsd-panel-group" key={ category.label }>
-                                        <h2>{ category.label }</h2>
-                                        {/* eslint-disable-next-line react/no-danger, react-perf/jsx-no-new-object-as-prop */}
-                                        <div dangerouslySetInnerHTML={{ __html: category.description }} />
+                                        <Heading as="h2" id={ headingId(category.label) }>{ category.label }</Heading>
+                                        {/* eslint-disable-next-line react/no-danger, react-perf/jsx-no-new-object-as-prop */ }
+                                        <div dangerouslySetInnerHTML={ { __html: category.description } }/>
                                         { category.items.map(item => (
                                             <div className="tsd-panel" key={ item.label }>
                                                 <h3 className="tsd-panel-header">
@@ -118,18 +130,25 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                                     </Link>
                                                     <span className="tsd-flag"
                                                           title={ 'current version' }>{ item.version }</span>
+
                                                     <NpmIcon packageName={ item.name }/>
+                                                    <Link className="tsd-anchor"
+                                                          href={ item.permalink }
+                                                          title={ `${ item.label } API documentation` }
+                                                    >
+                                                        <i className="codicon codicon-file-code" />
+                                                    </Link>
                                                 </h3>
                                                 <div className="tsd-panel-content">
-                                                <p>{ item.description }</p>
+                                                    <p>{ item.description }</p>
                                                 </div>
                                                 { Object.keys(item.compatibility).length > 0 && (
                                                     <div className="tsd-panel-content">
                                                         <h4>Compatible with:</h4>
-                                                        <ul className={'tsd-signatures'}>
+                                                        <ul className={ 'tsd-signatures' }>
                                                             { Object.entries(item.compatibility).map(([ dependencyName, compatibleVersions ]) => (
                                                                 <li key={ dependencyName }>
-                                                                    <NpmLink packageName={ dependencyName } />
+                                                                    <NpmLink packageName={ dependencyName }/>
 
                                                                     <span className="tsd-flag"
                                                                           title={ 'compatible versions' }>{ compatibleVersions }</span>
@@ -144,27 +163,27 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                 )) }
                             </section>
 
-                            {/*<section className="tsd-panel">*/}
-                            {/*    <h3 className="tsd-panel-header">Packages</h3>*/}
-                            {/*    <div className="tsd-panel-content">*/}
-                            {/*        <ul className="tsd-index-list">*/}
-                            {/*            { packages.map((pkg) => (*/}
-                            {/*                <li key={ pkg.packageName } className="tsd-truncate">*/}
-                            {/*                    <Link*/}
-                            {/*                        className="tsd-kind-icon"*/}
-                            {/*                        // to={pkg.entryPoints[0].reflection.permalink}*/}
-                            {/*                        // todo: submit fix to redirect to the index page of each package*/}
-                            {/*                        to={ pkg.entryPoints.find(entryPoint => entryPoint.index).reflection.permalink }*/}
-                            {/*                    >*/}
-                            {/*                        <span*/}
-                            {/*                            className="tsd-signature-symbol">v{ pkg.packageVersion }</span>{ ' ' }*/}
-                            {/*                        <span>{ removeScopes(pkg.packageName, options.scopes) }</span>*/}
-                            {/*                    </Link>*/}
-                            {/*                </li>*/}
-                            {/*            )) }*/}
-                            {/*        </ul>*/}
-                            {/*    </div>*/}
-                            {/*</section>*/}
+                            {/*<section className="tsd-panel">*/ }
+                            {/*    <h3 className="tsd-panel-header">Packages</h3>*/ }
+                            {/*    <div className="tsd-panel-content">*/ }
+                            {/*        <ul className="tsd-index-list">*/ }
+                            {/*            { packages.map((pkg) => (*/ }
+                            {/*                <li key={ pkg.packageName } className="tsd-truncate">*/ }
+                            {/*                    <Link*/ }
+                            {/*                        className="tsd-kind-icon"*/ }
+                            {/*                        // to={pkg.entryPoints[0].reflection.permalink}*/ }
+                            {/*                        // todo: submit fix to redirect to the index page of each package*/ }
+                            {/*                        to={ pkg.entryPoints.find(entryPoint => entryPoint.index).reflection.permalink }*/ }
+                            {/*                    >*/ }
+                            {/*                        <span*/ }
+                            {/*                            className="tsd-signature-symbol">v{ pkg.packageVersion }</span>{ ' ' }*/ }
+                            {/*                        <span>{ removeScopes(pkg.packageName, options.scopes) }</span>*/ }
+                            {/*                    </Link>*/ }
+                            {/*                </li>*/ }
+                            {/*            )) }*/ }
+                            {/*        </ul>*/ }
+                            {/*    </div>*/ }
+                            {/*</section>*/ }
                         </div>
 
                         <Footer/>

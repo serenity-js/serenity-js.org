@@ -227,7 +227,7 @@ const config: Config = {
                             to: 'https://github.com/serenity-js/?q=template&type=all&language=&sort='
                         },
                         { label: 'Serenity/JS GitHub', href: 'https://github.com/serenity-js', },
-                        { label: 'Report an issue', href: 'https://github.com/serenity-js/serenity-js/issues', },
+                        { label: 'Report an issue', href: '/community/contributing/reporting-issues/', },
                     ],
                 },
                 {
@@ -366,8 +366,9 @@ const config: Config = {
                         name: 'Test Runners',
                         description: `
                             <p>
-                                <a href="/handbook/test-runners/">Serenity/JS test runner <a href=""></a>dapters</a> enable you to
-                                execute your Serenity/JS test scenarios using popular test runners.
+                                <a href="/handbook/test-runners/">Serenity/JS test runner adapters</a> enable you to
+                                execute your Serenity/JS test scenarios using popular test runners and integrate them
+                                with <a href="/handbook/reporting">Serenity/JS reporting services</a>.
                             </p>
                         `,
                         items: [
