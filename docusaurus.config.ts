@@ -7,6 +7,7 @@ import remarkLinkRewrite from './src/plugins/remark/link-rewrite';
 
 import pkg from './package.json';
 import redirects from './redirects.config';
+import packageJsonParser from './src/config/PackageJsonParser';
 
 const remarkOptions = {
     remarkPlugins: [
@@ -29,8 +30,9 @@ const remarkOptions = {
             }
         } ]
     ],
-}
+};
 
+// todo: remove
 const integrationsOfInterest = [
     'axios',
     '@cucumber/cucumber',
@@ -48,6 +50,8 @@ const integrationsOfInterest = [
     'webdriverio',
 ];
 
+const categories = packageJsonParser.parse(['./node_modules/@serenity-js/*/package.json']);
+
 const editUrl = (path: string) =>
     new URL(path, `https://github.com/serenity-js/serenity-js.org/tree/main`).toString();
 
@@ -56,10 +60,12 @@ const config: Config = {
     tagline: 'Collaborative test automation at scale!',
     favicon: 'icons/favicon.ico',
     trailingSlash: true,
+    githubHost: 'github.com',
 
     customFields: {
         supportedEngines: pkg.engines,
         currentNodeVersion: process.version,
+        categories,
         description:
             `Serenity/JS is an innovative test automation framework designed to help you create
             high-quality, business-focused test scenarios that interact with any interface of your system
@@ -70,7 +76,7 @@ const config: Config = {
     url: 'https://serenity-js.org',
     baseUrl: '/',
     organizationName: 'serenity-js',
-    projectName: 'serenity-js.org',
+    projectName: 'serenity-js',
 
     onBrokenLinks: 'warn',
     // onBrokenLinks: 'throw',
@@ -288,179 +294,88 @@ const config: Config = {
             {
                 gitRefName: 'main',
                 projectRoot: __dirname,
-                categories: [
-                    {
-                        name: 'Core Modules',
-                        description: `
-                            <p>
-                                <a href="/handbook/design/">Serenity/JS core modules</a> form the foundation of the Serenity/JS framework,
-                                providing essential functionality such as the Screenplay Pattern for structuring your automated tests,
-                                reporting infrastructure for capturing the activities of your actors and processing test results,
-                                and assertion libraries for verifying test outcomes.
-                            </p>
-                            <p>
-                                For practical examples of writing different kinds of automated tests using Serenity/JS, check out the 
-                                <a href="/handbook/getting-started/project-templates/">Serenity/JS Project Templates</a>.
-                            </p>
-                        `,
-                        items: [
-                            '@serenity-js/core',
-                            '@serenity-js/assertions',
-                        ],
-                    },
-                    {
-                        name: 'Web Testing',
-                        description: `
-                            <p>
-                                <a href="/handbook/web-testing/">Serenity/JS web modules</a> offer a <strong>standardised abstraction layer</strong> on top
-                                of popular web integration tools, enabling you to write <strong>portable web automation code</strong>
-                                that follows the Screenplay Pattern and works just as well for end-to-end test scenarios as for UI component tests.
-                            </p>
-                            <p>
-                                For practical examples of writing web-based tests using Serenity/JS, check out the 
-                                <a href="/handbook/getting-started/project-templates/#web-testing">Serenity/JS Project Templates for web testing</a>
-                                and the <a href="/handbook/web-testing/your-first-web-scenario/">Serenity/JS web testing tutorial</a>.
-                            </p>
-                        `,
-                        items: [
-                            '@serenity-js/web',
-                            '@serenity-js/playwright',
-                            '@serenity-js/protractor',
-                            '@serenity-js/webdriverio',
-                        ],
-                    },
-                    {
-                        name: 'REST API Testing',
-                        description: `
-                            <p>
-                                <a href="/handbook/api-testing/">Serenity/JS REST modules</a> enable you to automate interactions
-                                with REST and other HTTP-based APIs, either as part of dedicated API test suites,
-                                or as part of web-based test scenarios. 
-                            </p>
-                            <p>
-                                For practical examples of writing API-based tests using Serenity/JS, check out the 
-                                <a href="/handbook/getting-started/project-templates/#resthttp-api-testing">Serenity/JS Project Templates for API testing</a>
-                                and the <a href="/handbook/api-testing/your-first-api-scenario/">Serenity/JS API testing tutorial</a>.
-                            </p>
-                        `,
-                        items: [
-                            '@serenity-js/rest',
-                            '@serenity-js/local-server',
-                        ],
-                    },
-                    {
-                        name: 'Reporting',
-                        description: `
-                            <p>
-                                <a href="/handbook/reporting/">Serenity/JS reporting modules</a> capture information
-                                about the activities performed by your actors during a test scenario and translate it
-                                into test reports and living documentation of your system.
-                            </p>
-                        `,
-                        items: [
-                            '@serenity-js/console-reporter',
-                            '@serenity-js/serenity-bdd',
-                        ]
-                    },
-                    {
-                        name: 'Test Runners',
-                        description: `
-                            <p>
-                                <a href="/handbook/test-runners/">Serenity/JS test runner adapters</a> enable you to
-                                execute your Serenity/JS test scenarios using popular test runners and integrate them
-                                with <a href="/handbook/reporting">Serenity/JS reporting services</a>.
-                            </p>
-                        `,
-                        items: [
-                            '@serenity-js/cucumber',
-                            '@serenity-js/jasmine',
-                            '@serenity-js/mocha',
-                            '@serenity-js/playwright-test'
-                        ],
-                    },
-                ],
-                integrationsOfInterest,
+                categories,
                 packages: [
                     {
                         path: './node_modules/@serenity-js/core',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
-                            events: { label: 'Domain Events', path: 'lib/events/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
+                            events: { label: 'Domain Events', path: 'src/events/index.ts' },
                         },
                     },
                     {
                         path: './node_modules/@serenity-js/assertions',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
 
                     {
                         path: './node_modules/@serenity-js/web',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
                     {
                         path: './node_modules/@serenity-js/playwright',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
                     {
                         path: './node_modules/@serenity-js/protractor',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
                         },
                     },
                     {
                         path: './node_modules/@serenity-js/webdriverio',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
                         },
                     },
 
                     {
                         path: './node_modules/@serenity-js/rest',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
                     {
                         path: './node_modules/@serenity-js/local-server',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
 
 
                     {
                         path: './node_modules/@serenity-js/console-reporter',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
                     {
                         path: './node_modules/@serenity-js/serenity-bdd',
-                        entry: { index: 'lib/index.d.ts' },
+                        entry: { index: 'src/index.ts' },
                     },
 
                     {
                         path: './node_modules/@serenity-js/cucumber',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
                         },
                     },
                     {
                         path: './node_modules/@serenity-js/jasmine',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
                         },
                     },
                     {
                         path: './node_modules/@serenity-js/mocha',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
-                            adapter: { label: 'Test runner adapter', path: 'lib/adapter/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
                         },
                     },
                     {
                         path: './node_modules/@serenity-js/playwright-test',
                         entry: {
-                            index: { label: 'index', path: 'lib/index.d.ts' },
+                            index: { label: 'index', path: 'src/index.ts' },
                         },
                     },
                 ],
@@ -535,6 +450,7 @@ const config: Config = {
             require.resolve('./src/plugins/presets'),
             {
                 projectRoot: __dirname,
+                // todo: inject the parser instead of the integrationsOfInterest
                 integrationsOfInterest,
                 include: [
                     './node_modules/@serenity-js/*'

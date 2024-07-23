@@ -1,23 +1,25 @@
+import { CategoryDetails } from '../../config/PackageJsonParser';
+
 export interface CategoryDescriptor {
     name: string;
     description: string;
     items: string[];
 }
 
-export class Categoriser<Item extends { label: string }, Category extends { items: Array<Item>}> {
+export class SidebarGenerator<Item extends { label: string }, Category extends { items: Array<Item>}> {
     private readonly categorisedItems: Array<Category> = [];
 
     constructor(
-        private readonly categories: Array<CategoryDescriptor>,
-        categoryMapper: (category: CategoryDescriptor) => Category,
+        private readonly categories: Array<CategoryDetails>,
+        categoryMapper: (category: CategoryDetails) => Category,
     ) {
         this.categorisedItems = categories.map(category => categoryMapper(category));
     }
 
-    add(item: Item): Categoriser<Item, Category> {
+    add(item: Item): SidebarGenerator<Item, Category> {
         const found = this.categories.map((category, categoryIndex) => {
             return {
-                itemIndex: category.items.indexOf(item.label), // -1 if not found
+                itemIndex: category.items.findIndex(pkg => pkg.name === item.label), // -1 if not found
                 categoryIndex,
                 category
             }

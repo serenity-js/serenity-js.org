@@ -1,6 +1,7 @@
 import AuthorBio from '@site/src/components/AuthorBio';
 import ArticleComingSoon from '@site/src/components/ArticleComingSoon'
 import BrowserWindow from '@site/src/components/BrowserWindow'
+import DependencyTypeDescription from '@site/src/components/DependencyTypeDescription'
 import Figure from '@site/src/components/Figure'
 import Image from '@theme/IdealImage';
 import MDXComponents from '@theme-original/MDXComponents'
@@ -13,6 +14,7 @@ export default {
     AuthorBio,
     ArticleComingSoon,
     BrowserWindow,
+    DependencyTypeDescription,
     Image,
     Tabs,
     TabItem,
