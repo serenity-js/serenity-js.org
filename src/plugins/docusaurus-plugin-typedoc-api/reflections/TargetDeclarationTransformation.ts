@@ -2,7 +2,6 @@ import { ReflectionTransformation } from './ReflectionTransformation';
 import { JSONOutput } from 'typedoc';
 import { PackageReflectionGroup } from 'docusaurus-plugin-typedoc-api/lib/types';
 import { isRecord } from 'tiny-types/lib/objects';
-import fs from 'fs';
 
 export class TargetDeclarationTransformation implements ReflectionTransformation<JSONOutput.ReferenceType> {
     private readonly declarations: Record<string, Record<string, number>> = {};
