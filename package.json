@@ -58,7 +58,7 @@
     "tiny-types": "1.22.0",
     "typedoc": "0.25.13",
     "typedoc-plugin-mdn-links": "3.2.5",
-    "typedoc-plugin-replace-text": "3.3.0"
+    "typedoc-plugin-replace-text": "4.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.4.0",
