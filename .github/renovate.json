@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "groupName": "Docusaurus dependencies",
+      "packagePatterns": [
+        "^@docusaurus/",
+        "^docusaurus-"
+      ]
+    },
+    {
+      "groupName": "Serenity/JS dependencies",
+      "packagePatterns": [
+        "^@serenity-js/",
+        "tiny-types"
+      ]
+    },
+    {
+      "groupName": "TypeDoc dependencies",
+      "packagePatterns": [
+        "typedoc",
+        "^typedoc-plugin-",
+        "typescript"
+      ]
+    }
+  ]
+}
