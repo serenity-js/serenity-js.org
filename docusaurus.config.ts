@@ -465,30 +465,6 @@ const config: Config = {
                 },
             }
         ],
-        // [
-        //     require.resolve('./src/plugins/changelog/index.js'),
-        //     {
-        //         blogTitle: 'Serenity/JS Changelog \uD83C\uDF81',
-        //         blogDescription: 'Keep yourself up-to-date about new features in every release',
-        //         blogSidebarCount: 'ALL',
-        //         blogSidebarTitle: 'Changelog',
-        //         routeBasePath: '/changelog',
-        //         showReadingTime: false,
-        //         postsPerPage: 10,
-        //         archiveBasePath: undefined,
-        //         blogTagsListComponent: '@theme/BlogTagsListPage',
-        //         blogTagsPostsComponent: '@theme/BlogTagsPostsPage',
-        //         // authorsMapPath: 'authors.json',
-        //         feedOptions: {
-        //             type: 'all',
-        //             title: 'Serenity/JS changelog',
-        //             description:
-        //                 'Keep yourself up-to-date about new features in every release',
-        //             copyright: `Copyright © 2016-${new Date().getFullYear()} Jan Molak, SmartCode Ltd`,
-        //             language: 'en',
-        //         },
-        //     },
-        // ],
         [
             '@docusaurus/plugin-ideal-image',
             {
