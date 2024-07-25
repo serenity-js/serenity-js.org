@@ -1,9 +1,9 @@
 ---
 sidebar_position: 5
-title: Semantic versioning
+title: Versioning strategy
 ---
 
-# Semantic Versioning
+# Serenity/JS versioning strategy
 
 Serenity/JS complies with [Semantic Versioning 2.0.0](https://semver.org/),
 with release versions [determined automatically](/community/contributing/commit-message-conventions/)
@@ -32,15 +32,16 @@ To stay up to date, set the required version of each Serenity/JS module to `3.x`
     "@serenity-js/assertions": "3.x",
     "@serenity-js/rest": "3.x",
     "@serenity-js/playwright": "3.x",
-    "@serenity-js/web": "3.x",
-    "@serenity-js/serenity-bdd": "3.x"
+    "@serenity-js/playwright-test": "3.x",
+    "@serenity-js/serenity-bdd": "3.x",
+    "@serenity-js/web": "3.x"
   }
 }
 ```
 
-:::tip Use a bot to update your dependencies automatically
-You might also want to consider using services like [Renovate](https://github.com/renovatebot/renovate) or [Dependabot](https://github.com/dependabot)
-to notify you when new releases are available. This is something Serenity/JS does itself to stay up to date with _its_ dependencies.
+:::info Use a bot to update your dependencies automatically
+Use a dependency management bot like [Renovate](https://docs.renovatebot.com/) or [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide)
+to stay up-to-date with the new features, bug fixes, and security patches.
 :::
 
 ## Deprecated APIs
@@ -62,19 +63,3 @@ When a new experimental API is introduced to the framework, a ticket marked as [
 Please be aware that experimental APIs might change or get removed without prior notice and without affecting the major version number of the Serenity/JS framework.
 
 You can [watch](https://docs.github.com/en/github/managing-subscriptions-and-notifications-on-github/configuring-notifications#configuring-your-watch-settings-for-an-individual-repository) the [Serenity/JS GitHub](https://github.com/serenity-js/serenity-js) repository to be notified of experimental APIs.
-
-## Your feedback matters!
-
-If you like Serenity/JS, [give it a ⭐ star on GitHub](https://github.com/serenity-js/serenity-js) and tell your friends about it!
-For questions about Serenity/JS, check out [Serenity/JS Q'n'A](https://github.com/orgs/serenity-js/discussions/categories/how-to),
-and make sure to join our [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im) to say hi 👋
-
-[![GitHub stars](https://img.shields.io/github/stars/serenity-js/serenity-js)](https://github.com/serenity-js/serenity-js)
-[![Join Serenity/JS Community Chat](https://img.shields.io/badge/Serenity%2FJS-Q'n'A-FBD30B?logo=github)](https://matrix.to/#/#serenity-js:gitter.im)
-[![Join Serenity/JS Community Chat](https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js:gitter.im)
-
-New tutorials and videos are coming soon, follow us on [LinkedIn](https://www.linkedin.com/company/serenity-js) and subscribe to [Serenity/JS YouTube channel](https://www.youtube.com/channel/UC0RdeVPyjtJopVHvlLrXd1Q) to get notified when they're available!
-
-[![LinkedIn Follow](https://img.shields.io/badge/Follow%20Serenity%2FJS-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/serenity-js)
-[![YouTube Follow](https://img.shields.io/badge/Watch%20@serenity--js-E62117?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@serenity-js)
-[![GitHub Sponsors](https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/serenity-js)

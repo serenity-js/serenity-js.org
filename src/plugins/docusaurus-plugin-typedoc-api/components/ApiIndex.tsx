@@ -5,15 +5,14 @@ import type { GlobalVersion } from '@docusaurus/plugin-content-docs/client';
 import { useDocsPreferredVersion } from '@docusaurus/theme-common';
 import { useDocsVersion } from '@docusaurus/theme-common/internal';
 import type { Props as DocItemProps } from '@theme/DocItem';
-import DependencyTypeDescription from '../../../../src/components/DependencyTypeDescription'
 import Heading from '@theme/Heading';
 import type { ApiOptions, PackageReflectionGroup } from 'docusaurus-plugin-typedoc-api/lib/types';
 import { Footer } from 'docusaurus-plugin-typedoc-api/lib/components/Footer'
 import { VersionBanner } from 'docusaurus-plugin-typedoc-api/lib/components/VersionBanner';
 import Markdown from 'react-markdown'
 
-import NpmIcon from './NpmIcon';
-import NpmLink from './NpmLink';
+import DependencyTypeDescription from '../../../../src/components/DependencyTypeDescription';
+import NpmLink from '../../../../src/components/NpmLink';
 import { CategoryWithExtendedPackageDetails } from '../index';
 
 export interface ApiIndexProps extends Pick<DocItemProps, 'route'> {
@@ -144,7 +143,7 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                                     <span className="tsd-flag"
                                                           title={ 'current version' }>{ item.version }</span>
 
-                                                    <NpmIcon packageName={ item.name }/>
+                                                    <NpmLink packageName={ item.name } showPackageName={false} />
                                                     <Link className="tsd-anchor"
                                                           href={ item.permalink }
                                                           title={ `${ item.name } API documentation` }

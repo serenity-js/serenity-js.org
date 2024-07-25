@@ -75,7 +75,7 @@ export default {
             ], to: '/handbook/getting-started/upgrading-to-serenity-js-3'
         },
 
-        { from: '/handbook/release-notes/versioning.html', to: '/handbook/getting-started/versioning' },
+        { from: '/handbook/release-notes/versioning.html', to: '/releases/versioning' },
 
         { from: '/handbook/reporting/artifact-archiver.html', to: '/handbook/reporting/artifact-archiver' },
         { from: '/handbook/reporting/console-reporter.html', to: '/handbook/reporting/console-reporter' },

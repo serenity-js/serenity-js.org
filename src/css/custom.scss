@@ -163,6 +163,30 @@ html.plugin-typedoc-api .theme-doc-sidebar-menu > li::before {
     /*padding: 0px 6px 0px 6px;*/
 }
 
+#serenity-js-compatibility-matrix {
+
+    width: 100%;
+
+    tbody {
+        tr {
+            th:first-child a,
+            td:nth-child(2) a,
+            td:nth-child(3) a {
+                word-break: keep-all;
+            }
+
+            th[scope="colgroup"] {
+                text-align: center;
+                border-bottom: 3px solid var(--ifm-color-emphasis-300);
+            }
+
+            th[scope="row"], th[scope="rowgroup"],  {
+                text-align: left;
+            }
+        }
+    }
+}
+
 #giscus-comments {
     display: block;
     margin-top: 50px;

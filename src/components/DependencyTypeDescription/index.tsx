@@ -7,12 +7,12 @@ export default function DependencyTypeDescription({ type, format = descriptionTy
     className?: string
 }) {
     const title = {
-        required: 'You MUST install a compatible version of this dependency in your project package.json',
-        optional: 'You SHOULD install a compatible version of at least one of the available optional dependencies in your project package.json',
-        direct: 'A compatible version of this dependency already comes with this module, but you COULD install it directly in your project package.json too',
+        required: 'You MUST install a compatible version of this dependency in your package.json file',
+        optional: 'You SHOULD install a compatible version of at least one of the available optional dependencies in your package.json file',
+        direct: 'A compatible version of this dependency will be installed together with the corresponding Serenity/JS module, but you COULD also add it in your package.json file',
     }[type];
 
     return (
-        <span className={ clsx(className) } aria-lable={ title } title={ title }>{ format(type) }</span>
+        <span className={ clsx(className) } aria-label={ title } title={ title }>{ format(type) }</span>
     )
 }

@@ -5,7 +5,7 @@ import npm2yarn from '@docusaurus/remark-plugin-npm2yarn';
 import tabBlocks from 'docusaurus-remark-plugin-tab-blocks';
 import remarkLinkRewrite from './src/plugins/remark/link-rewrite';
 
-import pkg from './package.json';
+import core from '@serenity-js/core/package.json';
 import redirects from './redirects.config';
 import packageJsonParser from './src/config/PackageJsonParser';
 
@@ -63,7 +63,7 @@ const config: Config = {
     githubHost: 'github.com',
 
     customFields: {
-        supportedEngines: pkg.engines,
+        supportedEngines: core.engines,
         currentNodeVersion: process.version,
         categories,
         description:
@@ -78,10 +78,10 @@ const config: Config = {
     organizationName: 'serenity-js',
     projectName: 'serenity-js',
 
-    onBrokenLinks: 'warn',
-    // onBrokenLinks: 'throw',
-    onBrokenMarkdownLinks: 'warn',
-    // onBrokenMarkdownLinks: 'throw',
+    // onBrokenLinks: 'warn',
+    onBrokenLinks: 'throw',
+    // onBrokenMarkdownLinks: 'warn',
+    onBrokenMarkdownLinks: 'throw',
 
     // Even if you don't use internationalization, you can use this field to set
     // useful metadata like html lang. For example, if your site is Chinese, you
