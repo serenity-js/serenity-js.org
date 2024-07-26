@@ -160,7 +160,7 @@ const config: Config = {
                     position: 'left',
                 },
 
-                { to: '/blog', label: 'Announcements', position: 'left' },
+                { to: '/blog', label: 'News', position: 'left' },
                 {
                     href: 'https://www.youtube.com/@serenity-js',
                     'aria-label': 'Serenity/JS YouTube channel',
