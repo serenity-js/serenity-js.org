@@ -152,14 +152,15 @@ const config: Config = {
             items: [
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
                 { label: 'API', to: '/api/', position: 'left' },
-                { to: '/blog', label: 'Blog', position: 'left' },
+                { label: `Releases`, to: 'releases', position: 'left' },
                 { to: '/community', label: 'Community', position: 'left' },
                 {
                     to: 'https://github.com/sponsors/serenity-js',
                     label: 'Sponsors',
                     position: 'left',
                 },
-                { label: `Releases`, to: 'releases', position: 'left' },
+
+                { to: '/blog', label: 'Announcements', position: 'left' },
                 {
                     href: 'https://www.youtube.com/@serenity-js',
                     'aria-label': 'Serenity/JS YouTube channel',
