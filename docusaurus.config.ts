@@ -52,8 +52,7 @@ const integrationsOfInterest = [
 
 const categories = packageJsonParser.parse(['./node_modules/@serenity-js/*/package.json']);
 
-const editUrl = (path: string) =>
-    new URL(path, `https://github.com/serenity-js/serenity-js.org/tree/main`).toString();
+const editUrl = `https://github.com/serenity-js/serenity-js.org/tree/main`;
 
 const config: Config = {
     title: 'Serenity/JS',
@@ -97,7 +96,7 @@ const config: Config = {
             {
                 docs: {
                     ...remarkOptions,
-                    editUrl: editUrl('src/docs/handbook'),
+                    editUrl,
                     path: './src/docs/handbook',
                     routeBasePath: 'handbook',
                     sidebarPath: './src/sidebars/handbook.ts',
@@ -106,7 +105,7 @@ const config: Config = {
                 },
                 blog: {
                     ...remarkOptions,
-                    editUrl: editUrl('src/blog'),
+                    editUrl,
                     path: './src/blog',
                     showReadingTime: true,
                 },
@@ -422,7 +421,7 @@ const config: Config = {
             'content-docs',
             {
                 id: 'community',
-                editUrl: editUrl('src/docs/community'),
+                editUrl,
                 path: './src/docs/community',
                 routeBasePath: 'community',
                 sidebarPath: './src/sidebars/community.ts',
@@ -433,7 +432,7 @@ const config: Config = {
             'content-docs',
             {
                 id: 'releases',
-                editUrl: editUrl('src/docs/releases'),
+                editUrl,
                 path: './src/docs/releases',
                 routeBasePath: 'releases',
                 sidebarPath: './src/sidebars/releases.ts',
