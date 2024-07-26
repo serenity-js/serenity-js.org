@@ -30,6 +30,13 @@ jobs:
       - name: Install Node modules
         uses: bahmutov/npm-install@v1
 
-      # Runs a single command using the runners shell
       - name: Build website
         run: npm run build
+
+      - name: Publish website
+        uses: JamesIves/github-pages-deploy-action@94f3c658273cf92fb48ef99e5fbc02bd2dc642b2 # v4.6.3
+        if: github.ref == 'refs/heads/main'
+        with:
+          BRANCH: gh-pages
+          FOLDER: build
+          CLEAN: true
