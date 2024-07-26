@@ -1,5 +1,9 @@
 # Serenity/JS
 
+[![Build Status](https://github.com/serenity-js/serenity-js.org/workflows/build/badge.svg)](https://github.com/serenity-js/serenity-js.org/actions)
+[![Serenity/JS on GitHub](https://img.shields.io/badge/github-serenity--js-yellow?logo=github)](https://github.com/serenity-js/)
+[![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
+
 [![Follow Serenity/JS on LinkedIn](https://img.shields.io/badge/Follow-Serenity%2FJS%20-0077B5?logo=linkedin)](https://www.linkedin.com/company/serenity-js)
 [![Watch Serenity/JS on YouTube](https://img.shields.io/badge/Watch-@serenity--js-E62117?logo=youtube)](https://www.youtube.com/@serenity-js)
 [![Join Serenity/JS Community Chat](https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js:gitter.im)
@@ -15,34 +19,66 @@ of complex software systems faster, more collaborative and easier to scale.
 - [Serenity/JS Project Templates on GitHub](https://serenity-js.org/handbook/getting-started/project-templates/)
 
 👋 Join the Serenity/JS Community!
-- Meet other Serenity/JS developers and maintainers on the [Serenity/JS Community chat channel](https://matrix.to/#/#serenity-js:gitter.im),
-- Find answers to your Serenity/JS questions on the [Serenity/JS Forum](https://github.com/orgs/serenity-js/discussions/categories/how-to),
-- Learn how to [contribute to Serenity/JS](https://serenity-js.org/contributing),
+- Meet other Serenity/JS developers and maintainers on the [Serenity/JS Community chat channel](https://matrix.to/#/#serenity-js:gitter.im)
+- Find answers to your Serenity/JS questions on the [Serenity/JS Forum](https://github.com/orgs/serenity-js/discussions/categories/how-to)
+- Learn how to [contribute to Serenity/JS](https://serenity-js.org/contributing)
 - Support the project and gain access to [Serenity/JS Playbooks](https://github.com/serenity-js/playbooks) by becoming a [Serenity/JS GitHub Sponsor](https://github.com/sponsors/serenity-js)!
 
 ## Serenity/JS Website
 
 This repository hosts the code behind the [Serenity/JS website](https://serenity-js.org).
 
-### Installation
+The website is built with [Docusaurus](https://docusaurus.io/) and uses
+the [Docusaurus Plugin TypeDoc API](https://github.com/milesj/docusaurus-plugin-typedoc-api/) to produce the API docs.
 
-To install the dependencies of this repository, run the following command in your computer terminal:
+### Using Gitpod virtual workspace
+
+You can work on this repository in a virtual Gitpod workspace without having to install anything on your machine.
+
+To do that:
+- [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your GitHub account
+- [Create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository) in your forked repository
+- Click on the [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/serenity-js/serenity-js) badge in the readme of your forked repository to provision your free Gitpod workspace
+- Introduce the changes you wish to propose
+- Run **full local build** before committing - `npm run build`
+- Commit your changes following the conventional commits standard, e.g. `docs(website): fixed a typo`, push them to your forked repository, 
+  and raise a [Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
+
+Note that your Gitpod workspace is configured to automatically install Node.js and all the necessary dependencies and start the local development server
+when you open the workspace, so you can start working on the Serenity/JS website right away!
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/from-referrer/)
+
+### Using your local machine
+
+To work on the Serenity/JS website locally, you'll need to:
+- [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your GitHub account
+- [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) your fork to your machine
+- Make sure you have the have [Node.js](https://nodejs.org/) installed on your machine, as per the general [Serenity/JS installation instructions](https://serenity-js.org/handbook/getting-started/installation/#installing-nodejs)
+- Install the Node.js dependencies by running `npm ci` in the project root
+- Make sure you can build the Serenity/JS website on your machine by running `npm run build`
+- Start the local development server by running `npm start`
+- Introduce the changes you wish to propose
+- Run **full local build** before committing - `npm run build`
+- Commit your changes following the conventional commits standard, e.g. `docs(website): fixed a typo`, push them to your forked repository,
+  and raise a [Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
+
+
+#### Useful commands
+
+Installing Node.js dependencies:
 
 ```
 npm ci
 ```
 
-### Local Development
-
-To start a local development server, run:
+Starting the local development server:
 
 ```
 npm start
 ```
 
-### Build
-
-To build the Serenity/JS website and generate its static content under the `./build` directory, run:
+Running the full local build:
 
 ```
 npm run build
