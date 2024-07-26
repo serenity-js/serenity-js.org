@@ -1,6 +1,6 @@
 # Serenity/JS
 
-[![Build Status](https://github.com/serenity-js/serenity-js.org/workflows/build/badge.svg)](https://github.com/serenity-js/serenity-js.org/actions)
+[![Build Status](https://github.com/serenity-js/serenity-js.org/actions/workflows/main.yaml/badge.svg?branch=main)](https://github.com/serenity-js/serenity-js.org/actions)
 [![Serenity/JS on GitHub](https://img.shields.io/badge/github-serenity--js-yellow?logo=github)](https://github.com/serenity-js/)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/from-referrer/)
 
