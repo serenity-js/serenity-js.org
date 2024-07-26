@@ -1,0 +1,28 @@
+ports:
+  - port: 3000
+    onOpen: notify
+    visibility: public
+
+tasks:
+  - name: 'Install Node modules'
+    init: |
+      nvm install
+      nvm use
+      npm ci
+      gp sync-done installation
+
+  - name: 'Docusaurus Dev Server'
+    init: gp sync-await installation
+    command: |
+      npm start
+
+  - name: 'Welcome'
+    init: gp sync-await installation
+    command: |
+      echo "To view Serenity/JS website, visit:"
+      gp url 3000
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
+    - EditorConfig.EditorConfig
