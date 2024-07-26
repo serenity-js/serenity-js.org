@@ -16,7 +16,8 @@
       "packagePatterns": [
         "^@serenity-js/",
         "tiny-types"
-      ]
+      ],
+      "automerge": true
     },
     {
       "groupName": "TypeDoc dependencies",
