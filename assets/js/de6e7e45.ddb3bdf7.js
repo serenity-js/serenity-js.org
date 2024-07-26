@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkserenity_js_org=self.webpackChunkserenity_js_org||[]).push([[9120],{782:e=>{e.exports=JSON.parse('{"banner":"","breadcrumbs":true,"gitRefName":"main","minimal":false,"pluginId":"default","scopes":[]}')}}]);

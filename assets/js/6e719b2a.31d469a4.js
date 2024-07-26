@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkserenity_js_org=self.webpackChunkserenity_js_org||[]).push([[1650],{52521:e=>{e.exports=JSON.parse('{"name":"docusaurus-plugin-typedoc-api","id":"default"}')}}]);
