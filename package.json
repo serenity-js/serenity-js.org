@@ -47,7 +47,7 @@
     "@serenity-js/webdriverio": "3.25.3",
     "clsx": "2.1.1",
     "docusaurus-plugin-sass": "0.2.5",
-    "docusaurus-plugin-typedoc-api": "4.2.0",
+    "docusaurus-plugin-typedoc-api": "4.2.1",
     "docusaurus-remark-plugin-tab-blocks": "3.1.0",
     "fast-glob": "3.3.2",
     "prism-react-renderer": "2.3.1",
@@ -57,7 +57,7 @@
     "sass": "1.77.8",
     "tiny-types": "1.22.0",
     "typedoc": "0.26.5",
-    "typedoc-plugin-mdn-links": "3.2.6",
+    "typedoc-plugin-mdn-links": "3.2.7",
     "typedoc-plugin-replace-text": "4.0.0"
   },
   "devDependencies": {
