@@ -22,13 +22,13 @@
     "link": "npm install --install-links ../serenity-js/packages/*"
   },
   "dependencies": {
-    "@docusaurus/core": "3.4.0",
-    "@docusaurus/plugin-client-redirects": "3.4.0",
-    "@docusaurus/plugin-content-docs": "3.4.0",
-    "@docusaurus/plugin-ideal-image": "3.4.0",
-    "@docusaurus/preset-classic": "3.4.0",
-    "@docusaurus/remark-plugin-npm2yarn": "3.4.0",
-    "@docusaurus/theme-mermaid": "3.4.0",
+    "@docusaurus/core": "3.5.0",
+    "@docusaurus/plugin-client-redirects": "3.5.0",
+    "@docusaurus/plugin-content-docs": "3.5.0",
+    "@docusaurus/plugin-ideal-image": "3.5.0",
+    "@docusaurus/preset-classic": "3.5.0",
+    "@docusaurus/remark-plugin-npm2yarn": "3.5.0",
+    "@docusaurus/theme-mermaid": "3.5.0",
     "@giscus/react": "3.0.0",
     "@mdx-js/react": "3.0.1",
     "@serenity-js/assertions": "3.25.4",
@@ -61,9 +61,9 @@
     "typedoc-plugin-replace-text": "4.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.4.0",
-    "@docusaurus/tsconfig": "3.4.0",
-    "@docusaurus/types": "3.4.0",
+    "@docusaurus/module-type-aliases": "3.5.0",
+    "@docusaurus/tsconfig": "3.5.0",
+    "@docusaurus/types": "3.5.0",
     "typescript": "5.5.4",
     "unist-util-visit": "5.0.0"
   },
