@@ -1,0 +1,26 @@
+.indexCtas {
+    --ifm-button-size-multiplier: 1.6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.indexCtas a,
+.indexCtas a:hover {
+    color: black;
+}
+
+.indexCtas a:last-of-type {
+    margin: 20px 36px;
+}
+
+@media only screen and (max-width: 768px) {
+    .indexCtas {
+        justify-content: center;
+    }
+
+    .indexCtas a {
+        margin: 20px 36px;
+    }
+}

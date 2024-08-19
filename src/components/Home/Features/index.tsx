@@ -1,6 +1,9 @@
 import clsx from 'clsx';
 import React from 'react';
 
+import Section from '../components/Section';
+import SectionTitle from '../components/SectionTitle';
+
 import styles from './styles.module.css';
 
 type FeatureItem = {
@@ -96,18 +99,16 @@ function Feature({ title, Svg, description }: FeatureItem) {
     );
 }
 
-export default function HomepageFeatures(): React.JSX.Element {
+export default function Features(): React.JSX.Element {
     return (
-        <section className={ styles.features }>
-            <div className="container">
-                { TopFeatures.map((row, rowId) => (
-                    <div className="row" key={rowId}>
-                        { row.map((feature, featureId) =>
-                            <Feature key={ featureId } { ...feature } />
-                        ) }
-                    </div>
-                )) }
-            </div>
-        </section>
+        <Section className={ styles.features }>
+            { TopFeatures.map((row, rowId) => (
+                <div className="row" key={rowId}>
+                    { row.map((feature, featureId) =>
+                        <Feature key={ featureId } { ...feature } />
+                    ) }
+                </div>
+            )) }
+        </Section>
     );
 }
