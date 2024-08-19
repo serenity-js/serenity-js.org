@@ -60,6 +60,7 @@ const config: Config = {
     favicon: 'icons/favicon.ico',
     trailingSlash: true,
     githubHost: 'github.com',
+    staticDirectories: [ 'static' ],
 
     customFields: {
         supportedEngines: core.engines,
