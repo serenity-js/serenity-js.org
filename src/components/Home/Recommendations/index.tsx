@@ -11,7 +11,7 @@ export interface SectionProps {
     className?: string;
 }
 
-export function Recommendations({ className }: SectionProps) {
+export default function Recommendations({ className }: SectionProps) {
 
     const columns = LeaderRecommendations.reduce((acc, recommendation, i) => {
         acc[i % 2].push(recommendation);

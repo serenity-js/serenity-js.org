@@ -7,9 +7,13 @@ import clsx from 'clsx';
 import styles from './styles.module.css';
 import CallToAction from '../CallToAction';
 
-export default function Welcome() {
+export interface WelcomeProps {
+    className?: string;
+}
+
+export default function Welcome({ className }: WelcomeProps) {
     return (
-        <div className={ styles.wrapper }>
+        <div className={ clsx(styles.wrapper, className) }>
             <div className={ styles.background }/>
             <div className={ styles.container }>
                 <img

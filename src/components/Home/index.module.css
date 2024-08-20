@@ -1,17 +1,14 @@
 .section {
   padding: 72px 0;
-}
-
-html[data-theme='dark'] .section {
-
+  background: linear-gradient(
+          to bottom,
+          var(--ifm-color-emphasis-100),
+          var(--ifm-color-emphasis-0)
+  ),
+  var(--ifm-color-emphasis-100);
 }
 
 .sectionAlt {
-  background-color: var(--ifm-color-emphasis-100);
-}
-
-html[data-theme='dark'] .sectionAlt {
-  background-color: var(--ifm-color-emphasis-100);
 }
 
 .sectionInner {

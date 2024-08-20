@@ -3,6 +3,7 @@
     text-align: center;
     overflow: hidden;
     position: relative;
+    padding-top: 0 !important;
 }
 
 .background {
@@ -33,7 +34,7 @@
 }
 
 .primaryButton {
-    background-color: var(--home-button-primary-color);
+    background-color: var(--homepage-button-primary-background-color);
 }
 
 @media (max-width: 600px) {

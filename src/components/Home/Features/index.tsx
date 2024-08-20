@@ -5,6 +5,7 @@ import Section from '../components/Section';
 import SectionTitle from '../components/SectionTitle';
 
 import styles from './styles.module.css';
+import { SectionProps } from '../Recommendations';
 
 type FeatureItem = {
     title: string;
@@ -32,7 +33,7 @@ const TopFeatures: FeatureItem[][] = [
                     Serenity/JS is a <a id={"cta-homepage-about-architecture"} href={"/handbook/getting-started/architecture/"}>modular and extensible</a> abstraction layer
                     that works seamlessly with integration tools like
                     Playwright, Selenium, WebdriverIO, Appium, or Axios,
-                    and gives you a consistent, intuitive, and vendor-agnostic API to work with.
+                    and gives you a consistent, intuitive, and vendor-neutral API to work with.
                 </>
             ),
         },
@@ -99,9 +100,19 @@ function Feature({ title, Svg, description }: FeatureItem) {
     );
 }
 
-export default function Features(): React.JSX.Element {
+export interface FeaturesProps {
+    className?: string;
+}
+
+export default function Features({ className }: FeaturesProps): React.JSX.Element {
     return (
-        <Section className={ styles.features }>
+        <Section className={ clsx(styles.features, className) }>
+            <SectionTitle title={'Test automation aligned with your business'} description={`
+                Serenity/JS helps you create automated tests that capture your business language, 
+                reflect your business processes, improve collaboration among teams, and provide relevant
+                reports that matter to all stakeholders.
+            `} />
+            <>
             { TopFeatures.map((row, rowId) => (
                 <div className="row" key={rowId}>
                     { row.map((feature, featureId) =>
@@ -109,6 +120,7 @@ export default function Features(): React.JSX.Element {
                     ) }
                 </div>
             )) }
+            </>
         </Section>
     );
 }
