@@ -67,7 +67,7 @@ to see how to apply the above configuration to an existing project.
 ## Configuring blended test scenarios
 
 You can use Serenity/JS with [Playwright Test](/handbook/test-runners/playwright-test/), [WebdriverIO](/handbook/test-runners/webdriverio/),
-or [Protractor](/handbook/test-runners/protractor/) to write [**blended test scenarios**](/handbook/api-testing/blended-testing/) interacting with **both the web UI and APIs**.
+or [Protractor](/handbook/test-runners/protractor/) to write [**blended test scenarios**](/handbook/web-testing/blended-testing/) interacting with **both the web UI and APIs**.
 In those cases, the ability to `CallAnApi` is **configured for you automatically** by the respective Serenity/JS test runner adapter
 and uses the **base URL** defined in your test runner configuration file.
 To override the base URL, provide a full URL when performing `Send` interactions.
@@ -197,7 +197,7 @@ describe('GitHub', () => {
 If you need to dynamically [change the base URL](/api/rest/class/ChangeApiConfig/#setUrlTo)
 or [port](/api/rest/class/ChangeApiConfig/#setPortTo) of the API you're interacting with,
 or [set extra HTTP headers](/api/rest/class/ChangeApiConfig/#setHeader), use the task to [`ChangeApiConfig`](/api/rest/class/ChangeApiConfig/).
-This approach works for both API-only and [blended test scenarios](/handbook/api-testing/blended-testing/), with any config overrides returning to their original state before the next scenario starts:
+This approach works for both API-only and [blended test scenarios](/handbook/web-testing/blended-testing/), with any config overrides returning to their original state before the next scenario starts:
 
 ```typescript
 import { ChangeApiConfig } from '@serenity-js/rest';
