@@ -70,7 +70,35 @@ to point to your desired location by specifying the [`specDirectory`](/api/seren
 ### Configuring the Serenity BDD reporter
 
 To produce the Serenity BDD-standard JSON reports, your test runner adapter should use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter) stage crew member.
-Here again, if your project needs to customise the location of the requirements hierarchy, you can do so by configuring the `specDirectory` property of the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/).
+While the different test runners might have a slightly different configuration syntax,
+the `SerenityBDDReporter` itself is configured in the same way across all of them.
+
+For example, to use the `SerenityBDDReporter` with default settings, you can configure it as follows:
+```ts
+// ...
+    crew: [
+      '@serenity-js/serenity-bdd',
+    ]
+// ...
+```
+
+You can customise the behaviour of the `SerenityBDDReporter` by passing the [`SerenityBDDReporterConfig`](/api/serenity-bdd/interface/SerenityBDDReporterConfig/) configuration object:
+
+```ts
+// ...
+    crew: [
+      [ '@serenity-js/serenity-bdd', {
+          specDirectory: './spec',
+          reporter: {
+              includeAbilityDetails: true,
+          },
+      } ],
+    ]
+// ...
+```
+
+Check out the next section to learn [how to configure the `SerenityBDDReporter`](/handbook/reporting/serenity-bdd-reporter/#configuring-the-test-runner)
+for your test runner of choice.
 
 ### Configuring the Artifact Archiver
 
