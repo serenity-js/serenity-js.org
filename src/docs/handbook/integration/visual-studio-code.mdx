@@ -1,14 +1,25 @@
 # Visual Studio Code
 
-Serenity/JS integrates with [industry-standard test runners](/handbook/test-runners/), so that your test scenarios can be executed
-using your regular build tools, <abbr title="Continuous Integration and Delivery">CI/CD</abbr> pipelines, and <abbr title="Integrated Development Environments">IDEs</abbr>.
+[Visual Studio Code](https://code.visualstudio.com/) is a popular code editor that comes with built-in support for JavaScript, TypeScript, and Node.js.
+It also has a [rich ecosystem of extensions](https://marketplace.visualstudio.com/vscode) to help you with your development tasks, such as running and debugging tests.
 
-In this article, I'll show you how to configure [VisualStudio Code](https://code.visualstudio.com/),
-to run and debug automated acceptance tests built using Serenity/JS.
+Serenity/JS integrates with [industry-standard test runners](/handbook/test-runners/) using their dedicated integration protocols,
+which means that to run and debug your Serenity/JS tests in Visual Studio Code you simply need the appropriate extension for your test runner of choice.
 
-:::tip While you wait
-While you're waiting for me to finish this article, you might enjoy learning
-how to use VisualStudio Code to [write your first Serenity/JS web scenario](/handbook/web-testing/your-first-web-scenario).
-:::
+## Recommended Extensions
 
-<ArticleComingSoon />
+### Cucumber.js
+
+You'll need the following extensions to run and debug your Serenity/JS Cucumber.js tests in Visual Studio Code:
+- [Cucumber for VSCode](https://marketplace.visualstudio.com/items?itemName=CucumberOpen.cucumber-official) - provides syntax highlighting, code snippets, and Gherkin step autocomplete
+- [CucumberJS Test Runner](https://marketplace.visualstudio.com/items?itemName=balrog994.cucumber-test-runner) - allows you to run and debug Cucumber.js tests directly from Visual Studio Code
+
+### Playwright Test
+
+To run and debug your Serenity/JS Playwright Test scenarios in Visual Studio Code, you'll need the following extension:
+- [Playwright Test](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) - enables developers to write, run, and debug end-to-end and component tests for web applications using the Playwright Test framework directly within the editor
+
+
+### WebdriverIO
+
+While there's no recommended WebdriverIO extension for Visual Studio Code yet, you can run and debug your Serenity/JS WebdriverIO scenarios using the [WebdriverIO Test Runner CLI](https://webdriver.io/docs/testrunner).
