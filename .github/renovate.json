@@ -17,7 +17,8 @@
         "^@serenity-js/",
         "tiny-types"
       ],
-      "automerge": true
+      "automerge": true,
+      "platformAutomerge": true
     },
     {
       "groupName": "TypeDoc dependencies",
