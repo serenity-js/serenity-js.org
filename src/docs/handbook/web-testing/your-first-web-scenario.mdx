@@ -78,7 +78,7 @@ There are two ways to run Playwright tests in Visual Studio Code, and you can do
     img={require('@site/static/images/web-testing/your-first-web-scenario/vs-code-running-test-scenarios.gif')}
 />
 
-Once you've inspected the [`spec/recording-items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording-items.spec.ts),
+Once you've inspected the [`spec/recording_items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording_items.spec.ts),
 you will notice that we're using two functions provided by the [`@serenity-js/playwright-test`](/api/playwright-test) module that help to organise a test suite:
 - [`it`](/api/playwright-test/function/it) - to declare a single test scenario
 - [`describe`](/api/playwright-test/function/describe) - to declare a group of test scenarios
@@ -109,7 +109,7 @@ use the "Refresh Tests" icon in the Test Explorer to reload test configuration.
 ### Exercises
 
 To get familiar with running Serenity/JS test scenarios in Visual Studio Code, conduct the following experiments:
-1. Open [`spec/recording-items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording-items.spec.ts) and run test scenarios such as `it('should clear text input field when an item is added')` individually using the play/check mark icon next to the `it` block. Make sure they're passing.
+1. Open [`spec/recording_items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording_items.spec.ts) and run test scenarios such as `it('should clear text input field when an item is added')` individually using the play/check mark icon next to the `it` block. Make sure they're passing.
 1. Run a group of test scenarios by clicking on the play/check mark icon next to the `describe` block, such as `describe('Todo List App')`. Make sure they're passing.
 1. Run individual test scenarios using Visual Studio Code Test Explorer panel.
 1. Navigate from a test scenario in a Visual Studio Code Test Explorer panel to its location in the codebase using the "Go to test" icon next to the name of the test.
@@ -118,10 +118,10 @@ To get familiar with running Serenity/JS test scenarios in Visual Studio Code, c
 
 Now that you know how to run Serenity/JS test scenarios in VS Code, let's talk about what's involved in writing some new ones.
 
-First, add the below code snippet to your existing test suite in [`spec/recording-items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording-items.spec.ts)
+First, add the below code snippet to your existing test suite in [`spec/recording_items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording_items.spec.ts)
 by placing it inside the `describe('Todo List App')` block.
 
-```typescript title="spec/recording-items.spec.ts"
+```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
 
     it('should allow me to add a todo item', async ({ actor }) => {
@@ -187,15 +187,15 @@ you can configure your tests to start the browser
 in non-headless mode by setting the `headless` flag to `false` in [Playwright Test configuration file](https://playwright.dev/docs/test-configuration):
 
 ```typescript title="playwright.config.ts"
-import type { PlaywrightTestConfig } from '@serenity-js/playwright-test'
-const config: PlaywrightTestConfig = {
+import { defineConfig, devices } from '@playwright/test';
+import type { SerenityOptions } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityOptions>({
   use: {
     headless: false,
     // ...
   },
-}
-
-export default config
+})
 ```
 
 Now that you know how to run the tests, let's get back to code.
@@ -227,7 +227,7 @@ and dismissing them and freeing their resources when the test scenario is finish
 All you need to do is to use the Serenity/JS [`it` function](/api/playwright-test/function/it) instead of the default Playwright `test` function,
 and ask it for an `actor`:
 
-```typescript title="spec/recording-items.spec.ts"
+```typescript title="spec/recording_items.spec.ts"
 // Use Serenity/JS `describe` and `it` wrappers from `@serenity-js/playwright-test` module:
 import { describe, it } from '@serenity-js/playwright-test'
 
@@ -350,7 +350,7 @@ you give to an actor to perform.
 
 Consider the test scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
-```typescript title="spec/recording-items.spec.ts"
+```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
 
     it('should allow me to add a todo item', async ({ actor }) => {
@@ -397,7 +397,7 @@ To experience how you'd go about analysing a Serenity/JS assertion failure,
 modify the scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios)
 to make it fail:
 
-```typescript title="spec/recording-items.spec.ts"
+```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
 
     it('should allow me to add a todo item', async ({ actor }) => {
@@ -427,7 +427,7 @@ makes it easy to see exactly where the assertion failure has happened.
 
 ### Exercises
 
-1.  Compare a single-actor scenario in [`spec/recording-items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording-items.spec.ts)
+1.  Compare a single-actor scenario in [`spec/recording_items.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording_items.spec.ts)
     and a multi-actor scenario in [`spec/multi-actor.spec.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/multi-actor.spec.ts).
     What differences and what similarities can you see in how the actors are accessed?
 1.  Inspect tasks in [`spec/todo-list-app/TodoItem/tasks.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/todo-list-app/TodoItem/tasks.ts).
@@ -571,7 +571,7 @@ Also note how all the questions define [custom descriptions](/api/core/class/Que
 To use the interaction to [`Debug`](/api/core/class/Debug) to analyse what a given question resolves to,
 modify the scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
-```typescript title="spec/recording-items.spec.ts"
+```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
 
     it('should allow me to add a todo item', async ({ actor }) => {
@@ -628,7 +628,7 @@ To use it, you'll need to:
 To see how the locator tuning features work in practice,
 modify the scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
-```typescript title="spec/recording-items.spec.ts"
+```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
 
     it('should allow me to add a todo item', async ({ actor }) => {
@@ -711,6 +711,96 @@ under `playwright-report` and served on port `8181` on Gitpod:
     caption='Enhanced Playwright Test reports'
     img={require('@site/static/images/web-testing/your-first-web-scenario/vs-code-test-reporting-playwright-test.gif')}
 />
+
+### Taking screenshots
+
+Serenity/JS can capture screenshots of the system under test either automatically using the [`Photographer`](/api/web/class/Photographer/)
+or on demand using the interaction to [`TakeScreenshot`](/api/web/class/TakeScreenshot).
+
+#### Automatic screenshots
+
+To enable automatic screenshots, use your `playwright.config.ts` file to add the [`Photographer`](/api/web/class/Photographer/) to the Serenity/JS
+stage [`crew`](/api/playwright-test/interface/SerenityOptions/#crew) available in Playwright Test [worker processes](https://playwright.dev/docs/test-parallel),
+and add the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/) and
+[`ArtifactArchiver`](/api/core/class/ArtifactArchiver/) to your reporter process:
+
+```typescript title="playwright.config.ts"
+import { defineConfig, devices } from '@playwright/test';
+import type { SerenityOptions } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityOptions>({
+  reporter: [
+      [ '@serenity-js/playwright-test', {
+          crew: [
+              '@serenity-js/serenity-bdd',
+              [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+          ]
+          // other Serenity/JS config
+      }]
+  ],
+
+  use: {
+    crew: [
+      [ '@serenity-js/web:Photographer', {
+        strategy: 'TakePhotosOfFailures',                    // <-- pick a strategy
+        // strategy: 'TakePhotosOfInteractions',
+        // strategy: 'TakePhotosBeforeAndAfterInteractions',
+      } ]
+    ],
+  },
+})
+```
+
+:::tip Project-specific configuration
+Use [Playwright Projects](https://playwright.dev/docs/test-projects) to configure
+the `Photographer` differently for different environments, browsers, or test suites, while keeping the `SerenityBDDReporter`
+and `ArtifactArchiver` configuration the same across all of them.
+:::
+
+Automatic screenshots are taken using the active actor's web browser when the desired conditions are met,
+as defined by your configured strategy:
+- `TakePhotosOfFailures`: takes screenshots of the active actor's browser whenever an assertion fails or an error occurs; this is the best strategy in most scenarios as it reduces the size of the HTML report and helps you quickly identify the cause of any failure
+- `TakePhotosOfInteractions`: takes screenshots of the system under test after each actor's interaction; useful for producing comprehensive living documentation
+- `TakePhotosBeforeAndAfterInteractions`: takes screenshots of the system under test before and after each actor's interaction; helpful in debugging and troubleshooting
+
+:::tip Multi-actor scenarios
+Serenity/JS actor-centric model means that in multi-actor scenarios you'll get screenshots from each actor's browser,
+even when the actors [use different browsers](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/multi-actor_scenarios.spec.ts).
+:::
+
+#### On-demand screenshots
+
+To take a screenshot on demand, use the interaction to [`TakeScreenshot`](/api/web/class/TakeScreenshot)
+and the `ArtifactArchiver` and `SerenityBDDReporter` will automatically add your screenshot to the report:
+
+```typescript title="spec/recording_items.spec.ts"
+import { TakeScreenshot } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+// ...other imports
+
+describe('Todo List App', () => {
+
+    it('should allow me to add a todo item', async ({ actor }) => {
+        await actor.attemptsTo(
+            startWithAnEmptyList(),
+
+            recordItem('Buy some milk'),
+
+            TakeScreenshot.of('my app'),    // <-- take a screenshot with a description
+
+            Ensure.that(itemNames(), equals([
+                'Buy some milk',
+            ])),
+        )
+    })
+})
+```
+
+:::tip Automatic and on-demand screenshots
+Note that you can use both the automatic an on-demand strategies simultaneously.
+The most common scenario is to configure the `Photographer` to `TakePhotosOfFailures`,
+and use `TakeScreenshot` to capture additional screenshots when needed.
+:::
 
 ## Next steps
 
