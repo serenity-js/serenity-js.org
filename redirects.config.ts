@@ -11,6 +11,8 @@ export default {
         { from: '/privacy-policy/', to: '/legal/privacy-policy/' },
         { from: '/license/', to: '/legal/license/' },
 
+        { from: '/handbook/api-testing/blended-testing/', to: '/handbook/web-testing/blended-testing/' },
+
         { from: '/handbook/about/', to: '/handbook/getting-started/' },
         { from: '/handbook/about/architecture/', to: '/handbook/getting-started/architecture' },
         { from: '/handbook/about/installation/', to: '/handbook/getting-started/installation' },
