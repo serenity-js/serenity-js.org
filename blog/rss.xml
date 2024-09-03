@@ -4,10 +4,59 @@
         <title>Serenity/JS Blog</title>
         <link>https://serenity-js.org/blog/</link>
         <description>Serenity/JS Blog</description>
-        <lastBuildDate>Mon, 17 Jun 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 03 Sep 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Better API documentation]]></title>
+            <link>https://serenity-js.org/blog/better-api-documentation/</link>
+            <guid>https://serenity-js.org/blog/better-api-documentation/</guid>
+            <pubDate>Tue, 03 Sep 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[In the ever-evolving world of software development, the importance of clear, concise, and accessible documentation cannot be overstated. The Serenity/JS team is thrilled to announce a series of significant improvements to our API documentation, designed to enhance the developer experience and streamline the process of building automated acceptance tests. These updates are crafted to support developers at every stage of their journey, from understanding the basics to mastering the intricacies of the framework.]]></description>
+            <content:encoded><![CDATA[<p>In the ever-evolving world of software development, the importance of clear, concise, and accessible documentation cannot be overstated. The Serenity/JS team is thrilled to announce a series of significant improvements to our API documentation, designed to enhance the developer experience and streamline the process of building automated acceptance tests. These updates are crafted to support developers at every stage of their journey, from understanding the basics to mastering the intricacies of the framework.</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="a-new-gateway-to-learning">A new gateway to learning<a class="hash-link" aria-label="Direct link to A new gateway to learning" title="Direct link to A new gateway to learning" href="https://serenity-js.org/blog/better-api-documentation/#a-new-gateway-to-learning">​</a></h2>
+<p>The newly revamped <a href="https://serenity-js.org/api/">API Docs landing page</a> serves as the central hub for all things Serenity/JS,
+providing a comprehensive overview that we believe is both welcoming to newcomers and invaluable to seasoned developers.
+The landing page is now your go-to resource for navigating the extensive Serenity/JS ecosystem.
+Whether you’re looking for detailed class references, method signatures, or specific modules, the structured layout ensures that everything you need is just a click away.</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="compatibility-at-a-glance">Compatibility at a glance<a class="hash-link" aria-label="Direct link to Compatibility at a glance" title="Direct link to Compatibility at a glance" href="https://serenity-js.org/blog/better-api-documentation/#compatibility-at-a-glance">​</a></h2>
+<p>One of the standout additions to our documentation is the <a href="https://serenity-js.org/releases/">Serenity/JS compatibility matrix</a>, a tool we believe will help developers stay up to date with their project's dependencies.</p>
+<p>This page is especially useful because:</p>
+<ul>
+<li><em>Version Matching</em>: It allows you to quickly determine which versions of Serenity/JS are compatible with your project’s existing setup, helping to prevent integration issues before they arise.</li>
+<li><em>Upgrade Guidance</em>: The matrix offers insights into the latest compatible versions, making it easier for developers to plan upgrades without disrupting their workflow.</li>
+<li><em>Cross-Referencing</em>: Links to detailed release notes and API changes offer immediate access to further information, enabling you to make informed decisions about when and how to update your dependencies.</li>
+</ul>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="api-documentation-in-your-ide">API documentation in your IDE<a class="hash-link" aria-label="Direct link to API documentation in your IDE" title="Direct link to API documentation in your IDE" href="https://serenity-js.org/blog/better-api-documentation/#api-documentation-in-your-ide">​</a></h2>
+<p>Another exciting improvement is the availability of diagrams, examples, and direct links to the API documentation directly within your IDE. These enhancements ensure that you have all the necessary resources at your fingertips, right when you need them. With context-specific information available inline, you no longer need to interrupt your workflow to search for documentation elsewhere.</p>
+<ul>
+<li><em>Contextual Diagrams</em>: Visual representations of class hierarchies and relationships help you understand how different parts of the framework interact, improving comprehension and reducing errors.</li>
+<li><em>Embedded Examples</em>: Code snippets within the IDE provide immediate examples of how to implement specific features, speeding up development and reinforcing learning.</li>
+<li><em>Instant Documentation</em> Links: With direct links to the Serenity/JS API docs embedded in your code editor, you can quickly reference detailed documentation without breaking your focus.</li>
+</ul>
+<p>These improvements are designed to keep developers in their flow, reducing the time spent searching for information and increasing productivity.</p>
+<p><img decoding="async" loading="lazy" alt="API Documentation in Your IDE" src="https://serenity-js.org/assets/images/api-documentation-in-your-ide-766a26fef980aa625dbdeb254d76f66f.png" width="3090" height="2384" class="img_ev3q"></p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="your-feedback-matters">Your feedback matters!<a class="hash-link" aria-label="Direct link to Your feedback matters!" title="Direct link to Your feedback matters!" href="https://serenity-js.org/blog/better-api-documentation/#your-feedback-matters">​</a></h2>
+<p>I hope this latest release of Serenity/JS will make it even easier for you and your team to create high-quality test automation.</p>
+<p>Let me know what you think of the new features in the comments below 👇👇👇</p>
+<h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="-stay-up-to-date">📣 Stay up to date<a class="hash-link" aria-label="Direct link to 📣 Stay up to date" title="Direct link to 📣 Stay up to date" href="https://serenity-js.org/blog/better-api-documentation/#-stay-up-to-date">​</a></h3>
+<p>New features, tutorials, and demos are coming soon!
+Follow <a href="https://www.linkedin.com/company/serenity-js" target="_blank" rel="noopener noreferrer">Serenity/JS on LinkedIn</a>,
+subscribe to <a href="https://www.youtube.com/@serenity-js" target="_blank" rel="noopener noreferrer">Serenity/JS channel on YouTube</a> and join the <a href="https://matrix.to/#/#serenity-js:gitter.im" target="_blank" rel="noopener noreferrer">Serenity/JS Community Chat</a> to stay up to date!
+Please also make sure to star ⭐️ <a href="https://github.com/serenity-js/serenity-js" target="_blank" rel="noopener noreferrer">Serenity/JS on GitHub</a> to help others discover the framework!</p>
+<p><a href="https://www.linkedin.com/company/serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Follow-Serenity%2FJS%20-0077B5?logo=linkedin" alt="Follow Serenity/JS on LinkedIn" class="img_ev3q"></a>
+<a href="https://www.youtube.com/@serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Watch-@serenity--js-E62117?logo=youtube" alt="Watch Serenity/JS on YouTube" class="img_ev3q"></a>
+<a href="https://matrix.to/#/#serenity-js:gitter.im" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix" alt="Join Serenity/JS Community Chat" class="img_ev3q"></a>
+<a href="https://github.com/serenity-js/serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/github/stars/serenity-js/serenity-js?label=Serenity%2FJS&amp;logo=github&amp;style=badge" alt="GitHub stars" class="img_ev3q"></a></p>
+<h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="-support-serenityjs">💛 Support Serenity/JS<a class="hash-link" aria-label="Direct link to 💛 Support Serenity/JS" title="Direct link to 💛 Support Serenity/JS" href="https://serenity-js.org/blog/better-api-documentation/#-support-serenityjs">​</a></h3>
+<p>If you appreciate all the effort that goes into making sophisticated tools easy to work with, please support our work and become a Serenity/JS GitHub Sponsor today!</p>
+<p><a href="https://github.com/sponsors/serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub Sponsors" class="img_ev3q"></a></p>]]></content:encoded>
+            <category>core</category>
+            <category>web</category>
+            <category>rest</category>
+            <category>open-source</category>
+        </item>
         <item>
             <title><![CDATA[Introducing dynamic descriptions]]></title>
             <link>https://serenity-js.org/blog/introducing-dynamic-descriptions/</link>
