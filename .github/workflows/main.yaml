@@ -35,7 +35,7 @@ jobs:
         run: npm run build
 
       - name: Publish website
-        uses: JamesIves/github-pages-deploy-action@94f3c658273cf92fb48ef99e5fbc02bd2dc642b2 # v4.6.3
+        uses: JamesIves/github-pages-deploy-action@920cbb300dcd3f0568dbc42700c61e2fd9e6139c # v4.6.4
         if: github.ref == 'refs/heads/main'
         with:
           BRANCH: gh-pages
