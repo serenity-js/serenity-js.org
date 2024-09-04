@@ -1,10 +1,52 @@
 # JetBrains IDEA
 
-Serenity/JS integrates with [industry-standard test runners](/handbook/test-runners/), so that your test scenarios can be executed
-using your regular build tools, <abbr title="Continuous Integration and Delivery">CI/CD</abbr> pipelines, and <abbr title="Integrated Development Environments">IDEs</abbr>.
+[JetBrains](https://www.jetbrains.com/) <abbr title="Integrated Development Environments">IDEs</abbr> are popular among developers for their powerful features and support for a wide range of programming languages and frameworks.
+They provide a rich set of tools for code editing, refactoring, debugging, and testing, making them a top choice for many software development teams.
 
-In this article, I'll show you how to configure [JetBrains IDEs](https://www.jetbrains.com/),
-such as [IntelliJ IDEA](https://www.jetbrains.com/idea/) and [WebStorm](https://www.jetbrains.com/webstorm/),
-to run and debug automated acceptance tests built using Serenity/JS.
+Serenity/JS integrates with [industry-standard test runners](/handbook/test-runners/) using their dedicated integration protocols,
+which means that to run and debug your Serenity/JS tests in JetBrain IDEs you simply need the appropriate extension for your test runner of choice.
 
-<ArticleComingSoon />
+## Recommended Plugins
+
+JetBrains plugins listed in this section are developed and maintained by [JetBrains s.r.o.](https://www.jetbrains.com/) and are available in the [JetBrains Marketplace](https://plugins.jetbrains.com/).
+At the time of writing, the plugins are compatible with all the JetBrains IDEs that [support JavaScript](https://www.jetbrains.com/products/#lang=js&type=ide), including:
+- [Aqua](https://www.jetbrains.com/aqua/)
+- [CLion](https://www.jetbrains.com/clion/)
+- [GoLand](https://www.jetbrains.com/go/)
+- [IntelliJ IDEA Ultimate](https://www.jetbrains.com/idea/)
+- [PhpStorm](https://www.jetbrains.com/phpstorm/)
+- [PyCharm](https://www.jetbrains.com/pycharm/)
+- [Rider](https://www.jetbrains.com/rider/)
+- [RubyMine](https://www.jetbrains.com/ruby/)
+- [WebStorm](https://www.jetbrains.com/webstorm/)
+
+### Cucumber.js
+
+To run and debug your Serenity/JS Playwright Test scenarios in the supported JetBrains IDEs, you'll need the following plugins:
+
+- [Cucumber.js](https://plugins.jetbrains.com/plugin/7418-cucumber-js)
+- [Node.js](https://plugins.jetbrains.com/plugin/6098-node-js)
+- [JavaScript Debugger](https://plugins.jetbrains.com/plugin/17562-javascript-debugger)
+
+### Mocha
+
+To run and debug your Serenity/JS Mocha scenarios in the supported JetBrains IDEs, you'll need the following plugins:
+
+- [Node.js](https://plugins.jetbrains.com/plugin/6098-node-js)
+- [JavaScript Debugger](https://plugins.jetbrains.com/plugin/17562-javascript-debugger)
+
+### Playwright Test
+
+To run and debug your Serenity/JS Playwright Test scenarios in the supported JetBrains IDEs, you'll need the following plugins:
+
+- [Test Automation Plugin](https://plugins.jetbrains.com/plugin/20175-test-automation)
+- [Node.js](https://plugins.jetbrains.com/plugin/6098-node-js)
+- [JavaScript Debugger](https://plugins.jetbrains.com/plugin/17562-javascript-debugger)
+
+### WebdriverIO
+
+While there's no dedicated WebdriverIO plugin for JetBrains IDEs yet, you can run and debug your Serenity/JS WebdriverIO scenarios using the [WebdriverIO Test Runner CLI](https://webdriver.io/docs/testrunner)
+with the following plugins:
+
+- [Node.js](https://plugins.jetbrains.com/plugin/6098-node-js)
+- [JavaScript Debugger](https://plugins.jetbrains.com/plugin/17562-javascript-debugger)
