@@ -595,7 +595,7 @@ Serenity/JS provides a number of meta-questions, like [`Text`](/api/web/class/Te
 and you can always write your own if needed.
 
 For example, if you're dealing with a web interface that presents tabular data, 
-you might want to fetch the table row, perform some transformation on each cell,
+you might want to fetch a table row, perform some transformation on each cell,
 then return the result as a JSON object so that it's easier to work with.
 
 An equivalent of doing that in our example would be to:
