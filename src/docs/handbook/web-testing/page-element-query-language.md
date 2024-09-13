@@ -736,7 +736,7 @@ const destroyButton = () =>                             // Destroy button
 ### Filtering page elements
 
 Serenity/JS [`PageElements`](/api/web/class/PageElements/) are a [`List`](/api/core/class/List/), which means they offer a filtering API
-[`list.where(metaQuestion, expectation)`](/api/core/class/List/#where) and methods like 
+([`list.where(metaQuestion, expectation)`](/api/core/class/List/#where)) and methods like 
 [`first()`](/api/web/class/PageElements/#first),
 [`last()`](/api/web/class/PageElements/#last),
 or [`count()`](/api/web/class/PageElements/#count).
