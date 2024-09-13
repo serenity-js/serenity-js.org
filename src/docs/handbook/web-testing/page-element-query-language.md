@@ -676,7 +676,7 @@ const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: stri
 ## Querying page elements
 
 While Serenity/JS [expectations](/api/core/class/Expectation) are most commonly used with [assertion](#performing-assertions) and [synchronisation](#waiting-for-condition) statements,
-when used with [`PageElements#where`](/api/web/class/PageElements#where) API they offer a great and reusable alternative to complex CSS selectors and XPath expressions.
+when used with the [`PageElements#where`](/api/web/class/PageElements#where) API they offer a great and reusable alternative to complex CSS selectors and XPath expressions.
 
 In this section, I'll show you how to:
 - query page elements to find those that meet your expectations,
