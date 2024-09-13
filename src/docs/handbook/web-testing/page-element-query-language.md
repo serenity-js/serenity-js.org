@@ -492,7 +492,7 @@ In our example, the description of `Text.of(itemName().of(basketItem()))` will b
 questions in the chain and reported as `text of name of basket item`. 
 Of course, you can set your own description if you prefer using `.describedAs()`, too.
 
-You might have also noticed that [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
+You might have also noticed that the [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
 works only with **individual elements**.
 To map **multiple elements** we need to use `PageElements` [mapping API](/handbook/web-testing/page-element-query-language/#mapping-page-elements-in-a-collection) we'll talk about next.
 
