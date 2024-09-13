@@ -488,7 +488,7 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 Serenity/JS lets you compose not just the page elements, but also their **descriptions**.
-In our example, description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of 
+In our example, the description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of 
 questions in the chain and reported as `text of name of basket item`. 
 Of course, you can set your own description if you prefer using `.describedAs()`, too.
 
