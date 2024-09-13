@@ -77,7 +77,7 @@ to help your code achieve polymorphic behaviour and promote code reuse.
 In practice, this means that in order to retrieve a specific attribute of a `PageElement`, you compose the element
 with an [appropriate web question](/api/web).
 
-For example, to retrieve the text value of a `PageElement` returned by `Basket.total()`, compose it with a question about its [`Text`](/api/web/class/Text):
+For example, to retrieve the text value of a `PageElement` returned by `basketTotal()`, compose it with a question about its [`Text`](/api/web/class/Text):
 
 ```typescript
 import { By, PageElement, Text } from '@serenity-js/web'
