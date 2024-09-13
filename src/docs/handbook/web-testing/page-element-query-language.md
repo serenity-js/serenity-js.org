@@ -355,7 +355,7 @@ const lastItem = () =>
     .last()
 ```
 
-Above APIs are particularly useful when you need to retrieve elements from a sorted collection, 
+The above APIs are particularly useful when you need to retrieve elements from a sorted collection, 
 such as the most recent comment under an article, the last customer order in a CRM system,
 nth position from a league table, and so on.
 
