@@ -508,7 +508,7 @@ especially when the system under test uses a consistent convention to name eleme
 
 Similarly to how you [transform answers to individual questions](/handbook/web-testing/page-element-query-language/#transforming-answers-to-questions),
 you can also transform each element in a collection
-using [`PageElements#eachMappedTo`](/api/web/class/PageElements#eachMappedTo) API
+using the [`PageElements#eachMappedTo`](/api/web/class/PageElements#eachMappedTo) API
 and providing a [meta-question](/api/core/interface/MetaQuestion) to be used for the mapping.
 
 For example, just how you'd use the meta-question about [`Text`](/api/web/class/Text/) to retrieve the text
