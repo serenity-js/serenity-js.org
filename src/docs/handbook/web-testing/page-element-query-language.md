@@ -618,7 +618,7 @@ const basketItems = () =>                           // Locate basket item contai
 
 const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: string, price: number }>>> = {
   
-  of: (element: PageElement) =>    // A meta-qustion must provide a method called `of`
+  of: (element: PageElement) =>    // A meta-question must provide a method called `of`
 
     Question.about('basket item details', async actor => {  // Create a question
     
