@@ -375,7 +375,7 @@ const basketItemNameElementNames = () =>
     Text.ofAll(basketItemNameElements())
 ```
 
-[`Text.ofAll`](/api/web/class/Text) API is useful when you need to retrieve text content of multiple elements and assert on it all at once:
+The [`Text.ofAll`](/api/web/class/Text) API is useful when you need to retrieve text content of multiple elements and assert on it all at once:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
