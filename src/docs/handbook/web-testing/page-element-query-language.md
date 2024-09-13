@@ -551,7 +551,7 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 Where this pattern becomes indispensable is when you start **reusing** and **composing several meta-questions together**.
-For example, you could map each of `basketItems()` to retrieve their name or price:
+For example, you could map each of the `basketItems()` to retrieve their name or price:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
