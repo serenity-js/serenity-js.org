@@ -494,7 +494,7 @@ Of course, you can set your own description if you prefer using `.describedAs()`
 
 You might have also noticed that the [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
 works only with **individual elements**.
-To map **multiple elements** we need to use `PageElements` [mapping API](/handbook/web-testing/page-element-query-language/#mapping-page-elements-in-a-collection) we'll talk about next.
+To map **multiple elements** we need to use the `PageElements` [mapping API](/handbook/web-testing/page-element-query-language/#mapping-page-elements-in-a-collection), which we'll talk about next.
 
 :::tip Serenity/JS PEQL helps you avoid code duplication
 Serenity/JS PEQL lets you **compose** and **reuse** page element definitions,
