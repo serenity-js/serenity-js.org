@@ -326,8 +326,8 @@ const basketItems = () =>
     .describedAs('basket items')                //    instead of `PageElement`
 ```
 
-Note that in the code sample above, selector `By.css('#basket .item')` makes the collection target **both** the `<li class="item" />` elements,
-each of which containing two descendant elements: `<span class="name" />` and `<span class="price" />` .
+Note that in the code sample above, the selector `By.css('#basket .item')` makes the collection target **both** the `<li class="item" />` elements,
+each of which contains two descendant elements: `<span class="name" />` and `<span class="price" />` .
 
 In a moment, I'll show you [how to make your queries more precise](/handbook/web-testing/page-element-query-language/#querying-page-elements)
 and retrieve only those elements you need.
