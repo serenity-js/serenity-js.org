@@ -4,10 +4,57 @@
         <title>Serenity/JS Blog</title>
         <link>https://serenity-js.org/blog/</link>
         <description>Serenity/JS Blog</description>
-        <lastBuildDate>Tue, 03 Sep 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 26 Sep 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Introducing Numeric]]></title>
+            <link>https://serenity-js.org/blog/introducing-numeric/</link>
+            <guid>https://serenity-js.org/blog/introducing-numeric/</guid>
+            <pubDate>Thu, 26 Sep 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Love numbers? You'll love Serenity/JS 3.29! 🎉]]></description>
+            <content:encoded><![CDATA[<p>Love numbers? You'll love Serenity/JS 3.29! 🎉</p>
+<p>We’re excited to share the latest release of Serenity/JS, which is packed with new powerful features for handling numeric data in your automated tests!</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="new-to-serenityjs">New to Serenity/JS?<a class="hash-link" aria-label="Direct link to New to Serenity/JS?" title="Direct link to New to Serenity/JS?" href="https://serenity-js.org/blog/introducing-numeric/#new-to-serenityjs">​</a></h2>
+<p>Serenity/JS web testing tutorial was called "the best guide if you want to take your automation skills to the next level." ❤️</p>
+<p>If you're new to Serenity/JS or web automation in general, start with <a href="https://serenity-js.org/handbook/web-testing/your-first-web-scenario/">"Your first web scenario"</a>.</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="new-in-serenityjs-329">New in Serenity/JS 3.29<a class="hash-link" aria-label="Direct link to New in Serenity/JS 3.29" title="Direct link to New in Serenity/JS 3.29" href="https://serenity-js.org/blog/introducing-numeric/#new-in-serenityjs-329">​</a></h2>
+<h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="built-in-support-for-arithmetic-operations">Built-in support for arithmetic operations<a class="hash-link" aria-label="Direct link to Built-in support for arithmetic operations" title="Direct link to Built-in support for arithmetic operations" href="https://serenity-js.org/blog/introducing-numeric/#built-in-support-for-arithmetic-operations">​</a></h3>
+<p>Part of the <a href="https://serenity-js.org/api/core/">Serenity/JS Core module</a>, the new <a href="https://serenity-js.org/api/core/class/Numeric/"><code>Numeric</code></a> class offers built-in support for performing arithmetic operations
+on both synchronous and asynchronous data types directly within your Serenity/JS test scenarios.</p>
+<p>In addition, this new class offers methods to help you extract numeric data from REST API responses and web interfaces
+and convert it to a desired numeric data type without any external libraries or complex workarounds.</p>
+<p>This enhancement makes your tests more readable, reduces the risk of calculation errors, and ensures data-driven scenarios are both easy to implement and maintain.
+With <code>Numeric</code>, your test logic is cleaner, making Serenity/JS even more developer-friendly.</p>
+<p>Learn about <a href="https://serenity-js.org/api/core/class/Numeric/"><code>Numeric</code></a>.</p>
+<h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="more-serenityjs-examples-in-your-ide">More Serenity/JS examples in your IDE!<a class="hash-link" aria-label="Direct link to More Serenity/JS examples in your IDE!" title="Direct link to More Serenity/JS examples in your IDE!" href="https://serenity-js.org/blog/introducing-numeric/#more-serenityjs-examples-in-your-ide">​</a></h3>
+<p>We continue our effort to bring the thousands of examples available in the <a href="https://serenity-js.org/api/">Serenity/JS API documentation</a> close to you and your team.
+As part of that, the new <a href="https://serenity-js.org/api/core/class/Numeric/"><code>Numeric</code></a> class ships with <strong>15 new examples</strong>, demonstrating how to extract numeric data from user interfaces and data objects.
+You'll also learn how to use the new features with <a href="https://serenity-js.org/handbook/web-testing/page-element-query-language/">Serenity/JS Page Element Query Language</a> to make extracting the right UI element even easier!</p>
+<p>Check out the Serenity/JS API docs at <a href="https://serenity-js.org/api/">https://serenity-js.org/api/</a></p>
+<p>Enjoy Serenity!</p>
+<p><img decoding="async" loading="lazy" alt="Numeric API Documentation in Your IDE" src="https://serenity-js.org/assets/images/numeric-api-docs-beac783e01f25ac02535584140d46483.png" width="2342" height="1244" class="img_ev3q"></p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="your-feedback-matters">Your feedback matters!<a class="hash-link" aria-label="Direct link to Your feedback matters!" title="Direct link to Your feedback matters!" href="https://serenity-js.org/blog/introducing-numeric/#your-feedback-matters">​</a></h2>
+<p>I hope this latest release of Serenity/JS will make it even easier for you and your team to create high-quality test automation.</p>
+<p>Let me know what you think of the new features in the <a href="https://serenity-js.org/blog/better-api-documentation/#giscus-comments">comments below</a> 👇👇👇</p>
+<h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="-stay-up-to-date">📣 Stay up to date<a class="hash-link" aria-label="Direct link to 📣 Stay up to date" title="Direct link to 📣 Stay up to date" href="https://serenity-js.org/blog/introducing-numeric/#-stay-up-to-date">​</a></h3>
+<p>New features, tutorials, and demos are coming soon!
+Follow <a href="https://www.linkedin.com/company/serenity-js" target="_blank" rel="noopener noreferrer">Serenity/JS on LinkedIn</a>,
+subscribe to <a href="https://www.youtube.com/@serenity-js" target="_blank" rel="noopener noreferrer">Serenity/JS channel on YouTube</a> and join the <a href="https://matrix.to/#/#serenity-js:gitter.im" target="_blank" rel="noopener noreferrer">Serenity/JS Community Chat</a> to stay up to date!
+Please also make sure to star ⭐️ <a href="https://github.com/serenity-js/serenity-js" target="_blank" rel="noopener noreferrer">Serenity/JS on GitHub</a> to help others discover the framework!</p>
+<p><a href="https://www.linkedin.com/company/serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Follow-Serenity%2FJS%20-0077B5?logo=linkedin" alt="Follow Serenity/JS on LinkedIn" class="img_ev3q"></a>
+<a href="https://www.youtube.com/@serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Watch-@serenity--js-E62117?logo=youtube" alt="Watch Serenity/JS on YouTube" class="img_ev3q"></a>
+<a href="https://matrix.to/#/#serenity-js:gitter.im" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix" alt="Join Serenity/JS Community Chat" class="img_ev3q"></a>
+<a href="https://github.com/serenity-js/serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/github/stars/serenity-js/serenity-js?label=Serenity%2FJS&amp;logo=github&amp;style=badge" alt="GitHub stars" class="img_ev3q"></a></p>
+<h3 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="-support-serenityjs">💛 Support Serenity/JS<a class="hash-link" aria-label="Direct link to 💛 Support Serenity/JS" title="Direct link to 💛 Support Serenity/JS" href="https://serenity-js.org/blog/introducing-numeric/#-support-serenityjs">​</a></h3>
+<p>If you appreciate all the effort that goes into making sophisticated tools easy to work with, please support our work and become a Serenity/JS GitHub Sponsor today!</p>
+<p><a href="https://github.com/sponsors/serenity-js" target="_blank" rel="noopener noreferrer"><img decoding="async" loading="lazy" src="https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub Sponsors" class="img_ev3q"></a></p>]]></content:encoded>
+            <category>core</category>
+            <category>web</category>
+            <category>rest</category>
+            <category>open-source</category>
+        </item>
         <item>
             <title><![CDATA[Better API documentation]]></title>
             <link>https://serenity-js.org/blog/better-api-documentation/</link>
