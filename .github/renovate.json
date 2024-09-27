@@ -8,7 +8,10 @@
       "groupName": "Docusaurus dependencies",
       "packagePatterns": [
         "^@docusaurus/",
-        "^docusaurus-"
+        "^docusaurus-",
+        "typedoc",
+        "^typedoc-plugin-",
+        "typescript"
       ]
     },
     {
@@ -19,14 +22,6 @@
       ],
       "automerge": true,
       "platformAutomerge": true
-    },
-    {
-      "groupName": "TypeDoc dependencies",
-      "packagePatterns": [
-        "typedoc",
-        "^typedoc-plugin-",
-        "typescript"
-      ]
     }
   ]
 }
