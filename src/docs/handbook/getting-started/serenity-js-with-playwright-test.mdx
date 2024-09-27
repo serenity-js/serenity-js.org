@@ -63,9 +63,10 @@ Learn more about [Serenity/JS architecture](/handbook/getting-started/architectu
 To enable [Serenity/JS reporting services](/handbook/reporting/), configure Playwright Test as follows:
 
 ```typescript title="playwright.config.ts"
-import type { PlaywrightTestConfig } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test'
+import type { SerenityOptions } from '@serenity-js/playwright-test'
 
-const config: PlaywrightTestConfig = {
+export default defineConfig<SerenityOptions>({
     reporter: [
         // Serenity/JS reporting services
         [ '@serenity-js/playwright-test', {
@@ -93,9 +94,7 @@ const config: PlaywrightTestConfig = {
     },
 
     // Other Playwright Test configuration options
-}
-
-export default config
+});
 ```
 
 Learn more about:
