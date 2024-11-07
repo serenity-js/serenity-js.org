@@ -202,7 +202,7 @@ or even [write them yourself](/api/core/class/Expectation).
 Learn more about asserting on page elements in chapter "[Web assertions](/handbook/design/assertions#web-assertions)".
 :::
 
-### Waiting for condition
+### Waiting for conditions
 
 Serenity/JS web module provides [web-specific expectations](/api/core/class/Expectation) you use
 to synchronise your test code with the system under test and wait until its state meets your expectations.
@@ -675,7 +675,7 @@ const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: stri
 
 ## Querying page elements
 
-While Serenity/JS [expectations](/api/core/class/Expectation) are most commonly used with [assertion](#performing-assertions) and [synchronisation](#waiting-for-condition) statements,
+While Serenity/JS [expectations](/api/core/class/Expectation) are most commonly used with [assertion](#performing-assertions) and [synchronisation](#waiting-for-conditions) statements,
 when used with the [`PageElements#where`](/api/web/class/PageElements#where) API they offer a great and reusable alternative to complex CSS selectors and XPath expressions.
 
 In this section, I'll show you how to:
