@@ -22,9 +22,9 @@ For information on how to debug PEQL expressions, see the [debugging guide](/han
 
 ## Working with individual page elements
 
-To show you how to work with **individual page elements**, 
+To show you how to work with **individual page elements**,
 I'll use an example shopping basket widget and demonstrate locating its various parts.
-The widget is simple enough to help us focus on the important aspects of PEQL, 
+The widget is simple enough to help us focus on the important aspects of PEQL,
 yet sophisticated enough to be representative of other widgets you're likely to come across in the wild:
 
 ```html
@@ -97,7 +97,7 @@ and others.
 
 ### Using selector aliases
 
-In scenarios where elements use a consistent pattern allowing them to be easily identified, 
+In scenarios where elements use a consistent pattern allowing them to be easily identified,
 such as a `data-test-it`, or a `role` attribute, you might want to implement custom selector aliases
 to avoid code duplication.
 
@@ -355,7 +355,7 @@ const lastItem = () =>
     .last()
 ```
 
-The above APIs are particularly useful when you need to retrieve elements from a sorted collection, 
+The above APIs are particularly useful when you need to retrieve elements from a sorted collection,
 such as the most recent comment under an article, the last customer order in a CRM system,
 nth position from a league table, and so on.
 
@@ -426,7 +426,7 @@ so questions that can be composed with other questions and answered in their con
 In short, any Serenity/JS question that has a [`question.of(anotherQuestion)`](/api/core/interface/MetaQuestion/#of) API is
 a meta-question.
 
-Conveniently, [`PageElement`](/api/web/class/PageElement/) is a meta-question that can be 
+Conveniently, [`PageElement`](/api/web/class/PageElement/) is a meta-question that can be
 composed with another `PageElement` using a declarative [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
 to dynamically model a descendant/ancestor (a.k.a. child/parent) relationship between the elements.
 
@@ -488,8 +488,8 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 Serenity/JS lets you compose not just the page elements, but also their **descriptions**.
-In our example, the description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of 
-questions in the chain and reported as `text of name of basket item`. 
+In our example, the description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of
+questions in the chain and reported as `text of name of basket item`.
 Of course, you can set your own description if you prefer using `.describedAs()`, too.
 
 You might have also noticed that the [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
@@ -528,7 +528,7 @@ await actorCalled('Alice').attemptsTo(
 )
 ```
 
-you could also use it to extract the text value of each element in a collection:  
+you could also use it to extract the text value of each element in a collection:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
@@ -590,11 +590,11 @@ await actorCalled('Alice').attemptsTo(
 
 ### Creating custom meta-questions
 
-Serenity/JS provides a number of meta-questions, like [`Text`](/api/web/class/Text), 
-[`CssClasses`](/api/web/class/CssClasses), or [`Attribute`](/api/web/class/Attribute), 
+Serenity/JS provides a number of meta-questions, like [`Text`](/api/web/class/Text),
+[`CssClasses`](/api/web/class/CssClasses), or [`Attribute`](/api/web/class/Attribute),
 and you can always write your own if needed.
 
-For example, if you're dealing with a web interface that presents tabular data, 
+For example, if you're dealing with a web interface that presents tabular data,
 you might want to fetch a table row, perform some transformation on each cell,
 then return the result as a JSON object so that it's easier to work with.
 
@@ -652,7 +652,7 @@ await actorCalled('Alice').attemptsTo(
 
 Alternatively, when you want to create a question that returns a JSON object, instead of using [`Question.about`](/api/core/class/Question/#about)
 you can also use [`Question.fromObject`](/api/core/class/Question/#fromObject), which will make your implementation
-more concise: 
+more concise:
 
 ```typescript
 const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: string, price: number }>>> = {
@@ -736,7 +736,7 @@ const destroyButton = () =>                             // Destroy button
 ### Filtering page elements
 
 Serenity/JS [`PageElements`](/api/web/class/PageElements/) are a [`List`](/api/core/class/List/), which means they offer a filtering API
-([`list.where(metaQuestion, expectation)`](/api/core/class/List/#where)) and methods like 
+([`list.where(metaQuestion, expectation)`](/api/core/class/List/#where)) and methods like
 [`first()`](/api/web/class/PageElements/#first),
 [`last()`](/api/web/class/PageElements/#last),
 or [`count()`](/api/web/class/PageElements/#count).
@@ -757,7 +757,7 @@ await actorCalled('Alice').attemptsTo(
 )
 ```
 
-Furthermore, you can compose the result of your query with another question, like `label().of(...)`: 
+Furthermore, you can compose the result of your query with another question, like `label().of(...)`:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
