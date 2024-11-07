@@ -359,7 +359,7 @@ The above APIs are particularly useful when you need to retrieve elements from a
 such as the most recent comment under an article, the last customer order in a CRM system,
 nth position from a league table, and so on.
 
-### Retrieving text of multiple elements
+### Retrieving the text of multiple elements
 
 Similarly to [`PageElement`](/api/web/class/PageElement), [`PageElements`](/api/web/class/PageElements) can be composed with other questions,
 like [`Text.ofAll`](/api/web/class/Text):
