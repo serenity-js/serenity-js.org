@@ -12,6 +12,7 @@ and **reducing test maintenance costs** across your organisation.
 
 Serenity/JS Page Element Query Language uses **3 simple, composable abstractions** based on Screenplay [questions](/handbook/design/screenplay-pattern/#questions)
 that help you identify and interact with web elements of interest:
+
 - **[`PageElement`](/api/web/class/PageElement)** - models a **single web element**,
 - **[`PageElements`](/api/web/class/PageElements)** - models a **collection of web elements**,
 - **[`By`](/api/web/class/By)** - represents **portable locators** used by your browser to identify web elements of interest.
@@ -60,6 +61,7 @@ export const basketTotal = () =>                // <- Function representing a do
 ```
 
 To define a page element:
+
 - Create a [function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions) named after the **domain concept** represented by the UI widget, such as `basketTotal`.
 - Make the function return a [`PageElement`](/api/web/class/PageElement#located), configured to locate the element using one of the built-in [`By` selectors](/api/web/class/By).
 - Give your page element a **human-readable description** to be used when [reporting interactions](/handbook/reporting/) with the element.
@@ -310,6 +312,7 @@ To help you understand how to use this abstraction, remember the shopping basket
 
 Similarly to how you model a [single page element](/handbook/web-testing/page-element-query-language/#working-with-individual-page-elements),
 to model a **collection of page elements**:
+
 - Create a function that captures the name of the concept they represent, like `basketItems`.
 - Make the function return a [PageElements](/api/web/class/PageElements/#located) object.
 - Define a custom description to be used for reporting purposes.
@@ -597,6 +600,7 @@ you might want to fetch a table row, perform some transformation on each cell,
 then return the result as a JSON object so that it's easier to work with.
 
 An equivalent of doing that in our example would be to:
+
 - retrieve the name and price of each basket item,
 - clean up the data,
 - transform it into a JSON object,
@@ -677,6 +681,7 @@ While Serenity/JS [expectations](/api/core/class/Expectation) are most commonly 
 when used with the [`PageElements#where`](/api/web/class/PageElements#where) API they offer a great and reusable alternative to complex CSS selectors and XPath expressions.
 
 In this section, I'll show you how to:
+
 - query page elements to find those that meet your expectations,
 - find an interactive element based on some property of its sibling,
 - iterate over selected elements to perform a common task.
@@ -819,6 +824,7 @@ await actorCalled('Alice').attemptsTo(
 ### Finding a sibling element
 
 To find a sibling element, e.g. to find a destroy button for an item whose label contains a certain text:
+
 - find the container element whose descendant element meets your conditions,
 - locate the sibling element within that container element.
 
@@ -847,6 +853,7 @@ use the [`List#forEach`](/api/core/class/List#forEach) API to
 perform a sequence of interactions with each element of the collection.
 
 For example, to toggle every item that hasn't been bought yet:
+
 - filter the list to find elements that meet the expectation,
 - iterate over the found elements to click on the toggle button of each element.
 
