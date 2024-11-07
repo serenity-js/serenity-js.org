@@ -849,7 +849,7 @@ use the [`List#forEach`](/api/core/class/List#forEach) API to
 perform a sequence of interactions with each element of the collection.
 
 For example, to toggle every item that hasn't been bought yet:
-- filter the list find elements that meet the expectation,
+- filter the list to find elements that meet the expectation,
 - iterate over the found elements to click on the toggle button of each element.
 
 ```typescript
