@@ -332,7 +332,7 @@ each of which contains two descendant elements: `<span class="name" />` and `<sp
 In a moment, I'll show you [how to make your queries more precise](/handbook/web-testing/page-element-query-language/#querying-page-elements)
 and retrieve only those elements you need.
 
-### Retrieving element from a collection
+### Retrieving an element from a collection
 
 If you need to retrieve a specific element from a collection, and you know what position it occupies, you can use
 [`PageElements#first()`](/api/web/class/PageElements#first),
