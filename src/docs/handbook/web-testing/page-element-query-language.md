@@ -797,7 +797,7 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 You can also define a chain of filtering calls to **resolve it dynamically**
-in the context of a root element at runtime, improving reusability of your code:
+in the context of a root element at runtime, improving the reusability of your code:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
