@@ -64,7 +64,6 @@ To define a page element:
 - Make the function return a [`PageElement`](/api/web/class/PageElement#located), configured to locate the element using one of the built-in [`By` selectors](/api/web/class/By).
 - Give your page element a **human-readable description** to be used when [reporting interactions](/handbook/reporting/) with the element.
 
-
 :::tip Writing portable test code
 Note how giving your test functions **meaningful names**, such as `basketTotal`, helps to make your code **easier to read** and **understand**. Also note how using the `PageElement` and `By` APIs
 helps your code remain **declarative**, **portable**, and agnostic of low-level integration tool-specific method calls, further improving its **reusability**.
@@ -191,7 +190,6 @@ await actorCalled('Alice').attemptsTo(
   Ensure.that(Text.of(basketTotal()), equals('£3.75')),
 )
 ```
-
 
 Note that Serenity/JS expectations are **type-safe** and **portable**.
 This means that you're not limited to using just the web-specific expectations in your web tests,
