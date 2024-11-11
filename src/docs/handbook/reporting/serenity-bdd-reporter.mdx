@@ -462,20 +462,17 @@ npx serenity-bdd --help
 ```
 
 To produce Serenity BDD reports, your test suite must:
-- call `serenity-bdd update`, typically as part of the `postinstall` or `pretest` [NPM script](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order)
 - use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter), which produces intermediate Serenity BDD `.json` reports
 - call `serenity-bdd run` when the test run completes to generate the aggregated HTML report
 
 The pattern used by all the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/) relies
 on using:
-- a [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order) NPM script to download the Serenity BDD CLI
 - [`npm-failsafe`](https://www.npmjs.com/package/npm-failsafe) to run the reporting process even if the test suite itself has failed (which is precisely when you need test reports the most...).
 - [`rimraf`](https://www.npmjs.com/package/rimraf) as a convenience method to remove any test reports left over from the previous run
 
 ```json title="package.json"
 {
   "scripts": {
-    "postinstall": "serenity-bdd update",
     "clean": "rimraf target",
     "test": "failsafe clean test:execute test:report",
     "test:execute": "cucumber-js",
