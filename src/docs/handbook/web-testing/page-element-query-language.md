@@ -12,6 +12,7 @@ and **reducing test maintenance costs** across your organisation.
 
 Serenity/JS Page Element Query Language uses **3 simple, composable abstractions** based on Screenplay [questions](/handbook/design/screenplay-pattern/#questions)
 that help you identify and interact with web elements of interest:
+
 - **[`PageElement`](/api/web/class/PageElement)** - models a **single web element**,
 - **[`PageElements`](/api/web/class/PageElements)** - models a **collection of web elements**,
 - **[`By`](/api/web/class/By)** - represents **portable locators** used by your browser to identify web elements of interest.
@@ -22,9 +23,9 @@ For information on how to debug PEQL expressions, see the [debugging guide](/han
 
 ## Working with individual page elements
 
-To show you how to work with **individual page elements**, 
+To show you how to work with **individual page elements**,
 I'll use an example shopping basket widget and demonstrate locating its various parts.
-The widget is simple enough to help us focus on the important aspects of PEQL, 
+The widget is simple enough to help us focus on the important aspects of PEQL,
 yet sophisticated enough to be representative of other widgets you're likely to come across in the wild:
 
 ```html
@@ -45,7 +46,7 @@ yet sophisticated enough to be representative of other widgets you're likely to 
 
 ### Identifying individual page elements
 
-One of the most common things to implement in a web-based test scenario is an interaction with a web element, like clicking on an button, entering a value into a form field, or asserting on some message
+One of the most common things to implement in a web-based test scenario is an interaction with a web element, like clicking on a button, entering a value into a form field, or asserting on some message
 presented to the end-user.
 
 Of course, to interact with an element you need to tell your test how to find it.
@@ -60,10 +61,10 @@ export const basketTotal = () =>                // <- Function representing a do
 ```
 
 To define a page element:
+
 - Create a [function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions) named after the **domain concept** represented by the UI widget, such as `basketTotal`.
 - Make the function return a [`PageElement`](/api/web/class/PageElement#located), configured to locate the element using one of the built-in [`By` selectors](/api/web/class/By).
 - Give your page element a **human-readable description** to be used when [reporting interactions](/handbook/reporting/) with the element.
-
 
 :::tip Writing portable test code
 Note how giving your test functions **meaningful names**, such as `basketTotal`, helps to make your code **easier to read** and **understand**. Also note how using the `PageElement` and `By` APIs
@@ -77,7 +78,7 @@ to help your code achieve polymorphic behaviour and promote code reuse.
 In practice, this means that in order to retrieve a specific attribute of a `PageElement`, you compose the element
 with an [appropriate web question](/api/web).
 
-For example, to retrieve the text value of a `PageElement` returned by `Basket.total()`, compose it with a question about its [`Text`](/api/web/class/Text):
+For example, to retrieve the text value of a `PageElement` returned by `basketTotal()`, compose it with a question about its [`Text`](/api/web/class/Text):
 
 ```typescript
 import { By, PageElement, Text } from '@serenity-js/web'
@@ -97,7 +98,7 @@ and others.
 
 ### Using selector aliases
 
-In scenarios where elements use a consistent pattern allowing them to be easily identified, 
+In scenarios where elements use a consistent pattern allowing them to be easily identified,
 such as a `data-test-it`, or a `role` attribute, you might want to implement custom selector aliases
 to avoid code duplication.
 
@@ -192,7 +193,6 @@ await actorCalled('Alice').attemptsTo(
 )
 ```
 
-
 Note that Serenity/JS expectations are **type-safe** and **portable**.
 This means that you're not limited to using just the web-specific expectations in your web tests,
 and you can use any other expectations from the [Serenity/JS assertions module](/api/assertions)
@@ -202,7 +202,7 @@ or even [write them yourself](/api/core/class/Expectation).
 Learn more about asserting on page elements in chapter "[Web assertions](/handbook/design/assertions#web-assertions)".
 :::
 
-### Waiting for condition
+### Waiting for conditions
 
 Serenity/JS web module provides [web-specific expectations](/api/core/class/Expectation) you use
 to synchronise your test code with the system under test and wait until its state meets your expectations.
@@ -312,6 +312,7 @@ To help you understand how to use this abstraction, remember the shopping basket
 
 Similarly to how you model a [single page element](/handbook/web-testing/page-element-query-language/#working-with-individual-page-elements),
 to model a **collection of page elements**:
+
 - Create a function that captures the name of the concept they represent, like `basketItems`.
 - Make the function return a [PageElements](/api/web/class/PageElements/#located) object.
 - Define a custom description to be used for reporting purposes.
@@ -326,13 +327,13 @@ const basketItems = () =>
     .describedAs('basket items')                //    instead of `PageElement`
 ```
 
-Note that in the code sample above, selector `By.css('#basket .item')` makes the collection target **both** the `<li class="item" />` elements,
-each of which containing two descendant elements: `<span class="name" />` and `<span class="price" />` .
+Note that in the code sample above, the selector `By.css('#basket .item')` makes the collection target **both** the `<li class="item" />` elements,
+each of which contains two descendant elements: `<span class="name" />` and `<span class="price" />` .
 
 In a moment, I'll show you [how to make your queries more precise](/handbook/web-testing/page-element-query-language/#querying-page-elements)
 and retrieve only those elements you need.
 
-### Retrieving element from a collection
+### Retrieving an element from a collection
 
 If you need to retrieve a specific element from a collection, and you know what position it occupies, you can use
 [`PageElements#first()`](/api/web/class/PageElements#first),
@@ -355,11 +356,11 @@ const lastItem = () =>
     .last()
 ```
 
-Above APIs are particularly useful when you need to retrieve elements from a sorted collection, 
+The above APIs are particularly useful when you need to retrieve elements from a sorted collection,
 such as the most recent comment under an article, the last customer order in a CRM system,
 nth position from a league table, and so on.
 
-### Retrieving text of multiple elements
+### Retrieving the text of multiple elements
 
 Similarly to [`PageElement`](/api/web/class/PageElement), [`PageElements`](/api/web/class/PageElements) can be composed with other questions,
 like [`Text.ofAll`](/api/web/class/Text):
@@ -375,7 +376,7 @@ const basketItemNameElementNames = () =>
     Text.ofAll(basketItemNameElements())
 ```
 
-[`Text.ofAll`](/api/web/class/Text) API is useful when you need to retrieve text content of multiple elements and assert on it all at once:
+The [`Text.ofAll`](/api/web/class/Text) API is useful when you need to retrieve text content of multiple elements and assert on it all at once:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
@@ -423,10 +424,10 @@ to fix multiple selectors in your test automation code. Not to mention the issue
 
 Serenity/JS [meta-questions](/api/core/interface/MetaQuestion) are "questions about questions",
 so questions that can be composed with other questions and answered in their context.
-In short, any Serenity/JS question that has an [`question.of(anotherQuestion)`](/api/core/interface/MetaQuestion/#of) API is
+In short, any Serenity/JS question that has a [`question.of(anotherQuestion)`](/api/core/interface/MetaQuestion/#of) API is
 a meta-question.
 
-Conveniently, [`PageElement`](/api/web/class/PageElement/) is a meta-question that can be 
+Conveniently, [`PageElement`](/api/web/class/PageElement/) is a meta-question that can be
 composed with another `PageElement` using a declarative [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
 to dynamically model a descendant/ancestor (a.k.a. child/parent) relationship between the elements.
 
@@ -488,13 +489,13 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 Serenity/JS lets you compose not just the page elements, but also their **descriptions**.
-In our example, description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of 
-questions in the chain and reported as `text of name of basket item`. 
+In our example, the description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of
+questions in the chain and reported as `text of name of basket item`.
 Of course, you can set your own description if you prefer using `.describedAs()`, too.
 
-You might have also noticed that [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
+You might have also noticed that the [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
 works only with **individual elements**.
-To map **multiple elements** we need to use `PageElements` [mapping API](/handbook/web-testing/page-element-query-language/#mapping-page-elements-in-a-collection) we'll talk about next.
+To map **multiple elements** we need to use the `PageElements` [mapping API](/handbook/web-testing/page-element-query-language/#mapping-page-elements-in-a-collection), which we'll talk about next.
 
 :::tip Serenity/JS PEQL helps you avoid code duplication
 Serenity/JS PEQL lets you **compose** and **reuse** page element definitions,
@@ -508,10 +509,10 @@ especially when the system under test uses a consistent convention to name eleme
 
 Similarly to how you [transform answers to individual questions](/handbook/web-testing/page-element-query-language/#transforming-answers-to-questions),
 you can also transform each element in a collection
-using [`PageElements#eachMappedTo`](/api/web/class/PageElements#eachMappedTo) API
+using the [`PageElements#eachMappedTo`](/api/web/class/PageElements#eachMappedTo) API
 and providing a [meta-question](/api/core/interface/MetaQuestion) to be used for the mapping.
 
-For example, just how you'd use the meta-question about [`Text`](/api/web/class/Text/) to retrieve the text
+For example, the same way you'd use the meta-question about [`Text`](/api/web/class/Text/) to retrieve the text
 value of an **individual page element**:
 
 ```typescript
@@ -528,7 +529,7 @@ await actorCalled('Alice').attemptsTo(
 )
 ```
 
-you could also use it to extract the text value of each element in a collection:  
+you could also use it to extract the text value of each element in a collection:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
@@ -551,7 +552,7 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 Where this pattern becomes indispensable is when you start **reusing** and **composing several meta-questions together**.
-For example, you could map each of `basketItems()` to retrieve their name or price:
+For example, you could map each of the `basketItems()` to retrieve their name or price:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
@@ -590,15 +591,16 @@ await actorCalled('Alice').attemptsTo(
 
 ### Creating custom meta-questions
 
-Serenity/JS provides a number of meta-questions, like [`Text`](/api/web/class/Text), 
-[`CssClasses`](/api/web/class/CssClasses), or [`Attribute`](/api/web/class/Attribute), 
+Serenity/JS provides a number of meta-questions, like [`Text`](/api/web/class/Text),
+[`CssClasses`](/api/web/class/CssClasses), or [`Attribute`](/api/web/class/Attribute),
 and you can always write your own if needed.
 
-For example, if you're dealing with a web interface that presents tabular data, 
-you might want to fetch the table row, perform some transformation on each cell,
+For example, if you're dealing with a web interface that presents tabular data,
+you might want to fetch a table row, perform some transformation on each cell,
 then return the result as a JSON object so that it's easier to work with.
 
 An equivalent of doing that in our example would be to:
+
 - retrieve the name and price of each basket item,
 - clean up the data,
 - transform it into a JSON object,
@@ -618,7 +620,7 @@ const basketItems = () =>                           // Locate basket item contai
 
 const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: string, price: number }>>> = {
   
-  of: (element: PageElement) =>    // A meta-qustion must provide a method called `of`
+  of: (element: PageElement) =>    // A meta-question must provide a method called `of`
 
     Question.about('basket item details', async actor => {  // Create a question
     
@@ -652,7 +654,7 @@ await actorCalled('Alice').attemptsTo(
 
 Alternatively, when you want to create a question that returns a JSON object, instead of using [`Question.about`](/api/core/class/Question/#about)
 you can also use [`Question.fromObject`](/api/core/class/Question/#fromObject), which will make your implementation
-more concise: 
+more concise:
 
 ```typescript
 const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: string, price: number }>>> = {
@@ -675,10 +677,11 @@ const BasketItemDetails: MetaQuestion<PageElement, Question<Promise<{ name: stri
 
 ## Querying page elements
 
-While Serenity/JS [expectations](/api/core/class/Expectation) are most commonly used with [assertion](#performing-assertions) and [synchronisation](#waiting-for-condition) statements,
-when used with [`PageElements#where`](/api/web/class/PageElements#where) API they offer a great and reusable alternative to complex CSS selectors and XPath expressions.
+While Serenity/JS [expectations](/api/core/class/Expectation) are most commonly used with [assertion](#performing-assertions) and [synchronisation](#waiting-for-conditions) statements,
+when used with the [`PageElements#where`](/api/web/class/PageElements#where) API they offer a great and reusable alternative to complex CSS selectors and XPath expressions.
 
 In this section, I'll show you how to:
+
 - query page elements to find those that meet your expectations,
 - find an interactive element based on some property of its sibling,
 - iterate over selected elements to perform a common task.
@@ -736,7 +739,7 @@ const destroyButton = () =>                             // Destroy button
 ### Filtering page elements
 
 Serenity/JS [`PageElements`](/api/web/class/PageElements/) are a [`List`](/api/core/class/List/), which means they offer a filtering API
-[`list.where(metaQuestion, expectation)`](/api/core/class/List/#where) and methods like 
+([`list.where(metaQuestion, expectation)`](/api/core/class/List/#where)) and methods like
 [`first()`](/api/web/class/PageElements/#first),
 [`last()`](/api/web/class/PageElements/#last),
 or [`count()`](/api/web/class/PageElements/#count).
@@ -757,7 +760,7 @@ await actorCalled('Alice').attemptsTo(
 )
 ```
 
-Furthermore, you can compose the result of your query with another question, like `label().of(...)`: 
+Furthermore, you can compose the result of your query with another question, like `label().of(...)`:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
@@ -797,7 +800,7 @@ await actorCalled('Alice').attemptsTo(
 ```
 
 You can also define a chain of filtering calls to **resolve it dynamically**
-in the context of a root element at runtime, improving reusability of your code:
+in the context of a root element at runtime, improving the reusability of your code:
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
@@ -820,8 +823,9 @@ await actorCalled('Alice').attemptsTo(
 
 ### Finding a sibling element
 
-To find a sibling element, e.g. find a destroy button for an item which label contains a certain text:
-- find the container element which descendant element meets your conditions,
+To find a sibling element, e.g. to find a destroy button for an item whose label contains a certain text:
+
+- find the container element whose descendant element meets your conditions,
 - locate the sibling element within that container element.
 
 ```typescript
@@ -849,7 +853,8 @@ use the [`List#forEach`](/api/core/class/List#forEach) API to
 perform a sequence of interactions with each element of the collection.
 
 For example, to toggle every item that hasn't been bought yet:
-- filter the list find elements that meet the expectation,
+
+- filter the list to find elements that meet the expectation,
 - iterate over the found elements to click on the toggle button of each element.
 
 ```typescript
