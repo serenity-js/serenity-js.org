@@ -10,7 +10,7 @@ sidebar_position: 3
 **You will learn:**
 - How to install Serenity BDD
 - How to configure Serenity BDD reporter
-- How to produce Serenity BDD reports
+- How to generate Serenity BDD reports
 
 <Figure
     caption='Example reports produced by Serenity BDD'
@@ -20,10 +20,10 @@ sidebar_position: 3
 ## Module overview
 
 [`@serenity-js/serenity-bdd`](/api/serenity-bdd) module:
-- gathers information about your test execution,
-- analyses your test directory structure to understand your requirements hierarchy,
-- produces Serenity BDD-standard JSON reports,
-- helps you download and run [Serenity BDD CLI](https://github.com/serenity-bdd/serenity-core/tree/main/serenity-cli) - a Java program that turns the JSON reports into [HTML reports and living documentation](https://serenity-bdd.github.io/docs/reporting/the_serenity_reports).
+- Gathers information about your test execution,
+- Analyses your test directory structure to understand your requirements hierarchy,
+- Produces Serenity BDD-standard JSON reports,
+- Provides and runs the [Serenity BDD CLI](https://github.com/serenity-bdd/serenity-core/tree/main/serenity-cli) - a Java program that turns the JSON reports into [HTML reports and living documentation](https://serenity-bdd.github.io/docs/reporting/the_serenity_reports).
 
 ### Examples and Project Templates
 
@@ -52,13 +52,19 @@ If you're starting a new project or need a reference implementation,
 consider using one of the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/)
 as they all come with pre-configured test runner adapters and built-in support for Serenity BDD reporting.
 
+:::tip Simplified installation
+As of [Serenity/JS 3.30.0](https://github.com/serenity-js/serenity-js/blob/main/CHANGELOG.md#3300-2024-11-19), `@serenity-js/serenity-bdd` module ships with the Serenity BDD CLI .jar file, so you no longer need to download it separately.
+:::
+
 ## Configuration overview
 
 To make your project produce Serenity BDD reports, you need to:
-- use a [Serenity/JS test runner adapter](/handbook/test-runners/) to emit [domain events](/handbook/reporting/domain-events) that describe what happened during test execution,
-- use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter) ["stage crew member"](/api/core/interface/StageCrewMember/) to translate those events into Serenity BDD-standard JSON reports,
-- use the [`ArtifactArchiver`](/handbook/reporting/artifact-archiver) to store the JSON reports to disk,
-- run the Serenity BDD CLI when the test run completes.
+- Use a [Serenity/JS test runner adapter](/handbook/test-runners/) to emit [domain events](/handbook/reporting/domain-events) that describe what happened during test execution,
+- Use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter) ["stage crew member"](/api/core/interface/StageCrewMember/) to translate those events into Serenity BDD-standard JSON reports,
+- Use the [`ArtifactArchiver`](/handbook/reporting/artifact-archiver) to store the JSON reports to disk,
+- Run the Serenity BDD CLI when the test run completes.
+
+In this section, we'll show you how to configure the Serenity BDD reporter for the most popular test runners supported by Serenity/JS.
 
 ### Configuring the test runner adapter
 
@@ -66,6 +72,8 @@ Serenity/JS needs to know where your test scenarios are located to analyse your 
 The framework automatically detects conventional locations, such as `features`,  `specs`, `spec`, `tests`, `test` or `src` subdirectories of your project.
 If your project uses a different directory structure, you should configure your Serenity/JS test runner adapter
 to point to your desired location by specifying the [`specDirectory`](/api/serenity-bdd/interface/SerenityBDDReporterConfig/#Properties) property.
+
+Consult the [Serenity BDD Best Practices](#serenity-bdd-best-practices) section to learn more about how your project directory structure can help you produce better test reports.
 
 ### Configuring the Serenity BDD reporter
 
@@ -77,7 +85,9 @@ For example, to use the `SerenityBDDReporter` with default settings, you can con
 ```ts
 // ...
     crew: [
+      // highlight-start
       '@serenity-js/serenity-bdd',
+      // highlight-end
     ]
 // ...
 ```
@@ -87,12 +97,14 @@ You can customise the behaviour of the `SerenityBDDReporter` by passing the [`Se
 ```ts
 // ...
     crew: [
+      // highlight-start
       [ '@serenity-js/serenity-bdd', {
           specDirectory: './spec',
           reporter: {
               includeAbilityDetails: true,
           },
       } ],
+      // highlight-end
     ]
 // ...
 ```
@@ -104,22 +116,20 @@ for your test runner of choice.
 
 Lastly, to store the Serenity BDD-standard JSON reports to disk, your project needs to use the [`ArtifactArchiver`](/handbook/reporting/artifact-archiver), configured with your preferred output directory.
 
-### Serenity/JS 2 vs Serenity/JS 3 syntax
-
-If you have an existing project that uses the Serenity/JS 2 configuration syntax, you should update it to follow the Serenity/JS 3 convention:
-
-```diff
-- import { ArtifactArchiver } from '@serenity-js/core'
-- import { SerenityBDDReporter } from '@serenity-js/serenity-bdd'
-
+```ts
 // ...
     crew: [
--     new SerenityBDDReporter(),
--     ArtifactArchiver.storingArtifactsAt('./target/site/serenity'),
-+     '@serenity-js/serenity-bdd',
-+     [ '@serenity-js/core:ArtifactArchiver', {
-+       outputDirectory: 'target/site/serenity'
-+     } ],
+      [ '@serenity-js/serenity-bdd', {
+          specDirectory: './spec',
+          reporter: {
+              includeAbilityDetails: true,
+          },
+      } ],
+      // highlight-start
+      [ '@serenity-js/core:ArtifactArchiver', {
+          outputDirectory: './target/site/serenity'
+      } ],
+      // highlight-end
     ]
 // ...
 ```
@@ -141,7 +151,7 @@ If you choose not to specify it, Serenity/JS will do its best to [automatically 
 import type { PlaywrightTestConfig } from '@serenity-js/playwright-test'
 
 const config: PlaywrightTestConfig = {
-    testDir: './spec',                      // optional, indicates the root of your requirements hierarchy
+    testDir: './spec', // optional, indicates the root directory of your requirements hierarchy
 
     reporter: [
         [ '@serenity-js/playwright-test', {
@@ -204,7 +214,8 @@ BeforeAll(() => {
     configure({
         crew: [
             [ '@serenity-js/serenity-bdd', {
-                specDirectory: path.resolve(__dirname, '..')  // optional, requirements hierarchy root
+                // optional, requirements hierarchy root
+                specDirectory: path.resolve(__dirname, '..')
             } ],
             [ '@serenity-js/core:ArtifactArchiver', {
                 outputDirectory: path.resolve(__dirname, '../../target/site/serenity')
@@ -244,7 +255,8 @@ import * as path from 'path'
 configure({
     crew: [
         [ '@serenity-js/serenity-bdd', {
-            specDirectory: path.resolve(__dirname, '..')  // optional, requirements hierarchy root
+            // optional, requirements hierarchy root
+            specDirectory: path.resolve(__dirname, '..')
         } ],
         [ '@serenity-js/core:ArtifactArchiver', {
             outputDirectory: path.resolve(__dirname, '../../target/site/serenity')
@@ -293,7 +305,8 @@ import * as path from 'path'
 configure({
     crew: [
         [ '@serenity-js/serenity-bdd', {
-            specDirectory: path.resolve(__dirname, '..')  // optional, requirements hierarchy root
+            // optional, requirements hierarchy root
+            specDirectory: path.resolve(__dirname, '..')
         } ],
         [ '@serenity-js/core:ArtifactArchiver', {
             outputDirectory: path.resolve(__dirname, '../../target/site/serenity')
@@ -357,7 +370,7 @@ export const config: WebdriverIOConfig = {
     // Configure your Cucumber runner
     cucumberOpts: {
         formatOptions: {
-            specDirectory: './features'                 // optional, requirements hierarchy root
+            specDirectory: './features'  // optional, requirements hierarchy root
         },
         // ...
     },
@@ -365,13 +378,13 @@ export const config: WebdriverIOConfig = {
 
     // ... or Jasmine runner
     // jasmineOpts: {
-    //     specDir: './specs'                           // optional, requirements hierarchy root
+    //     specDir: './specs'            // optional, requirements hierarchy root
     // },
 
     // ... or Mocha runner
     // mochaOpts: {
     //     reporterOptions: {
-    //         specDirectory: './specs'                 // optional, requirements hierarchy root
+    //         specDirectory: './specs'  // optional, requirements hierarchy root
     //     },
     // },
 
@@ -418,7 +431,8 @@ exports.config = {
     // Configure your Cucumber runner
     cucumberOpts: {
         formatOptions: {
-            specDirectory: './features'                 // optional, requirements hierarchy root
+            // optional, requirements hierarchy root
+            specDirectory: './features'
         },
         // ...
     },
@@ -426,13 +440,13 @@ exports.config = {
 
     // ... or Jasmine runner
     // jasmineNodeOpts: {
-    //     specDir: './specs'                           // optional, requirements hierarchy root
+    //     specDir: './specs'           // optional, requirements hierarchy root
     // },
 
     // ... or Mocha runner
     // mochaOpts: {
     //     reporterOptions: {
-    //         specDirectory: './specs'                 // optional, requirements hierarchy root
+    //         specDirectory: './specs' // optional, requirements hierarchy root
     //     },
     // },
 
@@ -444,16 +458,21 @@ exports.config = {
 
 Learn more about using [Serenity/JS with WebdriverIO](/handbook/test-runners/protractor).
 
-## Using Serenity BDD CLI
+## Generating Serenity BDD HTML reports
 
-To turn the Serenity BDD-standard JSON reports produced by the `SerenityBDDReporter` into Serenity BDD test reports,
-you need the [Serenity BDD reporting CLI](https://github.com/serenity-bdd/serenity-core).
+To create Serenity BDD HTML reports from the JSON reports generated by the `SerenityBDDReporter`,
+you need to use the [Serenity BDD reporting CLI](https://github.com/serenity-bdd/serenity-core).
 
-The Serenity BDD reporting CLI is a Java program, distributed as an executable `.jar` file and available to download from [Maven Central](https://central.sonatype.com/artifact/net.serenity-bdd/serenity-cli).
+The Serenity BDD CLI is a Java program provided as an executable `.jar` file.
+Starting with [version 3.30.0](https://github.com/serenity-js/serenity-js/blob/main/CHANGELOG.md#3300-2024-11-19)
+of Serenity/JS, this CLI is included in the `@serenity-js/serenity-bdd` module.
+Alternatively, you can download the latest version from Maven Central if you want to experiment with the newest updates.
 
-The `@serenity-js/serenity-bdd` module ships with a command line tool called `serenity-bdd`, where:
-- `serenity-bdd update` command downloads the Serenity BDD CLI `jar` and caches it locally
-- `serenity-bdd run` command is a wrapper around the Serenity BDD CLI that invokes the Serenity BDD CLI `jar` to produce HTML reports based on the JSON reports generated by the `SerenityBDDReporter`
+### Using the Serenity BDD CLI
+
+The `@serenity-js/serenity-bdd` module includes a command line tool called `serenity-bdd`, where:
+- `serenity-bdd run` - acts as a shortcut to run the Serenity BDD CLI and generate the Serenity BDD HTML reports using default parameters
+- `serenity-bdd update` - downloads the Serenity BDD CLI `jar` file and caches it locally in your project workspace for future use
 
 To learn more about `serenity-bdd`, run the following command in your computer terminal:
 
@@ -461,21 +480,26 @@ To learn more about `serenity-bdd`, run the following command in your computer t
 npx serenity-bdd --help
 ```
 
-To produce Serenity BDD reports, your test suite must:
-- call `serenity-bdd update`, typically as part of the `postinstall` or `pretest` [NPM script](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order)
-- use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter), which produces intermediate Serenity BDD `.json` reports
+To leran more about the `run` command and how to change the defaults, run:
+
+```sh
+npx serenity-bdd --help run
+```
+
+### Configuring package.json scripts
+
+To produce Serenity BDD reports, you need to:
+- [configure your test runner](#configuring-the-test-runner) to use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter) and produce the intermediate Serenity BDD `.json` reports
 - call `serenity-bdd run` when the test run completes to generate the aggregated HTML report
 
 The pattern used by all the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/) relies
-on using:
-- a [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order) NPM script to download the Serenity BDD CLI
-- [`npm-failsafe`](https://www.npmjs.com/package/npm-failsafe) to run the reporting process even if the test suite itself has failed (which is precisely when you need test reports the most...).
+on using two additional Node modules:
 - [`rimraf`](https://www.npmjs.com/package/rimraf) as a convenience method to remove any test reports left over from the previous run
+- [`npm-failsafe`](https://www.npmjs.com/package/npm-failsafe) to run the reporting process even if the test suite itself has failed (which is precisely when you need test reports the most...).
 
 ```json title="package.json"
 {
   "scripts": {
-    "postinstall": "serenity-bdd update",
     "clean": "rimraf target",
     "test": "failsafe clean test:execute test:report",
     "test:execute": "cucumber-js",
@@ -484,121 +508,6 @@ on using:
 }
 ```
 Note that in the above code sample, you should configure `test:execute` to invoke your [test runner](/handbook/test-runners/) of choice.
-
-### Downloading Serenity BDD CLI
-
-To download the Serenity BDD reporting CLI or to update it, use the `update` command:
-
-```console
-npx serenity-bdd update
-```
-
-To download Serenity BDD reporting CLI jar from your company's artifact repository, specify the `--repository` parameter:
-
-```
-npx serenity-bdd update --repository https://artifactory.example.org/
-```
-
-To learn more about the `update` command, run:
-
-```
-npx serenity-bdd --help update
-```
-
-Please note that the `update` command will try to download the `.jar` only if you don't have it cached already, or when the one you have is not up to date. Otherwise, no outbound network calls are made.
-
-#### Downloading through a proxy
-
-The `update` command picks up your proxy configuration automatically from your [NPM config](https://docs.npmjs.com/cli/v6/commands/npm-config), [`.npmrc` file](https://docs.npmjs.com/cli/v6/configuring-npm/npmrc), or environment variables.
-Please note that you only need to use one of those configuration mechanisms.
-
-##### Using NPM config (Linux, macOS, Windows)
-
-To use NPM-level configuration, run the following commands in your terminal:
-
-```console
-npm config set proxy http://[user:pwd]@domain.tld:port
-npm config set https-proxy http://[user:pwd]@domain.tld:port
-```
-
-If your proxy requires a certificate file, you can provide a path to it as follows:
-
-```console
-npm config set cafile /path/to/root-ca.pem
-```
-
-The above can also be accomplished by placing an [`.npmrc` file](https://docs.npmjs.com/cli/v6/configuring-npm/npmrc) with following contents in your home directory or your project root:
-
-```bash
-# ~/.npmrc
-proxy = http://[user:pwd]@domain.tld:port
-https-proxy = http://[user:pwd]@domain.tld:port
-
-cafile = /path/to/root-ca.pem          # optional
-noproxy = localhost,mycompany.com      # optional
-```
-
-##### Using environment variables on Linux or macOS
-
-To set your proxy on Linux or macOS, run the following commands in your terminal:
-
-```console
-export HTTP_PROXY=http://[user:pwd]@domain.tld:port
-export HTTPS_PROXY=http://[user:pwd]@domain.tld:port
-```
-
-If needed, you can also set a `NO_PROXY` variable to a comma-separated list of domains that don't require a proxy, for example:
-
-```console
-export NO_PROXY=localhost,mycompany.com
-```
-
-Please note that you can add the above commands to your shell's `~/.profile`, so that they're executed whenever you open a new terminal.
-
-##### Using environment variables on Windows
-
-To configure a proxy on Windows, run the following commands in Command Prompt:
-
-```console
-set HTTP_PROXY=http://[user:pwd]@domain.tld:port
-set HTTPS_PROXY=http://[user:pwd]@domain.tld:port
-```
-
-If you're using Powershell, run the following commands instead:
-
-```console
-$env:HTTP_PROXY = http://[user:pwd]@domain.tld:port
-$env:HTTPS_PROXY = http://[user:pwd]@domain.tld:port
-```
-
-#### Using a specific User-Agent
-
-If your artifact registry requires you to use a specific user agent, you can configure it using NPM config:
-
-```console
-npm config set user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0"
-```
-
-#### Ignoring SSL checks
-
-You can instruct the `update` command to ignore any SSL certificate errors by providing an `--ignoreSSL` flag when running the command:
-
-```console
-npx serenity-bdd update --ignoreSSL
-```
-
-You can also disable certificate checks at the NPM config level by running:
-
-```console
-npm config set strict-ssl false
-```
-
-Alternative, you can accomplish the same with an `.npmrc` file:
-
-```bash
-# ~/.npmrc
-npm_config_strict-ssl = false
-```
 
 ### Configuring Serenity BDD CLI
 
@@ -628,20 +537,6 @@ report.customfields.BuildNumber = ${POTENTIALLY_MISSING_VARIABLE:-Fallback value
 :::tip
 Ensure any environment variables you want to use are exported; otherwise, they won't be picked up.
 :::
-
-### Running Serenity BDD CLI
-
-To produce the Serenity BDD test report and living documentation using default settings, run:
-
-```
-npx serenity-bdd run
-```
-
-To learn more about the `run` command and how to change the defaults, run:
-
-```
-npx serenity-bdd --help run
-```
 
 ## Serenity BDD Best Practices
 
@@ -832,6 +727,181 @@ match `Custom single sign-on` as well as `Custom Single Sign-On`.
 Try to avoid having multiple top-level `describe` blocks in a single spec file, or `it`/`test` blocks without a `describe` block
 as Serenity BDD will not be able to associate the test results with the right feature.
 :::
+
+## Upgrade guide
+
+Serenity/JS uses [semantic versioning](/releases/versioning/) and introduces backward-incompatible changes only in major releases.
+This section provides guidance on how changes in Serenity/JS 3 might affect your existing project
+and how to upgrade your configuration to the new syntax.
+
+### Upgrading to Serenity/JS 3 configuration syntax
+
+If you have an existing project that uses the Serenity/JS 2 configuration syntax, you should update it to follow the Serenity/JS 3 convention:
+
+```diff
+- import { ArtifactArchiver } from '@serenity-js/core'
+- import { SerenityBDDReporter } from '@serenity-js/serenity-bdd'
+
+// ...
+    crew: [
+-     new SerenityBDDReporter(),
+-     ArtifactArchiver.storingArtifactsAt('./target/site/serenity'),
++     '@serenity-js/serenity-bdd',
++     [ '@serenity-js/core:ArtifactArchiver', {
++       outputDirectory: 'target/site/serenity'
++     } ],
+    ]
+// ...
+```
+
+The new string-based configuration syntax improves portability and allows Serenity/JS
+to configure test runners that support parallel test execution across multiple worker processes.
+
+### Using the default Serenity BDD CLI
+
+As of [Serenity/JS 3.30.0](https://github.com/serenity-js/serenity-js/blob/main/CHANGELOG.md#3300-2024-11-19), `@serenity-js/serenity-bdd` module ships with the Serenity BDD CLI .jar file, so you no longer need to download it separately.
+If your Serenity/JS project uses version 3.30.0 or newer, you can remove the `postinstall` script and use the default Serenity BDD CLI instead:
+
+```diff
+{
+  "scripts": {
+-   "postinstall": "serenity-bdd update",
+    "clean": "rimraf target",
+    "test": "failsafe clean test:execute test:report",
+    "test:execute": "cucumber-js",
+    "test:report": "serenity-bdd run"
+  }
+}
+```
+
+## Using a custom Serenity BDD CLI
+
+If you need to use a specific version of the Serenity BDD CLI, you can configure the `serenity-bdd update` command to download it from Maven Central
+or your company's artifact registry.
+
+This is typically done using the [`postinstall`](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order) script defined in your `package.json` file:
+
+```json
+{
+  "scripts": {
+    // highlight-next-line
+    "postinstall": "serenity-bdd update",
+    "clean": "rimraf target",
+    "test": "failsafe clean test:execute test:report",
+    "test:execute": "cucumber-js",
+    "test:report": "serenity-bdd run"
+  }
+}
+```
+
+### Using a custom artifact registry
+
+To download Serenity BDD reporting CLI jar from your company's artifact repository, specify the `--repository` parameter:
+
+```
+npx serenity-bdd update --repository https://artifactory.example.org/
+```
+
+To learn more about the `update` command, run:
+
+```
+npx serenity-bdd --help update
+```
+
+Please note that the `update` command will try to download the `.jar` only if you don't have it cached already, or when the one you have is not up to date. Otherwise, no outbound network calls are made.
+
+### Downloading through a proxy
+
+The `update` command picks up your proxy configuration automatically from your [NPM config](https://docs.npmjs.com/cli/v6/commands/npm-config), [`.npmrc` file](https://docs.npmjs.com/cli/v6/configuring-npm/npmrc), or environment variables.
+Please note that you only need to use one of those configuration mechanisms.
+
+#### Using NPM config (Linux, macOS, Windows)
+
+To use NPM-level configuration, run the following commands in your terminal:
+
+```console
+npm config set proxy http://[user:pwd]@domain.tld:port
+npm config set https-proxy http://[user:pwd]@domain.tld:port
+```
+
+If your proxy requires a certificate file, you can provide a path to it as follows:
+
+```console
+npm config set cafile /path/to/root-ca.pem
+```
+
+The above can also be accomplished by placing an [`.npmrc` file](https://docs.npmjs.com/cli/v6/configuring-npm/npmrc) with following contents in your home directory or your project root:
+
+```bash
+# ~/.npmrc
+proxy = http://[user:pwd]@domain.tld:port
+https-proxy = http://[user:pwd]@domain.tld:port
+
+cafile = /path/to/root-ca.pem          # optional
+noproxy = localhost,mycompany.com      # optional
+```
+
+#### Using environment variables on Linux or macOS
+
+To set your proxy on Linux or macOS, run the following commands in your terminal:
+
+```console
+export HTTP_PROXY=http://[user:pwd]@domain.tld:port
+export HTTPS_PROXY=http://[user:pwd]@domain.tld:port
+```
+
+If needed, you can also set a `NO_PROXY` variable to a comma-separated list of domains that don't require a proxy, for example:
+
+```console
+export NO_PROXY=localhost,mycompany.com
+```
+
+Please note that you can add the above commands to your shell's `~/.profile`, so that they're executed whenever you open a new terminal.
+
+##### Using environment variables on Windows
+
+To configure a proxy on Windows, run the following commands in Command Prompt:
+
+```console
+set HTTP_PROXY=http://[user:pwd]@domain.tld:port
+set HTTPS_PROXY=http://[user:pwd]@domain.tld:port
+```
+
+If you're using Powershell, run the following commands instead:
+
+```console
+$env:HTTP_PROXY = http://[user:pwd]@domain.tld:port
+$env:HTTPS_PROXY = http://[user:pwd]@domain.tld:port
+```
+
+### Using a specific User-Agent
+
+If your artifact registry requires you to use a specific user agent, you can configure it using NPM config:
+
+```console
+npm config set user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0"
+```
+
+### Ignoring SSL checks
+
+You can instruct the `update` command to ignore any SSL certificate errors by providing an `--ignoreSSL` flag when running the command:
+
+```console
+npx serenity-bdd update --ignoreSSL
+```
+
+You can also disable certificate checks at the NPM config level by running:
+
+```console
+npm config set strict-ssl false
+```
+
+Alternative, you can accomplish the same with an `.npmrc` file:
+
+```bash
+# ~/.npmrc
+npm_config_strict-ssl = false
+```
 
 ## Integration architecture
 
