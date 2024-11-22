@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 2
 title: Versioning strategy
 ---
 
@@ -19,29 +19,10 @@ New minor and patch versions of Serenity/JS modules are typically released [at l
 but typically more frequently to help ensure the framework is up-to-date
 with any [security fixes](https://snyk.io/test/github/serenity-js/serenity-js) and patches to its dependencies
 
-:::info Stay up to date!
+:::info Stay up to date
 The easiest way to stay up to date with the latest features and bug fixes is to **always use the latest version of your chosen Serenity/JS modules**.
-:::
 
-To stay up to date, set the required version of each Serenity/JS module to `3.x` in your `package.json` file, for example:
-
-```json title="package.json"
-{
-  "devDependencies": {
-    "@serenity-js/core": "3.x",
-    "@serenity-js/assertions": "3.x",
-    "@serenity-js/rest": "3.x",
-    "@serenity-js/playwright": "3.x",
-    "@serenity-js/playwright-test": "3.x",
-    "@serenity-js/serenity-bdd": "3.x",
-    "@serenity-js/web": "3.x"
-  }
-}
-```
-
-:::info Use a bot to update your dependencies automatically
-Use a dependency management bot like [Renovate](https://docs.renovatebot.com/) or [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide)
-to stay up-to-date with the new features, bug fixes, and security patches.
+Learn how to [keep your Serenity/JS project up to date](/releases/updating-serenity-js).
 :::
 
 ## Deprecated APIs
