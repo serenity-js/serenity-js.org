@@ -1,0 +1,111 @@
+---
+slug: simplifying-test-automation-infrastructure
+title: Simplifying test automation infrastructure
+authors: [jan-molak]
+tags:
+  - core
+  - serenity-bdd
+  - open-source
+---
+
+The Serenity/JS team is excited to unveil version 3.30, a release focused on helping you simplify your test automation infrastructure.
+This update introduces:
+- streamlined installation process for Serenity BDD,
+- support for Node-only artifact registries like Verdaccio,
+- support for Playwright 1.49,
+- all Serenity/JS Project Templates updated to reflect these improvements.
+
+Let’s explore what’s new!
+
+:::tip New to Serenity/JS?
+New to Serenity/JS or test automation? Start with ["Your first web scenario"](/handbook/web-testing/your-first-web-scenario/),
+praised by our community as "the best guide to take your automation skills to the next level."
+:::
+
+## New in Serenity/JS 3.30
+
+### Streamlined Serenity BDD Installation
+
+One of the most exciting additions in this release is the inclusion of the Serenity BDD CLI jar file directly within the `@serenity-js/serenity-bdd` Node module.
+This improvement eliminates the need for a separate download, helps to simplify the installation process, and reduces friction for teams getting started with Serenity/JS
+([#2560](https://github.com/serenity-js/serenity-js/issues/2560)).
+
+We owe special thanks to [Anton Fedorov](https://github.com/fapspirit) from Amazon Web Services for proposing this feature
+and contributing its implementation. Anton’s work is a fantastic example of the open-source spirit driving Serenity/JS forward.
+
+Thank you, Anton!
+
+### Improved support for private and Node-only artifact registries
+
+Serenity/JS has always supported private artifact registries like Sonatype Nexus or JFrog Artifactory.
+However, corporate proxies and network constraints could sometimes
+make the [setup process](/handbook/reporting/serenity-bdd-reporter/#using-a-custom-serenity-bdd-cli) a bit more complex than we would have liked.
+
+Serenity/JS 3.30 includes the Serenity BDD CLI jar directly in the `@serenity-js/serenity-bdd` Node module.
+This change simplifies your infrastructure by letting you use a single registry for both Node modules and the Serenity BDD CLI jar
+and enables support for Node-only artifact registries like [Verdaccio](https://verdaccio.org/).
+
+### Playwright 1.49 compatibility
+
+Keeping Serenity/JS at the cutting edge of browser automation, this release introduces support for Playwright 1.49.
+With it, you can leverage the latest advancements in browser automation across Chromium, Firefox, and WebKit.
+
+Additionally, Playwright 1.49 brings improved handling and more accurate reporting on nested errors ([playwright#26848](https://github.com/microsoft/playwright/issues/26848)),
+making it easier to diagnose issues with custom Serenity/JS configuration ([#1823](https://github.com/serenity-js/serenity-js/issues/1823)).
+
+### Updated Serenity/JS Project Templates
+
+Getting started with Serenity/JS has never been easier! The [Serenity/JS Project Templates](/handbook/getting-started/project-templates/) have been updated
+to reflect the latest improvements, helping you kickstart your projects with best practices built right in.
+
+## Upgrading to Serenity/JS 3.30
+
+To upgrade your existing project to Serenity/JS 3.30, use a tool like [`npm-check-updates`](https://www.npmjs.com/package/npm-check-updates):
+
+```sh
+npx -y npm-check-updates '/@serenity-js|playwright/' -u
+```
+
+Next, remove the call to `serenity-bdd update` from your `package.json` file:
+
+```diff
+{
+  "scripts": {
+-   "postinstall": "serenity-bdd update",
+    "clean": "rimraf target",
+    "test": "failsafe clean test:execute test:report",
+    "test:execute": "playwright test",
+    "test:report": "serenity-bdd run"
+  }
+}
+```
+
+Finally, install the updated modules:
+
+```npm2yarn
+npm install
+```
+
+## Your feedback matters!
+
+I hope this latest release of Serenity/JS will make it even easier for you and your team to create high-quality test automation.
+
+Let me know what you think of the new features in the [comments below](/blog/better-api-documentation/#giscus-comments) 👇👇👇
+
+### 📣 Stay up to date
+
+New features, tutorials, and demos are coming soon!
+Follow [Serenity/JS on LinkedIn](https://www.linkedin.com/company/serenity-js),
+subscribe to [Serenity/JS channel on YouTube](https://www.youtube.com/@serenity-js) and join the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im) to stay up to date!
+Please also make sure to star ⭐️ [Serenity/JS on GitHub](https://github.com/serenity-js/serenity-js) to help others discover the framework!
+
+[![Follow Serenity/JS on LinkedIn](https://img.shields.io/badge/Follow-Serenity%2FJS%20-0077B5?logo=linkedin)](https://www.linkedin.com/company/serenity-js)
+[![Watch Serenity/JS on YouTube](https://img.shields.io/badge/Watch-@serenity--js-E62117?logo=youtube)](https://www.youtube.com/@serenity-js)
+[![Join Serenity/JS Community Chat](https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js:gitter.im)
+[![GitHub stars](https://img.shields.io/github/stars/serenity-js/serenity-js?label=Serenity%2FJS&logo=github&style=badge)](https://github.com/serenity-js/serenity-js)
+
+### 💛 Support Serenity/JS
+
+If you appreciate all the effort that goes into making sophisticated tools easy to work with, please support our work and become a Serenity/JS GitHub Sponsor today!
+
+[![GitHub Sponsors](https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/serenity-js)
