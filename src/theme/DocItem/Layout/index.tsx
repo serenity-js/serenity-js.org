@@ -1,5 +1,5 @@
-import { useColorMode,useWindowSize } from '@docusaurus/theme-common';
-import { useDoc } from '@docusaurus/theme-common/internal';
+import { useColorMode, useWindowSize } from '@docusaurus/theme-common';
+import { useDoc } from '@docusaurus/plugin-content-docs/client';
 import Giscus from '@giscus/react';
 import DocBreadcrumbs from '@theme/DocBreadcrumbs';
 import DocItemContent from '@theme/DocItem/Content';
