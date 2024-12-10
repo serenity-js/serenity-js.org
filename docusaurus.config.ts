@@ -109,6 +109,8 @@ const config: Config = {
                     editUrl,
                     path: './src/blog',
                     showReadingTime: true,
+                    blogSidebarTitle: 'Serenity/JS News',
+                    blogSidebarCount: 'ALL',
                 },
                 pages: {
                     ...remarkOptions,
