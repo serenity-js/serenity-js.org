@@ -18,6 +18,8 @@ export default {
         { from: '/handbook/about/installation/', to: '/handbook/getting-started/installation' },
         { from: '/handbook/about/serenity-js-v3/', to: '/handbook/getting-started/upgrading-to-serenity-js-3' },
 
+        { from: '/handbook/getting-started/serenity-js-with-webdriverio/', to: '/handbook/test-runners/webdriverio' },
+
         // Old changelog
         { from: '/changelog/', to: '/releases/' },
         { from: '/changelog/3.24.0/', to: 'https://github.com/serenity-js/serenity-js/releases/tag/v3.24.0' },

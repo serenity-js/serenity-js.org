@@ -14,7 +14,7 @@ Plus, it accommodates both classic Protractor tests and Serenity/JS [Screenplay 
 allowing you to migrate to Screenplay gradually,
 and then simply switch to using Serenity/JS with a more modern web integration tool
 like [Playwright](/handbook/getting-started/serenity-js-with-playwright-test/) or
-[WebdriverIO](/handbook/getting-started/serenity-js-with-webdriverio/).
+[WebdriverIO](/handbook/test-runners/webdriverio/).
 
 :::tip Use Serenity/JS to migrate away from Protractor
 As Protractor [reaches its end of life](https://www.protractortest.org/#/project-status),
@@ -307,7 +307,7 @@ as well as [Java Runtime Environment](/handbook/getting-started/installation/#in
 [Serenity BDD](/handbook/reporting/serenity-bdd-reporter/) reports
 - Migrate your existing Protractor tests to use [Serenity/JS Screenplay Pattern web APIs](/api/web/), which you can do gradually while keeping the remaining scenarios working
 - When all your test scenarios are using [Serenity/JS Screenplay Pattern web APIs](/api/web/) and there are no Protractor API calls left,
-introduce [Playwright](/handbook/getting-started/serenity-js-with-playwright-test/) or [WebdriverIO](/handbook/getting-started/serenity-js-with-webdriverio/) to ensure
+introduce [Playwright](/handbook/getting-started/serenity-js-with-playwright-test/) or [WebdriverIO](/handbook/test-runners/webdriverio/) to ensure
 your migrated scenarios work with the new integration library
 - Remove Protractor dependencies and enjoy your modernised test suite!
 
@@ -322,7 +322,7 @@ This way you'll build a stable foundation upon which you can migrate the more co
 
 Remember, if your current Protractor test suite is reasonably stable, still works and provides value, there's no need for a risky big bang rewrite
 as you can migrate it one scenario at a time while keeping the existing tests working.
-However, if your current Protractor test suite _doesn't work_ and you'd rather delete it than migrate it, you might prefer to start from scratch and use Serenity/JS with [Playwright](/handbook/getting-started/serenity-js-with-playwright-test/) or [WebdriverIO](/handbook/getting-started/serenity-js-with-webdriverio/) straight away.
+However, if your current Protractor test suite _doesn't work_ and you'd rather delete it than migrate it, you might prefer to start from scratch and use Serenity/JS with [Playwright](/handbook/getting-started/serenity-js-with-playwright-test/) or [WebdriverIO](/handbook/test-runners/webdriverio/) straight away.
 The choice is yours and Serenity/JS will support you either way.
 :::
 

@@ -111,6 +111,7 @@ const config: Config = {
                     showReadingTime: true,
                     blogSidebarTitle: 'Serenity/JS News',
                     blogSidebarCount: 'ALL',
+                    onUntruncatedBlogPosts: 'ignore',
                 },
                 pages: {
                     ...remarkOptions,
@@ -154,15 +155,14 @@ const config: Config = {
             items: [
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
                 { label: 'API', to: '/api/', position: 'left' },
+                { to: '/blog', label: 'News', position: 'left' },
                 { label: `Releases`, to: 'releases', position: 'left' },
                 { to: '/community', label: 'Community', position: 'left' },
                 {
                     to: 'https://github.com/sponsors/serenity-js',
-                    label: 'Sponsors',
+                    label: 'Sponsor',
                     position: 'left',
                 },
-
-                { to: '/blog', label: 'News', position: 'left' },
                 {
                     href: 'https://www.youtube.com/@serenity-js',
                     'aria-label': 'Serenity/JS YouTube channel',
@@ -329,6 +329,13 @@ const config: Config = {
                     },
                     {
                         path: './node_modules/@serenity-js/webdriverio',
+                        entry: {
+                            index: { label: 'index', path: 'src/index.ts' },
+                            adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },
+                        },
+                    },
+                    {
+                        path: './node_modules/@serenity-js/webdriverio-8',
                         entry: {
                             index: { label: 'index', path: 'src/index.ts' },
                             adapter: { label: 'Test runner adapter', path: 'src/adapter/index.ts' },

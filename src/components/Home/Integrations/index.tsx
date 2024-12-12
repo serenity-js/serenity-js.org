@@ -58,7 +58,7 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                             </p>
                             <p className={ styles.cardActions }>
                                 <Link id="cta-homepage-webdirverio"
-                                      to="/handbook/getting-started/serenity-js-with-webdriverio/">
+                                      to="/handbook/test-runners/webdriverio/">
                                     Learn more
                                 </Link>
                             </p>

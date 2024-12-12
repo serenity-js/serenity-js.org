@@ -1,0 +1,84 @@
+---
+slug: support-for-webdriverio-9
+title: Support for WebdriverIO 9
+authors: [jan-molak]
+tags:
+  - core
+  - webdriverio
+  - web
+  - open-source
+---
+
+We’re thrilled to announce the release of Serenity/JS 3.31, marking a significant step forward for modern test automation.
+This release introduces support for **WebdriverIO 9**,
+while maintaining compatibility with **WebdriverIO 8** for projects that are not yet ready to migrate ([#2572](https://github.com/serenity-js/serenity-js/issues/2572)).
+
+Let’s explore what makes this update exciting!
+
+{/* truncate */}
+
+:::tip New to Serenity/JS?
+New to Serenity/JS or test automation? Start with ["Your first web scenario"](/handbook/web-testing/your-first-web-scenario/),
+praised by our community as "the best guide to take your automation skills to the next level."
+:::
+
+## New in Serenity/JS 3.31
+
+### Support for WebdriverIO 9
+
+The most notable new feature introduced by [WebdriverIO 9](https://webdriver.io/blog/2024/08/15/webdriverio-v9-release/) is support for the **WebDriver BiDi protocol**.
+This new protocol enables modern test automation capabilities like network request mocking and console log inspection,
+which will be progressively supported with dedicated Screenplay Pattern interactions in upcoming Serenity/JS releases.
+
+Thanks to Serenity/JS being an [abstraction over WebdriverIO](/handbook/getting-started/architecture/) (and other [web integration tools](/api/web/)), upgrading to WebdriverIO 9 should require only a few simple configuration updates
+to replace the deprecated configuration properties.
+In most cases, no changes to test code are needed helping your team stay up-to-date with your tools while minimising the maintenance cost of your Serenity/JS-based frameworks.
+
+We owe special thanks to [Christian Bromann](https://github.com/christian-bromann), Head of the WebdriverIO project, for supporting us in integrating Serenity/JS with this new release.
+
+Thank you, Christian!
+
+### Continued support for WebdriverIO 8
+
+Serenity/JS continues to support WebdriverIO 8 via the new [`@serenity-js/webdriverio-8`](/api/webdriverio-8/) module, offering stability for teams not yet ready to upgrade.
+This ensures smooth transition without compromising existing projects.
+
+### Brand new WebdriverIO guide
+
+We've revised, simplified, and updated the [Serenity/JS WebdriverIO integration guide](/handbook/test-runners/webdriverio/) to reflect the latest changes, making it easier for you to get started with Serenity/JS and WebdriverIO 9.
+
+### Updated WebdriverIO Project Templates
+
+[Serenity/JS Project Templates](/handbook/getting-started/project-templates/) now default to WebdriverIO 9, making it easy for new projects to start with the latest features.
+
+## Upgrading to Serenity/JS 3.31
+
+To upgrade your existing project to **Serenity/JS 3.31** and **WebdriverIO 9**, follow our new [WebdriverIO 9 upgrade guide](/handbook/test-runners/webdriverio/#upgrading-to-webdriverio-9).
+
+If you'd like to upgrade Serenity/JS but keep using **WebdriverIO 8**, follow these steps:
+- install the `@serenity-js/webdriverio-8` module instead of `@serenity-js/webdriverio`,
+- replace any imports of `@serenity-js/webdriverio` with `@serenity-js/webdriverio-8`.
+
+## Your feedback matters!
+
+I hope this latest release of Serenity/JS will make it even easier for you and your team to create high-quality test automation.
+
+Let me know what you think of the new features in the [comments below](/blog/better-api-documentation/#giscus-comments) 👇👇👇
+
+### 📣 Stay up to date
+
+New features, tutorials, and demos are coming soon!
+Follow [Serenity/JS on LinkedIn](https://www.linkedin.com/company/serenity-js),
+subscribe to [Serenity/JS channel on YouTube](https://www.youtube.com/@serenity-js) and join the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im) to stay up to date!
+Please also make sure to star ⭐️ [Serenity/JS on GitHub](https://github.com/serenity-js/serenity-js) to help others discover the framework!
+
+[![Follow Serenity/JS on LinkedIn](https://img.shields.io/badge/Follow-Serenity%2FJS%20-0077B5?logo=linkedin)](https://www.linkedin.com/company/serenity-js)
+[![Watch Serenity/JS on YouTube](https://img.shields.io/badge/Watch-@serenity--js-E62117?logo=youtube)](https://www.youtube.com/@serenity-js)
+[![Join Serenity/JS Community Chat](https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js:gitter.im)
+[![GitHub stars](https://img.shields.io/github/stars/serenity-js/serenity-js?label=Serenity%2FJS&logo=github&style=badge)](https://github.com/serenity-js/serenity-js)
+
+### 💛 Support Serenity/JS
+
+If you appreciate all the effort that goes into making sophisticated tools easy to work with, please support our work and become a Serenity/JS GitHub Sponsor today!
+
+[![GitHub Sponsors](https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/serenity-js)

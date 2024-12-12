@@ -124,6 +124,7 @@ and the [Serenity/JS web testing tutorial](/handbook/web-testing/your-first-web-
             '@serenity-js/playwright',
             '@serenity-js/protractor',
             '@serenity-js/webdriverio',
+            '@serenity-js/webdriverio-8',
         ],
     },
     'REST API Testing': {

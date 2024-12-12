@@ -19,4 +19,4 @@ Now, we're taking things further with [**Serenity/JS 3.2.0**](https://github.com
 
 Check out our new tutorial where in **less than 5 minutes**, you'll learn how to **integrate Serenity/JS** with your WebdriverIO test suite, **enable Serenity BDD reports**, and start using the **Screenplay Pattern**!
 
-Learn about [Using Serenity/JS with WebdriverIO](/handbook/getting-started/serenity-js-with-webdriverio/)!
+Learn about [Using Serenity/JS with WebdriverIO](/handbook/test-runners/webdriverio/)!
