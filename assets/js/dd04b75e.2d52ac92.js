@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkserenity_js_org=self.webpackChunkserenity_js_org||[]).push([[1672],{33024:a=>{a.exports=JSON.parse('{"authors":[{"name":"Jan Molak","url":"https://github.com/jan-molak","imageURL":"https://github.com/jan-molak.png","key":"jan-molak","page":null,"count":10}]}')}}]);
