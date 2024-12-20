@@ -7,7 +7,16 @@ sidebar_position: 1
 
 ```mdx-code-block
 import PackageCompatibilityMatrix from '@site/src/components/PackageCompatibilityMatrix'
+import SupportedNodeVersions from '@site/src/components/SupportedNodeVersions'
 ```
+
+## Node.js compatibility
+
+To help ensure optimal stability of your test scenarios, you should use a recent [Long-Term Support (LTS)](https://github.com/nodejs/Release) version of the [Node.js platform](https://nodejs.org/en/download/).
+
+Serenity/JS is tested with the latest versions of Node.js <strong><SupportedNodeVersions conjunction="and" /></strong>. While non-LTS versions of Node.js may work, they are not officially supported and you should avoid using them in production environments.
+
+## Serenity/JS compatibility
 
 Serenity/JS helps you integrate your test automation framework with your favourite tools and libraries.
 
@@ -15,7 +24,6 @@ To make sure your Serenity/JS setup is up to date and you're using the right ver
 
 <PackageCompatibilityMatrix />
 
-:::info Use a bot to update your dependencies automatically
-Use a dependency management bot like [Renovate](https://docs.renovatebot.com/) or [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide)
-to stay up-to-date with the new features, bug fixes, and security patches.
-:::
+## Updating Serenity/JS
+
+To learn how to keep your Serenity/JS project up-to-date, check out the [Updating Serenity/JS](/releases/updating-serenity-js/) guide.
