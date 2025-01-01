@@ -29,12 +29,12 @@ This virtual workspace is free of charge thanks to the [generous free tier](http
 Alternatively, if you prefer to work on the pull request on your own machine instead of using Gitpod, you'll need to:
 
 - [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) your fork to your machine
-- Make sure you have the [runtime dependencies](/handbook/getting-started/installation/) installed
-- Install the Node.js dependencies by running `make install` in the project root. Serenity/JS uses [Lerna.js](https://github.com/lerna/lerna) to manage the `@serenity-js/*` modules you'll find in the mono-repo, so it will take care of propagating the `npm ci` and other commands to the modules (this step happens automatically in the Gitpod workspace)
-- Make sure you can build the Serenity/JS project on your machine and all the unit- and integration tests are passing before introducing any changes by running `make clean test` to run the package-scope tests or `make clean verify` to run package-scope and integration tests.
+- Install the [runtime dependencies](/handbook/getting-started/installation/): Node.js LTS and Java Runtime Environment
+- Run `make install` in the project root to install the Node.js dependencies. Serenity/JS uses [Lerna.js](https://github.com/lerna/lerna), [PnPm](https://pnpm.io/) and [Node.js Corepack](https://github.com/nodejs/corepack) to manage the `@serenity-js/*` modules in the mono-repo, `make install` installs all three for you. Note that this step happens automatically in the Gitpod workspace.
+- Run `make clean test` to make sure you can build the Serenity/JS project on your machine and all the unit tests are passing before introducing any changes.
 - Introduce the changes you wish to propose and update or introduce any package-scope and integration tests that are relevant.
-- Run **full local build** before committing - `make clean verify report`
-- Commit your changes following the [Serenity/JS conventional commits standard](/community/contributing/commit-message-conventions/), push them to your forked repository, and raise a pull request - more on commit message standard and automated releases below.
+- Commit your changes following the [Serenity/JS conventional commits standard](/community/contributing/commit-message-conventions/), push them to your forked repository, and raise a pull request.
+- Run **full local build** - `make clean verify report` before raising a pull request
 
 ### Serenity/JS mono-repo structure
 
@@ -56,7 +56,7 @@ Here's a list of commands you'll need to build and test Serenity/JS locally:
 - `make test` - executes the unit tests located under `packages/*/spec`
 - `make integration-test` - executes the integration tests located under `integration/*/spec`,
 - `make verify` - runs ESLint, transpiles TypeScript to JavaScript, runs the unit tests and other package-scope tests, runs the integration tests located under `integration/*/`
-- `make verify report site` - same as verify, but additionally generates aggregated test and coverage reports and produces the serenity-js.org website. This is the **full local build** you should run at least once before committing your changes and submitting the pull request.
+- `make verify report` - same as verify, but additionally generates aggregated test and coverage reports. This is the **full local build** you should run at least once before submitting the pull request.
 
 If you encounter any issues, let us know on the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im).
 And don't be shy, we're here to help 😊
