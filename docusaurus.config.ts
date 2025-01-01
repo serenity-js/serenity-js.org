@@ -11,7 +11,7 @@ import packageJsonParser from './src/config/PackageJsonParser';
 
 const remarkOptions = {
     remarkPlugins: [
-        [ npm2yarn, { sync: true, converters: [ 'yarn' ] } ],
+        [ npm2yarn, { sync: true, converters: [ 'yarn', 'pnpm' ] } ],
         [ tabBlocks, {
             sync: true,
             labels: [
