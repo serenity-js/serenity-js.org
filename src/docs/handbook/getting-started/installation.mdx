@@ -51,9 +51,9 @@ for example:
 
 Serenity/JS delegates the work of generating the illustrated HTML reports to [Serenity BDD](http://serenity-bdd.info/),
 which is a Java library and therefore requires
-a [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/overview/index.html) **version 11** or newer.
+a [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/overview/index.html) **version 17** or newer.
 
-You can download the JRE from [oracle.com](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html),
+You can download the JRE from [oracle.com](https://www.oracle.com/java/technologies/downloads/),
 [adoptopenjdk.net](https://adoptopenjdk.net/),
 or by using the excellent [Software Development Kit Manager (SDKMan)](https://sdkman.io/).
 
@@ -64,9 +64,9 @@ java -version
 ```
 The output should look similar to the following:
 ```shell
-openjdk 21.0.1 2023-10-17 LTS
-OpenJDK Runtime Environment Temurin-21.0.1+12 (build 21.0.1+12-LTS)
-OpenJDK 64-Bit Server VM Temurin-21.0.1+12 (build 21.0.1+12-LTS, mixed mode)
+openjdk version "22" 2024-03-19
+OpenJDK Runtime Environment Corretto-22.0.0.36.2 (build 22+36-FR)
+OpenJDK 64-Bit Server VM Corretto-22.0.0.36.2 (build 22+36-FR, mixed mode, sharing)
 ```
 
 If you're working with several versions of the Java platform simultaneously, please make sure that you point
@@ -76,7 +76,7 @@ On macOS this could be:
 
 ```shell
 echo $JAVA_HOME
-/Users/jan/.sdkman/candidates/java/21.0.1-tem
+/Users/jan/.sdkman/candidates/java/current
 ```
 
 ## Creating a Node.js project
