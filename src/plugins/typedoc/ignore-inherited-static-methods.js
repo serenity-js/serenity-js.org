@@ -1,4 +1,4 @@
-const { Converter, ParameterType } = require('typedoc');
+import { Converter, ParameterType } from 'typedoc';
 
 /*
  * Based on:
@@ -11,7 +11,7 @@ const { Converter, ParameterType } = require('typedoc');
  * @param {import('typedoc').Application} app
  * @returns void
  */
-function load(app) {
+export function load(app) {
 
     const reflectionsToIgnore = new Set();
 
@@ -47,5 +47,3 @@ function isInheritedStaticDeclaration(reflection) /*: reflection is Reflection &
     return reflection.flags.isStatic
         && Object.prototype.hasOwnProperty.call(reflection, 'inheritedFrom');
 }
-
-exports.load = load;
