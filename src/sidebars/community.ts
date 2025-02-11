@@ -16,7 +16,7 @@ const sidebars: SidebarsConfig = {
         {
             type: 'link',
             label: 'Serenity/JS Forum',
-            href: 'https://github.com/orgs/serenity-js/discussions',
+            href: 'https://github.com/orgs/serenity-js/discussions/categories/how-to',
         },
         {
             type: 'link',
