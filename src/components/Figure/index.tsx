@@ -17,7 +17,7 @@ export default function Figure({ img, caption, externalLink }: FigureProps) {
     return (
         <figure>
             <Image img={img} alt={caption} />
-            {figcaption}
+            <em>{figcaption}</em>
         </figure>
     )
 }
