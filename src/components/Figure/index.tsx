@@ -11,13 +11,13 @@ export interface FigureProps {
 export default function Figure({ img, caption, externalLink }: FigureProps) {
 
     const figcaption = externalLink
-        ? <figcaption>{caption} (<a href={ externalLink } target="_blank" rel="noopener noreferrer">source</a>)</figcaption>
-        : <figcaption>{caption}</figcaption>;
+        ? <figcaption><em>{caption} (<a href={ externalLink } target="_blank" rel="noopener noreferrer">source</a>)</em></figcaption>
+        : <figcaption><em>{caption}</em></figcaption>;
 
     return (
         <figure>
             <Image img={img} alt={caption} />
-            <em>{figcaption}</em>
+            {figcaption}
         </figure>
     )
 }
