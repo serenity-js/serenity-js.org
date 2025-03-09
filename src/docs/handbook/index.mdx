@@ -2,41 +2,117 @@
 sidebar_position: 1
 ---
 
-# Why Serenity/JS
+# Serenity/JS Handbook
 
-```mdx-code-block
-import AuthorBio from '@site/src/components/AuthorBio';
-```
+[![GitHub Stars](https://img.shields.io/github/stars/serenity-js/serenity-js)](https://github.com/serenity-js/serenity-js)
+[![Serenity/JS Q'n'A Forum](https://img.shields.io/badge/Serenity%2FJS-Q'n'A-FBD30B?logo=github)](https://github.com/orgs/serenity-js/discussions/categories/how-to)
+[![Join Serenity/JS Community Chat](https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js:gitter.im)
 
-**Serenity/JS** is a free and open-source **acceptance testing framework** that can help you establish a **clear link** between
-the **expected business functionality** and the **actual working state** of your software system.
+**Serenity/JS** is an open-source test automation framework that transforms acceptance testing into a **collaborative**, **intuitive**, and **enjoyable experience** for everyone on your team!
+By leveraging the Screenplay Pattern, Serenity/JS unifies developers, testers, and business stakeholders and helps your team create high-quality,
+reliable test scenarios that align with real-world workflows and deliver meaningful insights.
 
-I've designed Serenity/JS to make it easier for you to **create test scenarios** that build a **shared understanding** and **trust** between your business sponsors and delivery teams
-and to help you **prove** that your system **meets** and **continues to meet** its **requirements**.
+This **Serenity/JS Handbook** offers plenty of practical examples, exercises, and reference implementations to help you get started with Serenity/JS and succeed with modern test automation.
 
-To help you achieve all that, Serenity/JS enables you to:
-- Follow the [**Serenity/JS Screenplay Pattern**](/handbook/design/screenplay-pattern) to define your own **domain-specific test language**
-  that everyone on your team can read, understand, and reason about - including your business sponsors and domain experts.
-- Create **single- and multi-actor test scenarios** that interact with [**any interface of your system**](/handbook/getting-started/architecture),
-  including web UIs, REST APIs, mobile apps, and pretty much anything a Node.js program can integrate with.
-- Turn your test automation code into **test automation libraries** that are easy to [**share across projects and teams**](/handbook/design/portable-test-code),
-  so your whole company can benefit from your automation work and avoid code duplication and wasted effort.
-- Support **Continuous Integration**, **Testing**, and **Delivery**, so that your automated tests are as easy to run on your machine as they are as part of your [CI/CD pipelines](/handbook/integration/).
-- **Abstract away** the low-level implementation details and **use the same consistent API** to [**develop portable web tests**](/handbook/web-testing/) that work just as well with **remote Selenium grids** as with local **Playwright** or **Puppeteer** installations.
-- Introduce [**world-class reporting and living documentation**](/handbook/reporting/) to demonstrate not only what tests are executed
-  but, more importantly - what **business requirements** are verified and what **business features** and **workflows** are working as expected.
 
-In summary, **Serenity/JS** can help you and your team create **high-quality**, **reliable automated acceptance tests** that are a pleasure to work with.
-The **modular** and **extensible architecture** of the framework will let you use as much or as little of it as you wish, take advantage of your
-**existing automation tools and processes**, and introduce the **new ideas** and **patterns** brought by Serenity/JS **gradually** even to an **existing codebase**.
+## Why choose Serenity/JS
 
-This handbook will help you get started with Serenity/JS and offers plenty of **practical examples**, **exercises**, and **reference implementations** you can explore
-to become successful with test automation.
+Serenity/JS revolutionises how teams approach test automation:
 
-_Enjoy Serenity!_
+- **For Developers:** Modular APIs and vendor-agnostic design allow you to write clean, reusable code that integrates seamlessly with your existing Node.js toolchain.
+- **For Testers:** Simulate authentic multi-actor workflows spanning web UIs, REST APIs, mobile apps, and more.
+- **For Business Stakeholders:** Benefit from clear, actionable reports and living documentation that connect technical outcomes to meaningful business insights.
 
-_Jan Molak and the Serenity/JS Team_
 
----
+### Improved collaboration
+
+- **Speak the same language**: The [Serenity/JS Screenplay Pattern](/handbook/design/screenplay-pattern) fosters alignment between
+  developers, testers, and business stakeholders by helping you develop a test language that captures your domain vocabulary and workflows.
+  No matter your role, you'll find it easy to stay aligned and contribute meaningfully to the testing process.
+
+- **Focus on actors**: Serenity/JS test scenarios are written from the perspective of [actors](/handbook/design/screenplay-pattern/#actors) interacting
+  with your system, ensuring clarity and relevance to real-world workflows.
+
+
+### Reusable and modular design
+
+- **Write once, reuse anywhere**: Serenity/JS APIs encourage your team to craft modular,
+  reusable code modelled after the various activities performed by your actors.
+  Combine activities into [reusable tasks](/handbook/design/screenplay-pattern/#tasks) and
+  easily represent even the most complex multi-actor and multi-interface scenarios.
+
+- **Scale effortlessly**: Serenity/JS's actor-centric design minimises redundancy and helps you keep your tests maintainable.
+  It also enables you to build **reusable automation libraries** that can be shared across projects and teams to create
+  a **cohesive testing ecosystem** across your organisation and scale your automation as your systems evolve.
+
+- **Encourage portability**: The Serenity/JS Web module provides a portable abstraction layer over popular automation
+  tools like Selenium, Playwright, and WebdriverIO.
+  This abstraction makes your test code vendor-agnostic, enabling you to switch or mix underlying tools without rewriting your tests. For example:
+  - You could reuse the test code between your UI component tests using the Playwright Component Test runner and your end-to-end (E2E)
+    test scenarios running with WebdriverIO against a remote Selenium WebDriver grid.
+  - Similarly, you could quickly adapt tests developed with one integration tool to use another.
+    This portability not only future-proofs your test automation but also allows you to leverage the strengths of different tools depending on the context - whether it's local development, CI pipelines, or cross-browser testing.
+
+
+### Realistic multi-actor scenarios
+
+- **Test across interfaces**: Test across web UIs, REST APIs, mobile apps, and more - all within a single framework and using the same consistent design patterns.
+
+- **Achieve true end-to-end coverage**: Simulate realistic multi-actor user journeys across all touchpoints, ensuring comprehensive feature coverage.
+
+
+### Continuous automation
+
+- **CI/CD-ready**: Serenity/JS supports Continuous Integration, Continuous Testing, and Continuous Delivery paradigms, ensuring your automated tests are as easy to run on your machine as they are as part of your [test automation pipelines](/handbook/integration/).
+
+- **Efficient execution**: Execute tests in parallel or sharded, locally or remotely, and integrate with your favourite CI/CD tools to support your team and ensure your system is always release-ready.
+
+
+### Insightful reporting
+
+- Generate [**world-class test reports** and **living documentation**](/handbook/reporting/) that connect test outcomes to business requirements.
+
+- Provide stakeholders with **clear, actionable insights** into your system's performance, stability, and release readiness.
+
+
+## Get started fast 🚀
+
+Kickstart your journey with Serenity/JS today and experience the power of collaborative, scalable test automation. Here's how:
+
+1. [**Explore the official tutorials**](/handbook/tutorials/): Dive into step-by-step tutorials to learn the fundamentals of Serenity/JS and see practical examples in action without having to install anything on your machine!
+2. [**Start with a Serenity/JS Project Template**](/handbook/project-templates/): Save time and accelerate your progress with pre-built templates tailored to common automation scenarios.
+3. [**Follow the installation guide**](/handbook/installation/): Learn to install Serenity/JS and related test automation tools.
+4. [**Understand the architecture**](/handbook/architecture/): Discover how the modular architecture of Serenity/JS supports your software quality goals.
+5. [**⭐ Star Serenity/JS on GitHub**](https://github.com/serenity-js/serenity-js) and tell your colleagues about the framework!
+
+:::tip Get started fast
+Get a feel for Serenity/JS with our [15-minute web testing tutorial](/handbook/tutorials/your-first-web-scenario/) 🚀
+:::
+
+## Modernise existing projects
+
+Serenity/JS is designed to help you safely and progressively modernise **existing codebases**:
+
+- [**Serenity/JS with Playwright Test**](/handbook/test-runners/playwright-test/): Learn how to integrate Serenity/JS reporting services and Screenplay Pattern APIs with your Playwright Test project.
+- [**Serenity/JS with WebdriverIO**](/handbook/test-runners/webdriverio/): Learn how Serenity/JS can help you improve your WebdriverIO 8 and WebdriverIO 9 projects.
+- [**Migrating from Protractor**](/handbook/tutorials/migrating-from-protractor/): Migrate from Protractor to WebdriverIO or Playwright Test using the Serenity/JS web module.
+- [**Upgrading from Serenity/JS 2**](/handbook/tutorials/upgrading-from-serenity-js-2/): Upgrade from Serenity/JS 2 to Serenity/JS 3 with our comprehensive guide.
+
+## Join the Serenity/JS Community!
+
+Serenity/JS is more than just a framework - it's an active community of testers, developers, and quality advocates who share your passion for excellence.
+Here's how you can get involved:
+
+- [**Serenity/JS GitHub**](https://github.com/serenity-js): Contribute to the project, explore the source code, and collaborate with other developers.
+- [**Community Chat**](https://matrix.to/#/#serenity-js:gitter.im): Connect with like-minded professionals and share your experience with Serenity/JS.
+- [**Q&A Forum**](https://github.com/orgs/serenity-js/discussions/categories/how-to): Find answers to your Serenity/JS questions and share your knowledge to help others succeed.
+- **Stay Updated**: Follow **@serenity-js** on [LinkedIn](https://www.linkedin.com/company/serenity-js) and [YouTube](https://www.youtube.com/@serenity-js) for the latest tutorials and updates.
+
+[![GitHub Stars](https://img.shields.io/github/stars/serenity-js/serenity-js?style=for-the-badge)](https://github.com/serenity-js/serenity-js)
+[![LinkedIn Follow](https://img.shields.io/badge/Follow%20Serenity%2FJS-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/serenity-js)
+[![YouTube Follow](https://img.shields.io/badge/Watch%20@serenity--js-E62117?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@serenity-js)
+[![GitHub Sponsors](https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/serenity-js)
+
+## Meet the author
 
 <AuthorBio />
