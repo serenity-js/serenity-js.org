@@ -29,7 +29,7 @@ This virtual workspace is free of charge thanks to the [generous free tier](http
 Alternatively, if you prefer to work on the pull request on your own machine instead of using Gitpod, you'll need to:
 
 - [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) your fork to your machine
-- Install the [runtime dependencies](/handbook/getting-started/installation/): Node.js LTS and Java Runtime Environment
+- Install the [runtime dependencies](/handbook/installation/): Node.js LTS and Java Runtime Environment
 - Run `make install` in the project root to install the Node.js dependencies. Serenity/JS uses [Lerna.js](https://github.com/lerna/lerna), [PnPm](https://pnpm.io/) and [Node.js Corepack](https://github.com/nodejs/corepack) to manage the `@serenity-js/*` modules in the mono-repo, `make install` installs all three for you. Note that this step happens automatically in the Gitpod workspace.
 - Run `make clean test` to make sure you can build the Serenity/JS project on your machine and all the unit tests are passing before introducing any changes.
 - Introduce the changes you wish to propose and update or introduce any package-scope and integration tests that are relevant.
