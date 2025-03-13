@@ -13,7 +13,7 @@ you're a test automation expert or just starting on your journey.
 If you found anything here that could have been clearer, please let me know in the comments or
 [submit a correction](https://github.com/serenity-js/serenity-js/tree/main/documentation/serenity-js.org/docs/web-testing/your-first-web-scenario.mdx).
 
-To keep things simple, we'll use a [**Gitpod.io workspace**](/handbook/getting-started/project-templates/#serenityjs-gitpods) to work with Serenity/JS in your web browser, so there's **no need to install anything** on your computer.
+To keep things simple, we'll use a [**Gitpod.io workspace**](/handbook/project-templates/#serenityjs-gitpods) to work with Serenity/JS in your web browser, so there's **no need to install anything** on your computer.
 If you prefer to set up Serenity/JS locally instead, follow the installation instructions in [Serenity/JS + Playwright Test project template](https://github.com/serenity-js/serenity-js-playwright-test-template).
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/serenity-js/serenity-js-playwright-test-template)
@@ -32,8 +32,8 @@ If you get lost or stumble upon a problem you're not quite sure how to solve - a
 
 ## Launching your workspace
 
-All [Serenity/JS project templates](/handbook/getting-started/project-templates/), such as the one we'll use in this chapter,
-[support Gitpod.io workspaces](/handbook/getting-started/project-templates/#serenityjs-gitpods) and are configured to
+All [Serenity/JS project templates](/handbook/project-templates/), such as the one we'll use in this chapter,
+[support Gitpod.io workspaces](/handbook/project-templates/#serenityjs-gitpods) and are configured to
 make it easy for you to use them in a Visual Studio Code-based development environment.
 Of course, since Serenity/JS tests are standards-based Node.js code, they'll work just as well in any other modern <abbr title="Integrated Development Environment">IDE</abbr>.
 
@@ -161,7 +161,7 @@ browser interacting with the web app under test. That's because any web browsers
 are configured to run in "headless" mode by default so that they don't get in the way and don't interrupt your work.
 
 This setting is configurable, so you can change it when you need to see what's going on under the hood
-or to access the developer tools offered by your browser to [debug your test scenarios](/handbook/web-testing/your-first-web-scenario/#debugging-tests-and-interactive-execution)
+or to access the developer tools offered by your browser to [debug your test scenarios](/handbook/tutorials/your-first-web-scenario/#debugging-tests-and-interactive-execution)
 or the system under test.
 
 In addition to being able to interact with the browser when running the tests locally, the
@@ -344,11 +344,11 @@ over time, writing test scenarios becomes easier as you're simply re-arranging e
 ### Using portable assertions
 
 The Serenity/JS activity-based programming model applies to performing [assertions](/handbook/design/assertions) just as well as it applies
-to performing [tasks and interactions](/handbook/web-testing/your-first-web-scenario/#modelling-workflows-using-reusable-activities).
+to performing [tasks and interactions](/handbook/tutorials/your-first-web-scenario/#modelling-workflows-using-reusable-activities).
 In fact, the Serenity/JS assertion to [`Ensure`](/api/assertions/class/Ensure) is just another interaction
 you give to an actor to perform.
 
-Consider the test scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
+Consider the test scenario [you wrote earlier](/handbook/tutorials/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
 ```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
@@ -394,7 +394,7 @@ that are portable across web integration tools, such as Playwright, WebdriverIO,
 You've already seen what happens when an assertion passes. But what happens when it fails?
 
 To experience how you'd go about analysing a Serenity/JS assertion failure,
-modify the scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios)
+modify the scenario [you wrote earlier](/handbook/tutorials/your-first-web-scenario#writing-serenityjs-test-scenarios)
 to make it fail:
 
 ```typescript title="spec/recording_items.spec.ts"
@@ -525,7 +525,7 @@ to performing the parameterised activity.
 
 To see examples of how to define Serenity/JS questions, open [`spec/todo-list-app/TodoList/questions.ts`](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/todo-list-app/TodoList/questions.ts).
 
-Among several other functions you'll spot `itemNames()`, which should be already [familiar to you](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
+Among several other functions you'll spot `itemNames()`, which should be already [familiar to you](/handbook/tutorials/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
 ```typescript title="spec/todo-list-app/TodoList/questions.ts"
 import { includes } from '@serenity-js/assertions';
@@ -548,7 +548,7 @@ export const itemCalled = (name: Answerable<string>) =>
         .describedAs(d`an item called ${ name }`) as QuestionAdapter<PageElement>;
 ```
 
-Just like Serenity/JS activities can be [composed into tasks](/handbook/web-testing/your-first-web-scenario#modelling-workflows-using-reusable-activities),
+Just like Serenity/JS activities can be [composed into tasks](/handbook/tutorials/your-first-web-scenario#modelling-workflows-using-reusable-activities),
 Serenity/JS [questions](/api/core/class/Question) can be composed with other questions to transform their results.
 
 :::info Remember
@@ -569,7 +569,7 @@ Also note how all the questions define [custom descriptions](/api/core/class/Que
 ### Debugging questions
 
 To use the interaction to [`Debug`](/api/core/class/Debug) to analyse what a given question resolves to,
-modify the scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
+modify the scenario [you wrote earlier](/handbook/tutorials/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
 ```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
@@ -626,7 +626,7 @@ To use it, you'll need to:
 - interact directly with the `page.locator` API.
 
 To see how the locator tuning features work in practice,
-modify the scenario [you wrote earlier](/handbook/web-testing/your-first-web-scenario#writing-serenityjs-test-scenarios):
+modify the scenario [you wrote earlier](/handbook/tutorials/your-first-web-scenario#writing-serenityjs-test-scenarios):
 
 ```typescript title="spec/recording_items.spec.ts"
 describe('Todo List App', () => {
@@ -658,7 +658,7 @@ describe('Todo List App', () => {
 
 When you run your scenario through a debugger and the execution pauses on the line where you set
 the breakpoint, you'll notice that you can **modify the selector** passed to `page.locator`
-and that your [browser](/handbook/web-testing/your-first-web-scenario#showing-the-browser-window)
+and that your [browser](/handbook/tutorials/your-first-web-scenario#showing-the-browser-window)
 highlights the matching elements **live** as you do it.
 
 <Figure
