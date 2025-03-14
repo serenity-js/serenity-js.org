@@ -13,10 +13,10 @@
 of complex software systems faster, more collaborative and easier to scale.
 
 ⭐️ Get started with Serenity/JS!
-- [Serenity/JS web testing tutorial](https://serenity-js.org/handbook/web-testing/your-first-web-scenario)
+- [Serenity/JS web testing tutorial](https://serenity-js.org/handbook/tutorials/your-first-web-scenario)
 - [Serenity/JS Handbook](https://serenity-js.org/handbook) and [Getting Started guides](https://serenity-js.org/handbook/getting-started/)
 - [API documentation](https://serenity-js.org/api/core)
-- [Serenity/JS Project Templates on GitHub](https://serenity-js.org/handbook/getting-started/project-templates/)
+- [Serenity/JS Project Templates on GitHub](https://serenity-js.org/handbook/project-templates/)
 
 👋 Join the Serenity/JS Community!
 - Meet other Serenity/JS developers and maintainers on the [Serenity/JS Community chat channel](https://matrix.to/#/#serenity-js:gitter.im)
@@ -54,7 +54,7 @@ when you open the workspace, so you can start working on the Serenity/JS website
 To work on the Serenity/JS website locally, you'll need to:
 - [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) this repository to your GitHub account
 - [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) your fork to your machine
-- Make sure you have the have [Node.js](https://nodejs.org/) installed on your machine, as per the general [Serenity/JS installation instructions](https://serenity-js.org/handbook/getting-started/installation/#installing-nodejs)
+- Make sure you have [Node.js](https://nodejs.org/) installed on your machine, as per the general [Serenity/JS installation instructions](https://serenity-js.org/handbook/installation/)
 - Install the Node.js dependencies by running `npm ci` in the project root
 - Make sure you can build the Serenity/JS website on your machine by running `npm run build`
 - Start the local development server by running `npm start`

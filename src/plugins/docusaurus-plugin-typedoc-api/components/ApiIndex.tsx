@@ -106,7 +106,7 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                 <p>
                                     For <a href="/handbook/getting-started/"><strong>new test automation
                                     projects</strong></a>, consider
-                                    using <a href="/handbook/getting-started/project-templates/">Serenity/JS Project
+                                    using <a href="/handbook/project-templates/">Serenity/JS Project
                                     Templates</a>.
                                     These templates combine popular configurations of Serenity/JS modules with essential
                                     integration and test automation tools,
@@ -115,7 +115,7 @@ export default function ApiIndex({ options, packages, categories, history }: Api
                                 </p>
                                 <p>
                                     For <strong>existing test automation projects</strong>, the <a
-                                    href="/handbook/getting-started/architecture/">modular architecture of
+                                    href="/handbook/architecture/">modular architecture of
                                     Serenity/JS</a> lets
                                     you gradually introduce the framework into existing test suites, allowing
                                     for <strong>progressive modernisation</strong> without disrupting ongoing work.
