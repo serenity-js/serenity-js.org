@@ -13,9 +13,9 @@
 of complex software systems faster, more collaborative and easier to scale.
 
 ⭐️ Get started with Serenity/JS!
-- [Serenity/JS web testing tutorial](https://serenity-js.org/handbook/tutorials/your-first-web-scenario)
-- [Serenity/JS Handbook](https://serenity-js.org/handbook) and [Getting Started guides](https://serenity-js.org/handbook/getting-started/)
-- [API documentation](https://serenity-js.org/api/core)
+- [Serenity/JS Tutorial](https://serenity-js.org/handbook/tutorials/)
+- [Serenity/JS Handbook](https://serenity-js.org/handbook/)
+- [API documentation](https://serenity-js.org/api/)
 - [Serenity/JS Project Templates on GitHub](https://serenity-js.org/handbook/project-templates/)
 
 👋 Join the Serenity/JS Community!

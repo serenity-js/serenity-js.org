@@ -103,6 +103,12 @@ const config: Config = {
                     sidebarPath: './src/sidebars/handbook.ts',
                     showLastUpdateAuthor: false,
                     showLastUpdateTime: true,
+                    async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
+                        const sidebarItems = await defaultSidebarItemsGenerator(args);
+                        // DEBUG sidebar items
+                        // console.log({ sidebarItems })
+                        return sidebarItems.filter(item => ! item.id.endsWith('index'));
+                    },
                 },
                 blog: {
                     ...remarkOptions,
@@ -125,7 +131,6 @@ const config: Config = {
     ],
 
     themeConfig: {
-        // Replace with your project's social card
         image: 'images/serenity-js-social-card.jpg',    // open graph
         colorMode: {
             disableSwitch: false,
@@ -186,11 +191,11 @@ const config: Config = {
                     title: 'Handbook',
                     items: [
                         { label: 'Why Serenity/JS', to: '/handbook/' },
-                        { label: 'Getting started', to: '/handbook/getting-started' },
-                        { label: 'Web testing', to: '/handbook/web-testing' },
-                        { label: 'API testing', to: '/handbook/api-testing' },
-                        { label: 'Mobile testing', to: '/handbook/mobile-testing' },
+                        { label: 'Tutorials', to: '/handbook/tutorials' },
                         { label: 'Core Design Patterns', to: '/handbook/design' },
+                        { label: 'Web Testing', to: '/handbook/web-testing' },
+                        { label: 'API Testing', to: '/handbook/api-testing' },
+                        { label: 'Mobile Testing', to: '/handbook/mobile-testing' },
                         { label: 'Reporting', to: '/handbook/reporting' },
                         { label: 'Test runners', to: '/handbook/test-runners' },
                         { label: 'Integration', to: '/handbook/integration' },
