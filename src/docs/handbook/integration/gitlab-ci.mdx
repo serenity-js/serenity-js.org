@@ -18,7 +18,7 @@ to run automated acceptance tests built using Serenity/JS and publish test execu
 ## Writing tests
 
 To run your automated tests on GitLab CI you first need to write them 😊
-The easiest way to get started with automating tests using Serenity/JS is to use one of the available [**Serenity/JS Project Templates**](/handbook/getting-started/project-templates/)
+The easiest way to get started with automating tests using Serenity/JS is to use one of the available [**Serenity/JS Project Templates**](/handbook/project-templates/)
 as they come with example scenarios and combine some of the most popular configurations of Serenity/JS modules and test automation tools:
 
 - [REST API testing with Cucumber and Serenity/JS](https://github.com/serenity-js/serenity-js-cucumber-template)
@@ -28,12 +28,12 @@ as they come with example scenarios and combine some of the most popular configu
 - [Web testing with WebdriverIO, Mocha, and Serenity/JS](https://github.com/serenity-js/serenity-js/tree/main/examples/webdriverio-mocha-todomvc)
 - [Web testing with WebdriverIO, Cucumber, and Serenity/JS](https://github.com/serenity-js/serenity-js-cucumber-webdriverio-template)
 
-If you're new to Serenity/JS, you might want to follow the **tutorial** to learn how to [**write your first web scenario**](/handbook/web-testing/your-first-web-scenario)!
+If you're new to Serenity/JS, you might want to follow the **tutorial** to learn how to [**write your first web scenario**](/handbook/tutorials/your-first-web-scenario)!
 
 ## Running tests on GitLab CI
 
 GitLab CI uses [Docker containers](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html) to run your <abbr title="Continuous Integration and Delivery">CI/CD</abbr> jobs.
-To ensure maximum stability of your test suite, you should run Serenity/JS in a container that offers the latest [Long-Term Support](https://github.com/nodejs/Release) version of Node.js, as per the the [Serenity/JS installation guide](/handbook/getting-started/installation).
+To ensure maximum stability of your test suite, you should run Serenity/JS in a container that offers the latest [Long-Term Support](https://github.com/nodejs/Release) version of Node.js, as per the the [Serenity/JS installation guide](/handbook/installation/).
 
 The exact **Docker image** you choose depends on the runtime dependencies required for your tests.
 
@@ -132,7 +132,7 @@ serenity:
 - In our example, `script` runs:
     - `npm ci`, which installs the Node.js modules that your automation projects depends on
     - `npm test`, which invokes the [`test` script](https://docs.npmjs.com/cli/v8/commands/npm-test) defined in your [`package.json`](https://docs.npmjs.com/cli/v9/configuring-npm/package-json)
-- Since all the [**Serenity/JS Project Templates**](/handbook/getting-started/project-templates/) are configured to run tests via `npm test` and produce [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter) under `target/site/serenity`,
+- Since all the [**Serenity/JS Project Templates**](/handbook/project-templates/) are configured to run tests via `npm test` and produce [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter) under `target/site/serenity`,
   we configure GitLab to archive any [`artifacts`](https://docs.gitlab.com/ee/ci/yaml/#artifacts) under `target`. This way you can [inspect them in GitLab UI](https://docs.gitlab.com/ee/ci/jobs/job_artifacts.html) or use them in subsequent stages of your pipeline.
 
 ## Generating Serenity BDD reports

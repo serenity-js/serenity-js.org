@@ -49,7 +49,7 @@ npm install --save-dev @serenity-js/serenity-bdd
 ```
 
 If you're starting a new project or need a reference implementation,
-consider using one of the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/)
+consider using one of the [Serenity/JS Project Templates](/handbook/project-templates/)
 as they all come with pre-configured test runner adapters and built-in support for Serenity BDD reporting.
 
 :::tip Simplified installation
@@ -492,7 +492,7 @@ To produce Serenity BDD reports, you need to:
 - [configure your test runner](#configuring-the-test-runner) to use the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter) and produce the intermediate Serenity BDD `.json` reports
 - call `serenity-bdd run` when the test run completes to generate the aggregated HTML report
 
-The pattern used by all the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/) relies
+The pattern used by all the [Serenity/JS Project Templates](/handbook/project-templates/) relies
 on using two additional Node modules:
 - [`rimraf`](https://www.npmjs.com/package/rimraf) as a convenience method to remove any test reports left over from the previous run
 - [`npm-failsafe`](https://www.npmjs.com/package/npm-failsafe) to run the reporting process even if the test suite itself has failed (which is precisely when you need test reports the most...).
@@ -643,7 +643,7 @@ spec
 
 #### Requirements hierarchy for web UI component testing projects
 
-If you're using Serenity/JS to test [web UI components](/handbook/getting-started/project-templates/#web-component-testing), you might be following the popular convention of storing your spec files next to the component they're testing:
+If you're using Serenity/JS to test [web UI components](/handbook/project-templates/#web-component-testing), you might be following the popular convention of storing your spec files next to the component they're testing:
 
 ```
 src

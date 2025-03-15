@@ -33,12 +33,12 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                             <p>
                                 Add Serenity/JS to your new or existing Playwright Test project
                                 to introduce portable test APIs, business-friendly reporting,
-                                and leverage Serenity/JS integration libraries
-                                to write end-to-end and component tests.
+                                leverage Serenity/JS integration libraries and
+                                write end-to-end and component tests.
                             </p>
                             <p className={ styles.cardActions }>
                                 <Link id="cta-homepage-playwright-test"
-                                      to="/handbook/getting-started/serenity-js-with-playwright-test/">
+                                      to="/handbook/test-runners/playwright-test/">
                                     Learn more
                                 </Link>
                             </p>
@@ -78,7 +78,7 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                             </p>
                             <p className={ styles.cardActions }>
                                 <Link id="cta-homepage-protractor"
-                                      to="/handbook/getting-started/serenity-js-with-protractor/">
+                                      to="/handbook/tutorials/migrating-from-protractor/">
                                     Learn more
                                 </Link>
                             </p>

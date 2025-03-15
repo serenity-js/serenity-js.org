@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: Your first API scenario
 ---
 
@@ -25,7 +25,7 @@ To demonstrate how this can be accomplished, in this tutorial I'll show you how 
 ## Writing dedicated API test scenarios
 
 We'll write a simple "health check" test, where an actor sends a HTTP request to check if a web service is up and running.
-You can write API test scenarios like this using one of the [Serenity/JS Project Templates for API Testing](/handbook/getting-started/project-templates/#resthttp-api-testing),
+You can write API test scenarios like this using one of the [Serenity/JS Project Templates for API Testing](/handbook/project-templates/#resthttp-api-testing),
 as they integrate Serenity/JS directly with [Cucumber](/handbook/test-runners/cucumber/), [Mocha](/handbook/test-runners/mocha/), or [Jasmine](/handbook/test-runners/jasmine/),
 without the overhead of managing a web browser.
 
@@ -66,7 +66,7 @@ describe('GitHub Status API v2', () => {
 })
 ```
 
-If you've already completed the [Serenity/JS web testing tutorial](/handbook/web-testing/your-first-web-scenario/),
+If you've already completed the [Serenity/JS web testing tutorial](/handbook/tutorials/your-first-web-scenario/),
 the above scenario should look familiar:
 1. We start by giving all actors in our [`Cast`](/api/core/class/Cast) abilities to [`CallAnApi`](/api/rest/class/CallAnApi) at a given `baseURL`
 2. Next, the actor sends a [`GetRequest`](/api/rest/class/GetRequest) to the `status` endpoint
@@ -449,7 +449,7 @@ I call this approach [**Blended Testing**](/handbook/web-testing/blended-testing
 
 To support you in using Blended Testing in your test suites,
 all [Serenity/JS web test runner adapters](/handbook/test-runners/)
-and [Serenity/JS Project Templates for Web Testing](/handbook/getting-started/project-templates/#web-testing) come with **built-in support for REST and HTTP-based interactions**,
+and [Serenity/JS Project Templates for Web Testing](/handbook/project-templates/#web-testing) come with **built-in support for REST and HTTP-based interactions**,
 so there's no need to install additional dependencies or manually configure anything.
 
 
@@ -578,9 +578,9 @@ describe('GitHub', () => {
 
 ## Using Serenity/JS REST testing templates
 
-Use [Serenity/JS Project Templates](/handbook/getting-started/project-templates/) to create a new GitHub repository for your automation project in seconds.
+Use [Serenity/JS Project Templates](/handbook/project-templates/) to create a new GitHub repository for your automation project in seconds.
 
-Remember that each Serenity/JS template comes with a [GitPod workspace](/handbook/getting-started/project-templates/#serenityjs-gitpods) that uses a dedicated Docker image with all the required dependencies
+Remember that each Serenity/JS template comes with a [GitPod workspace](/handbook/project-templates/#serenityjs-gitpods) that uses a dedicated Docker image with all the required dependencies
 and comes with pre-configured VisualStudio Code extensions to help you experiment with running Serenity/JS straight away in your browser with no local installation required.
 
 ## Next steps

@@ -30,7 +30,7 @@ const TopFeatures: FeatureItem[][] = [
             Svg: require('@site/static/images/serenity-js-browsers-mobile-apis.svg').default,
             description: (
                 <>
-                    Serenity/JS is a <a id={"cta-homepage-about-architecture"} href={"/handbook/getting-started/architecture/"}>modular and extensible</a> abstraction layer
+                    Serenity/JS is a <a id={"cta-homepage-about-architecture"} href={"/handbook/architecture/"}>modular and extensible</a> abstraction layer
                     that works seamlessly with integration tools like
                     Playwright, Selenium, WebdriverIO, Appium, or Axios,
                     and gives you a consistent, intuitive, and vendor-neutral API to work with.

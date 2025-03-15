@@ -102,7 +102,7 @@ reporting infrastructure for capturing the activities of your actors and process
 and assertion libraries for verifying test outcomes.
 
 For practical examples of writing different kinds of automated tests using Serenity/JS,
-check out the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/).        
+check out the [Serenity/JS Project Templates](/handbook/project-templates/).        
         `,
         items: [
             '@serenity-js/core',
@@ -116,8 +116,8 @@ enabling you to write **portable web automation code** that follows the Screenpl
 and works just as well for end-to-end test scenarios as for UI component tests.
 
 For practical examples of writing web-based tests using Serenity/JS,
-check out the [Serenity/JS Project Templates for web testing](/handbook/getting-started/project-templates/#web-testing)
-and the [Serenity/JS web testing tutorial](/handbook/web-testing/your-first-web-scenario/).
+check out the [Serenity/JS Project Templates for web testing](/handbook/project-templates/#web-testing)
+and the [Serenity/JS web testing tutorial](/handbook/tutorials/your-first-web-scenario/).
         `,
         items: [
             '@serenity-js/web',
@@ -133,8 +133,8 @@ and the [Serenity/JS web testing tutorial](/handbook/web-testing/your-first-web-
 either as part of dedicated API test suites, or as part of web-based test scenarios.
 
 For practical examples of writing API-based tests using Serenity/JS,
-check out the [Serenity/JS Project Templates for API testing](/handbook/getting-started/project-templates/#resthttp-api-testing)
-and the [Serenity/JS API testing tutorial](/handbook/api-testing/your-first-api-scenario/).
+check out the [Serenity/JS Project Templates for API testing](/handbook/project-templates/#resthttp-api-testing)
+and the [Serenity/JS API testing tutorial](/handbook/tutorials/your-first-api-scenario/).
         `,
         items: [
             '@serenity-js/rest',
