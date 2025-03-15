@@ -137,7 +137,7 @@ export default defineConfig<SerenityOptions>({
 });
 ```
 
-This configuration enables the [`@serenity-js/playwright-test`](/api/playwright-test/), which in turn configures the ["stage crew"](/handbook/architecture/#serenityjs-reporting-services) of Serenity/JS reporting services:
+This configuration enables the [`@serenity-js/playwright-test`](/api/playwright-test/) test runner adapter, which in turn configures the ["stage crew"](/handbook/architecture/#serenityjs-reporting-services) of Serenity/JS reporting services:
 - [Console reporter](/handbook/reporting/console-reporter/) - Displays test results in the terminal.
 - [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter/) - Produces `json` reports to be ingested by the Serenity BDD CLI and produce the living documentation.
 - [Artifact Archiver](/handbook/reporting/artifact-archiver/) - Stores the `json` reports and screenshots captured by the Photographer to disk.
@@ -1030,15 +1030,16 @@ parameters to your NPM scripts. See the [`npm-failsafe` documentation](https://g
 
 ## Integration architecture
 
-To recap, Serenity/JS integrates with Playwright Test through the [`@serenity-js/playwright-test`](/api/playwright-test) module, which acts as a [test runner adapter](/handbook/architecture/#serenityjs-test-runner-adapters) and:
+To recap, Serenity/JS integrates with Playwright Test through the [`@serenity-js/playwright-test`](/api/playwright-test) module,
+which acts as a [test runner adapter](/handbook/architecture/#serenityjs-test-runner-adapters) and:
 - Captures test execution events from Playwright Test
 - Translates them into [Serenity/JS domain events](/handbook/reporting/domain-events)
 - Makes them available to [Serenity/JS reporting services](/handbook/reporting/)
 
-This modular architecture enables Serenity/JS to enhance both classic Playwright Test scenarios and those following the Screenplay Pattern with advanced reporting capabilities, as it:
+This modular architecture enables Serenity/JS to enhance both classic Playwright Test scenarios and those following the Screenplay Pattern with advanced reporting capabilities.
 
 To enable this integration, you need to:
-1. Configure [Serenity/JS reporting services](#integrating-serenityjs-reporting) in your `playwright.config.ts` file
+1. Configure [Serenity/JS test runner adapter and reporting services](#integrating-serenityjs-reporting) in your `playwright.config.ts` file
 2. Optionally, use the [Serenity/JS test fixtures](#using-the-screenplay-pattern-apis) to enable Screenplay Pattern APIs in your Playwright Test scenarios
 
 <figure>
@@ -1076,10 +1077,10 @@ To take things further, check out:
 - [Your first web scenario (Serenity/JS + Playwright Test tutorial)](/handbook/tutorials/your-first-web-scenario)
 - [The Screenplay Pattern](/handbook/design/screenplay-pattern/)
 - [Serenity/JS Web Testing Patterns](/handbook/web-testing/)
-- [Serenity/JS examples on GitHub](https://github.com/serenity-js/serenity-js/tree/main/examples/)
-- [Serenity/JS Playwright project templates](https://github.com/serenity-js?q=playwright+template&type=all&language=&sort=)
+- [Serenity/JS Playwright project templates](/handbook/project-templates/#playwright)
 - [Serenity/JS Web API docs](/api/web/)
 - [Serenity/JS Assertions API docs](/api/assertions/)
+- [Serenity/JS examples on GitHub](https://github.com/serenity-js/serenity-js/tree/main/examples/)
 - 📚 Our book, ["BDD in Action, Second Edition"](https://www.manning.com/books/bdd-in-action-second-edition)
 
 Remember, new features, tutorials, and demos are coming soon!
