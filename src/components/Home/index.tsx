@@ -8,10 +8,12 @@ import Recommendations from './Recommendations';
 import Welcome  from './Welcome';
 
 import styles from './index.module.css';
+import TopBanner from './TopBanner';
 
 export default function Home(): React.JSX.Element {
     return (
         <>
+            <TopBanner />
             <Hero />
             <main>
                 <Features className={clsx(styles.section)} />

@@ -71,6 +71,10 @@ const config: Config = {
             high-quality, business-focused test scenarios that interact with any interface of your system
             and produce comprehensive test reports that build trust between delivery teams and the business.
             `,
+        banner: {
+            text: 'New Playwright Test guide is out!',
+            link: '/handbook/test-runners/playwright-test',
+        }
     },
 
     url: 'https://serenity-js.org',
