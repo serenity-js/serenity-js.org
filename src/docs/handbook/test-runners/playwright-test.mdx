@@ -560,7 +560,7 @@ By default, all actors share the same browser session. To make them use **indepe
 Each actor comes with a set of abilities that enable them to interact with the system under test. By default, these abilities include:
 - [`BrowseTheWebWithPlaywright`](/api/playwright/class/BrowseTheWebWithPlaywright/) - Allows interaction with the browser using the default [`page`](https://playwright.dev/docs/test-fixtures#built-in-fixtures) fixture.
 - [`TakeNotes.usingAnEmptyNotepad()`](/api/core/class/TakeNotes/) - Facilitates storing and retrieving information during the test run.
-- [`CallAnApi`](/api/rest/class/CallAnApi/) - Enables interaction with RESTful APIs, configured with configured
+- [`CallAnApi`](/api/rest/class/CallAnApi/) - Enables interaction with RESTful APIs using an Axios HTTP client configured
   with [`baseURL`](https://playwright.dev/docs/api/class-testoptions#test-options-base-url),
   [`extraHTTPHeaders`](https://playwright.dev/docs/api/class-testoptions#test-options-extra-http-headers),
   and proxy configuration derived from the [`proxy`](https://playwright.dev/docs/api/class-testoptions#test-options-proxy) fixture.
@@ -848,7 +848,7 @@ The framework supports:
 Serenity/JS supports both classic Playwright Test scenarios and those that follow the [Screenplay Pattern](/handbook/design/screenplay-pattern/),
 allowing you to migrate to Screenplay gradually if you wish, or mix and match the two implementations within the same codebase.
 
-:::info Reference Implementation
+:::tip Reference Implementation
 Explore the [Serenity/JS + Playwright Test project template](https://github.com/serenity-js/serenity-js-playwright-test-template) to see these reports in action:
 - [Serenity BDD report](https://serenity-js.github.io/serenity-js-playwright-test-template/serenity/)
 - [Playwright Test report](https://serenity-js.github.io/serenity-js-playwright-test-template/playwright/)
