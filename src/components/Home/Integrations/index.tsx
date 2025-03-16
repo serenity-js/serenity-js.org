@@ -78,7 +78,7 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                             </p>
                             <p className={ styles.cardActions }>
                                 <Link id="cta-homepage-protractor"
-                                      to="/handbook/tutorials/migrating-from-protractor/">
+                                      to="/handbook/test-runners/protractor/">
                                     Learn more
                                 </Link>
                             </p>
