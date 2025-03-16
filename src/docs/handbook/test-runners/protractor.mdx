@@ -265,7 +265,7 @@ This configuration enables the [`@serenity-js/protractor`](/api/protractor/) tes
 - [Artifact Archiver](/handbook/reporting/artifact-archiver/) - Stores the `json` reports and screenshots captured by the Photographer to disk.
 
 Note that the above configuration assumes the following directory structure of your project:
-- `./spec` - stores your test scenarios and is the top-most directory of your [requirements hierarchy](/handbook/reporting/serenity-bdd-reporter/#the-requirements-hierarchy).
+- `./spec` or `./features` - stores your test scenarios and is the top-most directory of your [requirements hierarchy](/handbook/reporting/serenity-bdd-reporter/#the-requirements-hierarchy).
 - `./target/site/serenity` - stores any test report artifacts, like the `.json` files and screenshots.
 
 If you'd like to use different locations for your tests or the test reports, adjust the `specDirectory` and `outputDirectory` settings accordingly.
@@ -300,8 +300,9 @@ The most commonly used Screenplay Pattern APIs come from the following modules:
 - [`@serenity-js/protractor`](/api/protractor) - Provides Protractor-specific interactions.
 - [`@serenity-js/core`](/api/core) - Provides interface-agnostic interactions, such as [waiting and synchronisation](/handbook/design/waiting-and-synchronisation/), [control flow](/handbook/design/control-flow/), or [logging](/handbook/design/logging/).
 
-
 ### Using actors in test scenarios
+
+A test scenario following the Screenplay Pattern models workflows of one or multiple [actors](/api/core/class/Actor/) representing people and external systems interacting with the system under test.
 
 When you configure [Serenity/JS Protractor](/api/protractor)
 as the [Protractor `framework`](/handbook/test-runners/protractor#configuring-serenityjs),
@@ -312,10 +313,13 @@ where every actor has the abilities to:
 - [`CallAnApi`](/api/rest/class/CallAnApi/) - Enables interaction with RESTful APIs using an Axios HTTP client configured
   with configured with `baseUrl`.
 
-To use an actor in your Protractor test scenario, refer to it using the
-[`actorCalled`](/api/core/function/actorCalled) function, which returns an instance of the actor with the given name,
-or use the [`actorInTheSpotlight`](/api/core/function/actorInTheSpotlight) function to refer to the last accessed actor.
-All the default actors already have access to the Protractor-managed browser instance.
+:::tip Overriding abilities
+An actor can only have **one instance of each ability** type at a time.
+Therefore, providing a new instance of the same type via the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method overrides any existing ability of that type
+:::
+
+To use an actor in your test scenario, refer to it using the [`actorCalled`](/api/core/function/actorCalled/) or [`actorInTheSpotlight`](/api/core/function/actorInTheSpotlight/) functions
+and they'll automatically use the configured cast of actors to create or retrieve the actor you need.
 
 ```ts title="specs/example.spec.ts"
 import 'jasmine'
@@ -341,11 +345,6 @@ describe('My awesome website', () => {
     })
 })
 ```
-
-:::tip Overriding abilities
-An actor can only have **one instance of each ability** type at a time.
-Therefore, providing a new instance of the same type via the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method overrides any existing ability of that type
-:::
 
 Since Protractor uses Jasmine, Mocha, or Cucumber to run your test scenarios, please refer to their
 dedicated guides to learn more about using Serenity/JS actors with:
@@ -784,12 +783,11 @@ npm uninstall protractor @serenity-js/protractor --save
 Learn more:
 - [Serenity/JS WebdriverIO Test Runner Adapter](/handbook/test-runners/webdriverio/)
 
-
 ## Integration architecture
 
 To recap, Serenity/JS integrates with Protractor through the [`@serenity-js/protractor`](/api/protractor) module,
 which acts as a [test runner adapter](/handbook/architecture/#serenityjs-test-runner-adapters) and:
-- Captures test execution events from Playwright Test
+- Captures test execution events from Protractor and its test runners
 - Translates them into [Serenity/JS domain events](/handbook/reporting/domain-events)
 - Makes them available to [Serenity/JS reporting services](/handbook/reporting/)
 
