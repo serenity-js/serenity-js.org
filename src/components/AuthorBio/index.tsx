@@ -18,23 +18,18 @@ export default function AuthorBio() {
             <Image img={ require('@site/static/images/jan-molak.png') } width={ 200 } alt="Jan Molak" style={{overflow: 'hidden'}}  />
             <div>
                 <p>
-                    <strong>Jan Molak</strong> is an independent software development consultant and trainer
-                    with over { experience } years of experience helping teams bridge the gap between business and
-                    technology.
-                    From <a href={ 'https://www.mobygames.com/person/292010/jan-molak/' } target={ '_blank' }>award-winning video games</a> to
+                    <strong>Jan Molak</strong> is a software development consultant and trainer with over <strong>{ experience } years of experience</strong> helping
+                    teams <strong>turn ideas into high-quality software</strong>. From <a href={ 'https://www.mobygames.com/person/292010/jan-molak/' } target={ '_blank' }>award-winning video games</a> to
                     high-traffic web apps, complex event processing, and financial systems,
-                    Jan has worked across multiple industries to reduce risks, improve software quality, and accelerate delivery,
-                    ensuring better business outcomes and happier customers.
+                    Jan has worked across multiple industries to boost efficiency, reduce risks, and accelerate delivery - leading to better business results and happier customers.
                 </p>
                 <p>
-                    As the creator of Serenity/JS, co-author of <a
-                    href={ 'https://www.manning.com/books/bdd-in-action-second-edition' } target={ '_blank' }>"BDD in Action, Second Edition"</a>,
-                    and a contributor to the <a href={ '/handbook/design/screenplay-pattern/' }>Screenplay Pattern</a>,
-                    Jan helps teams adopt Behaviour-Driven Development and test automation to improve collaboration, reduce production incidents, and ensure software meets business needs.
+                    As the <strong>creator of Serenity/JS</strong>, <strong>co-author of <em><a href={ 'https://www.manning.com/books/bdd-in-action-second-edition' } target={ '_blank' }>BDD in Action, Second Edition</a></em></strong>,
+                    and a key contributor to the <strong>Screenplay Pattern</strong>, Jan specialises in <strong>Behaviour-Driven Development (BDD)</strong>, <strong>test automation</strong> and <strong>continuous delivery</strong>.
+                    His mission? Helping teams collaborate better, catch issues earlier, and build software that truly meets business needs.
                 </p>
                 <p>
-                    💬 <a href={ 'https://linkedin.com/in/janmolak' } target={ '_blank' }><strong>Connect with Jan on LinkedIn</strong></a> to
-                    discuss how aligning business and technology can drive better software, faster delivery, and real impact!
+                    🚀 <strong>Want to deliver better software, sooner?</strong> <a href={ 'https://linkedin.com/in/janmolak' } target={ '_blank' }><strong>Connect with Jan on LinkedIn</strong></a>!
                 </p>
             </div>
         </footer>

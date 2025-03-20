@@ -1,16 +1,16 @@
 ---
-sidebar_position: 9
-title: Upgrading to Serenity/JS 3
+sidebar_position: 3
+title: Upgrading from Serenity/JS 2
 ---
 
-# Upgrading to Serenity/JS 3
+# Upgrading from Serenity/JS 2
 
 Serenity/JS 3.0 introduces a number of new features while aiming to retain backwards compatibility of most of the core APIs.
 
 Serenity/JS 3 is [available on NPM](https://www.npmjs.com/package/@serenity-js/core) and this guide
 will help you get started and highlight notable differences from Serenity/JS 2.
 
-All the [Serenity/JS Project Templates](/handbook/getting-started/project-templates/) are migrated to Serenity/JS 3.
+All the [Serenity/JS Project Templates](/handbook/project-templates/) are migrated to Serenity/JS 3.
 You'll find code using the new Serenity/JS APIs on the `main` branch while the `2.x` branch still contains Serenity/JS 2
 code for comparison:
 - [serenity-js-cucumber-webdriverio-template](https://github.com/serenity-js/serenity-js-cucumber-webdriverio-template/tree/main) ([see diff](https://github.com/serenity-js/serenity-js-cucumber-webdriverio-template/compare/2.x...main))
@@ -112,9 +112,9 @@ However, if the default configuration is not sufficient to your needs,
 every test runner integration still lets you configure a custom cast.
 
 Learn how to configure a custom cast of actors with:
-- [Playwright Test](/handbook/test-runners/playwright-test#configuring-a-custom-cast-of-actors)
-- [Protractor](/handbook/test-runners/protractor#configuring-a-custom-cast-of-actors)
-- [WebdriverIO](/handbook/test-runners/webdriverio/#customising-serenityjs-actors)
+- [Playwright Test](/handbook/test-runners/playwright-test/#replacing-the-default-actors)
+- [Protractor](/handbook/test-runners/protractor/#replacing-the-default-actors)
+- [WebdriverIO](/handbook/test-runners/webdriverio/#replacing-the-default-actors)
 
 ### Implementing portable `Interaction`s and `Question`s
 
@@ -232,7 +232,7 @@ interface MyNotes {
   }
 }
 
-actorCalled('Leonard')
+await actorCalled('Leonard')
   .whoCan(
     TakeNotes.using(Notepad.empty<MyNotes>())
   )
@@ -244,7 +244,7 @@ Those new APIs replace the `Note` you might remember from Serenity/JS v2:
 ```typescript
 import { Log, Notepad, notes, TakeNotes } from '@serenity-js/core';
 
-actorCalled('Leonard')
+await actorCalled('Leonard')
   .whoCan(
     TakeNotes.using(Notepad.empty<MyNotes>())
   )
@@ -261,7 +261,7 @@ While you can still initialise the ability to `TakeNotes.usingAnEmptyNotepad()` 
 ```typescript
 import { Note, Notepad, TakeNotes } from '@serenity-js/core';
 
-actorCalled('Leonard')
+await actorCalled('Leonard')
   .whoCan(
     TakeNotes.using(
       Notepad.with<MyNotes>({
@@ -317,7 +317,7 @@ Another improvement is that `notes<T>().get(noteName)` now returns a [`QuestionA
 ```typescript
 import { Log, Notepad, notes, TakeNotes } from '@serenity-js/core';
 
-actorCalled('Leonard')
+await actorCalled('Leonard')
   .whoCan(
     TakeNotes.using(Notepad.empty<MyNotes>())
   )
@@ -366,7 +366,7 @@ You can then record and retrieve notes using your subject of choice, defined usi
 ```typescript
 import { Log, Note } from '@serenity-js/core';
 
-actorCalled('Alice')
+await actorCalled('Alice')
   .attemptsTo(
     notes().set('shopping list item', 'milk'),
     Log.the(
@@ -393,7 +393,7 @@ import { actorCalled, Duration } from '@serenity-js/core';
 - import { Wait } from '@serenity-js/webdriverio';
 + import { Wait } from '@serenity-js/core';
 
-actorCalled('Alice').attemptsTo(
+await actorCalled('Alice').attemptsTo(
     Wait.for(Duration.ofSeconds(1)),
 
     Wait.until(someQuestion, someExpectation)
@@ -410,7 +410,7 @@ Additionally, `Wait.until` has also received a new API allowing you to configure
 ```typescript
 import { actorCalled, Duration, Wait } from '@serenity-js/core';
 
-actorCalled('Alice').attemptsTo(
+await actorCalled('Alice').attemptsTo(
     Wait.until(someQuestion, someExpectation)
         .pollingEvery(Duration.ofMilliseconds(10)),
 )
@@ -485,7 +485,7 @@ interface AddProductRequestData {
     quantity:   number;
 }
 
-actorCalled('René').attemptsTo(
+await actorCalled('René').attemptsTo(
     Send.a(
         PostRequest.to('/products')
             .with(
@@ -526,40 +526,46 @@ interface AddProductRequestData {
 }
 ```
 
-### Formatting descriptions with `d` and `f`
+### Formatting descriptions with `the`
 
-Deprecated [tag function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates) `formatted` has been removed and replaced by `d` (short for "description") and `f` (short for "format"):
+Deprecated [tag function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates) `formatted` has been removed and replaced by [`the`](/api/core/function/the/):
 
 ```diff
 - import { formatted } from '@serenity-js/core/lib/io';
-+ import { f, d } from '@serenity-js/core/lib/io';
++ import { the } from '@serenity-js/core';
 
 const AuthenticateAs = (username: Answerable<string>) =>
 -    Task.where(formatted `#actor authenticates as ${ username }`, /* ... */)
-+    Task.where(d `#actor authenticates as ${ username }`, /* ... */)
++    Task.where(the `#actor authenticates as ${ username }`, /* ... */)
 ```
 
-While both the [`d`](/api/core/function/d) and [`f`](/api/core/function/f) tag functions can be used
-to format the descriptions of custom tasks, interactions and questions,
-the difference between them is how they format [`Question`s](/api/core/class/Question) provided as template parameter:
-- `f` marks the question parameter so that it's easy to distinguish in the description
-- `d` makes the question parameter blend in with the rest of the description
+[`the`](/api/core/function/the/) creates a single-line description of an [`Activity`](/api/core/class/Activity/) by transforming
+a [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates),
+parameterised with [primitive data types](https://developer.mozilla.org/en-US/docs/Glossary/Primitive),
+[complex data structures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#objects),
+or any other [answerables](/api/core/#Answerable),
+into a [`QuestionAdapter<string>`](https://serenity-js.org/api/core/#QuestionAdapter)
+that can be used with [`Task.where`](https://serenity-js.org/api/core/class/Task/#where) and [`Interaction.where`](https://serenity-js.org/api/core/class/Interaction/#where) methods.
 
-For example, given a custom question as follows:
+For example, given a custom question and task definitions as follows:
 
-```typescript
+```ts
+import { Question, Task, actorCalled, the } from '@serenity-js/core'
+
 const testUsername = () =>
     Question.about('test username', actor => `${ actor.name }@example.org`)
+
+const AuthenticateAs = (username: Answerable<string>) =>
+    Task.where(the `#actor authenticates as ${ username }`, /* ... */)
+
+await actorCalled('Alice').attemptsTo(
+    AuthenticateAs('test-user')
+)
 ```
-Calling `d`:
-```typescript
-    d`#actor authenticates as ${ testUsername() }`
-    // produces: #actor authenticates as test username
+
+Performed task is reported using an evaluated value of the question:
 ```
-Calling `f`:
-```typescript
-    f`#actor authenticates as ${ testUsername() }`
-    // produces: #actor authenticates as <<test username>>
+Alice authenticates as alice@example.org
 ```
 
 ## `@serenity-js/web`

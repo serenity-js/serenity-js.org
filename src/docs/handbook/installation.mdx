@@ -1,0 +1,119 @@
+---
+sidebar_position: 3
+title: Installation
+---
+
+# Serenity/JS Installation Guide
+
+Serenity/JS integrates your favourite automation tools into a cohesive platform
+and gives you a consistent [Screenplay Pattern](/handbook/design/screenplay-pattern/)-based API to implement multi-actor,
+multi-interface test scenarios and generate rich, illustrated reports.
+
+This guide helps you install the core runtime dependencies and prepare your development environment for writing and running Serenity/JS test scenarios.
+Once you have the development environment set up, follow your test runner's [dedicated configuration guide](/handbook/test-runners/)
+to create a new project or add Serenity/JS to your existing codebase.
+
+## Quick start 🚀
+
+To start testing immediately, consider using:
+- [**Serenity/JS Project Templates**](/handbook/project-templates/) - pre-configured with essential dependencies
+- [**Serenity/JS GitPods**](/handbook/project-templates/#serenityjs-gitpods) - ready-to-use cloud-based environments
+
+## Installing Node.js
+
+Serenity/JS runs on [Node.js](https://nodejs.org/) and supports recent [Long-Term Support (LTS)](https://github.com/nodejs/Release) versions.
+It is tested with Node.js <SupportedNodeVersions conjunction="and" />.
+
+### Downloading Node.js
+
+To install Node.js and the Node Package Manager (npm):
+- **Recommended**: Download the installer from [nodejs.org](https://nodejs.org/)
+- **Advanced**: Use [Node Version Manager (nvm)](http://nvm.sh) to manage multiple versions of Node.js on a single machine
+
+### Verifying the installation
+
+Run the following command in your terminal:
+
+```shell
+node --version
+```
+
+Expected output (example):
+
+<CodeBlock language="bash" >
+    <CurrentNodeVersion />
+</CodeBlock>
+
+## Installing the JRE
+
+Serenity/JS uses [Serenity BDD](http://serenity-bdd.info/) to generate the illustrated HTML reports.
+Serenity BDD is a Java library and requires the [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/overview/index.html) **version 17** or newer.
+
+### Downloading JRE
+
+To install the JRE:
+- **Recommended**: Download the installer from [oracle.com](https://www.oracle.com/java/technologies/downloads/) or [adoptopenjdk.net](https://adoptopenjdk.net/)
+- **Advanced**: Use the [Software Development Kit Manager (SDKMan)](https://sdkman.io/) to manage multiple Java versions on a single machine
+
+### Verifying the installation
+
+Run the following command in your terminal:
+
+```shell
+java -version
+```
+
+Expected output (example):
+```shell
+openjdk version "22" 2024-03-19
+OpenJDK Runtime Environment Corretto-22.0.0.36.2 (build 22+36-FR)
+OpenJDK 64-Bit Server VM Corretto-22.0.0.36.2 (build 22+36-FR, mixed mode, sharing)
+```
+
+If you use multiple Java versions, ensure `JAVA_HOME` environment variable points to the correct one. On macOS, it could be:
+
+```shell
+echo $JAVA_HOME
+/Users/jan/.sdkman/candidates/java/current
+```
+
+## Installing an IDE
+
+Serenity/JS supports open standards and works with all the popular JavaScript and TypeScript editors and Integrated Development Environments (IDEs).
+
+Learn more about Serenity/JS integration with your favourite IDE:
+
+- [JetBrains IDEA](/handbook/integration/jetbrains-idea/)
+- [VisualStudio Code](/handbook/integration/visual-studio-code/)
+
+## Setting up CI/CD integration
+
+Serenity/JS is designed to work with Continuous Integration (CI) and Continuous Delivery (CD) systems.
+
+Learn how to configure Serenity/JS with your CI/CD system of choice:
+
+- [GitLab CI](/handbook/integration/gitlab-ci/)
+- [GitHub Actions](/handbook/integration/github-actions/)
+- [Jenkins CI](/handbook/integration/jenkins-ci/)
+
+## Need help?
+
+If you encounter issues during setup, try these resources:
+- [Serenity/JS Project Templates](/handbook/project-templates/)
+- [Reference implementations](https://github.com/serenity-js/serenity-js/tree/main/examples)
+- [Serenity/JS Q'n'A forum](https://github.com/orgs/serenity-js/discussions/categories/how-to)
+- [Serenity/JS Community chat](https://matrix.to/#/#serenity-js:gitter.im)
+
+The Serenity/JS Community is here to support you!
+
+## Next step - set up your test runner
+
+You're now ready to set up your Serenity/JS project! 🎯
+
+Follow your chosen test runner's dedicated installation and configuration guide to create a new project or add Serenity/JS to your existing codebase:
+- [Cucumber](/handbook/test-runners/cucumber)
+- [Jasmine](/handbook/test-runners/jasmine)
+- [Mocha](/handbook/test-runners/mocha)
+- [Playwright Test](/handbook/test-runners/playwright-test)
+- [Protractor](/handbook/test-runners/protractor)
+- [WebdriverIO](/handbook/test-runners/webdriverio)
