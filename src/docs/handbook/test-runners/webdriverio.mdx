@@ -105,7 +105,7 @@ Learn more:
 
 ### Adding Serenity/JS to an existing project
 
-To add Serenity/JS to an existing WebdriverIO project, you'll need to install the required Serenity/JS modules and [configure the WebdriverIO test runner](#configuring-serenityjs) to use Serenity/JS framework and reporting services.
+To add Serenity/JS to an existing WebdriverIO project, you'll need to install the required Serenity/JS modules and [configure the WebdriverIO test runner](#configuration) to use Serenity/JS framework and reporting services.
 
 #### Compatibility
 
@@ -379,7 +379,7 @@ The most commonly used Screenplay Pattern APIs come from the following modules:
 
 A test scenario following the Screenplay Pattern models workflows of one or multiple [actors](/api/core/class/Actor/) representing people and external systems interacting with the system under test.
 
-When you [register `@serenity-js/webdriverio`](#configuring-serenityjs) as your WebdriverIO `framework`, Serenity/JS automatically configures
+When you [register `@serenity-js/webdriverio`](#integrating-serenityjs-reporting) as your WebdriverIO `framework`, Serenity/JS automatically configures
 a default [cast](/api/core/class/Cast/) of actors where every actor,  where every actor has the abilities to:
 
 To do so, Serenity/JS equips your actors with abilities to:
@@ -559,7 +559,7 @@ When your test run finishes, test results will be available in the `target/site/
 To view them, open the `index.html` file in your preferred web browser.
 
 :::tip Using WebdriverIO CLI wizard
-To avoid naming conflicts with any existing `test` script, projects created using the [WebdriverIO CLI wizard](#using-the-webdriverio-cli-wizard) come pre-configured with a `serenity` script that runs your tests and generates the reports:
+To avoid naming conflicts with any existing `test` script, projects created using the [WebdriverIO CLI wizard](#initialising-a-webdriverio-project) come pre-configured with a `serenity` script that runs your tests and generates the reports:
 
 ```sh
 npm run serenity
