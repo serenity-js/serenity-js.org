@@ -12,6 +12,7 @@ export default function TopBanner(): React.JSX.Element {
             <div className={styles.topBannerTitle}>
                 {'🎉\xa0'}
                 <Link
+                    id="top-banner-link"
                     to={ banner.link }
                     className={styles.topBannerTitleText}>
                     { banner.text }
