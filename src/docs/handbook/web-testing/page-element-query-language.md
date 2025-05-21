@@ -130,7 +130,7 @@ import { Answerable, q } from '@serenity-js/core'
 import { By, PageElement } from '@serenity-js/web'
 
 export const byTestId = (dataTestId: Answerable<string>) =>
-    By.css(q`[data-test-id="${ dataTestId }"]`)
+    By.css(q`[data-testid="${ dataTestId }"]`)
 ```
 
 Note that the example above uses [tag function `q`](/api/core/function/q) to concatenate a static string with an [`Answerable<string>`](/api/core/#Answerable).
