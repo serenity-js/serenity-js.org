@@ -99,7 +99,7 @@ and others.
 ### Using selector aliases
 
 In scenarios where elements use a consistent pattern allowing them to be easily identified,
-such as a `data-test-it`, or a `role` attribute, you might want to implement custom selector aliases
+such as a `data-testid`, or a `role` attribute, you might want to implement custom selector aliases
 to avoid code duplication.
 
 For example, below function `byRole` helps to locate elements with
