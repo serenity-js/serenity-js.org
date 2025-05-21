@@ -129,8 +129,8 @@ selector value using an [`Answerable<string>`](/api/core#Answerable):
 import { Answerable, q } from '@serenity-js/core'
 import { By, PageElement } from '@serenity-js/web'
 
-const byTestId = (dataTestId: Answerable<string>) =>
-    PageElement.located(By.css(q`[data-test-id="${ dataTestId }"]`))
+export const byTestId = (dataTestId: Answerable<string>) =>
+    By.css(q`[data-test-id="${ dataTestId }"]`)
 ```
 
 Note that the example above uses [tag function `q`](/api/core/function/q) to concatenate a static string with an [`Answerable<string>`](/api/core/#Answerable).
