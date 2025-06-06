@@ -99,7 +99,7 @@ and others.
 ### Using selector aliases
 
 In scenarios where elements use a consistent pattern allowing them to be easily identified,
-such as a `data-test-it`, or a `role` attribute, you might want to implement custom selector aliases
+such as a `data-testid`, or a `role` attribute, you might want to implement custom selector aliases
 to avoid code duplication.
 
 For example, below function `byRole` helps to locate elements with
@@ -129,8 +129,8 @@ selector value using an [`Answerable<string>`](/api/core#Answerable):
 import { Answerable, q } from '@serenity-js/core'
 import { By, PageElement } from '@serenity-js/web'
 
-const byTestId = (dataTestId: Answerable<string>) =>
-    PageElement.located(By.css(q`[data-test-id="${ dataTestId }"]`))
+export const byTestId = (dataTestId: Answerable<string>) =>
+    By.css(q`[data-testid="${ dataTestId }"]`)
 ```
 
 Note that the example above uses [tag function `q`](/api/core/function/q) to concatenate a static string with an [`Answerable<string>`](/api/core/#Answerable).
