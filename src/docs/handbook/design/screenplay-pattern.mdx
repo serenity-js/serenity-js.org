@@ -277,7 +277,7 @@ Serenity/JS test runner adapters use your test runner's configuration to set up 
 And so, Serenity/JS adapters for the following test runners will automatically give every actor you retrieve via [`actorCalled`](/api/core/function/actorCalled) the below abilities so that you don't have to configure them yourself:
 - [Playwright Test](/handbook/test-runners/playwright-test):
     - [`BrowseTheWebWithPlaywright`](/api/playwright/class/BrowseTheWebWithPlaywright/),
-    - [`CallAnApi`](/api/rest/class/CallAnApi) at [`baseURL`](/api/playwright/interface/PlaywrightOptions/#baseURL) configured in the [Playwright Test config file](https://playwright.dev/docs/test-configuration),
+    - [`CallAnApi`](/api/rest/class/CallAnApi) at [`baseURL`](https://playwright.dev/docs/api/class-testoptions#test-options-base-url) configured in the [Playwright Test config file](https://playwright.dev/docs/test-configuration),
     - [`TakeNotes`](/api/core/class/TakeNotes)
 - [WebdriverIO](/handbook/test-runners/webdriverio/) (with [Cucumber](/handbook/test-runners/cucumber), [Jasmine](/handbook/test-runners/jasmine), or [Mocha](/handbook/test-runners/mocha)):
     - [`BrowseTheWebWithWebdriverIO`](/api/webdriverio/class/BrowseTheWebWithWebdriverIO/),

@@ -90,7 +90,7 @@ In addition to the functionality offered by Playwright [`test`](https://playwrig
 wrapper offers [Serenity/JS-specific test fixtures](/api/playwright-test/interface/SerenityFixtures),
 such as [`actor`](/api/playwright-test/interface/SerenityFixtures#actor),
 [`actorCalled`](/api/playwright-test/interface/SerenityFixtures#actorCalled),
-or [`crew`](/api/playwright-test/interface/SerenityOptions/#crew).
+or [`crew`](/api/playwright-test/interface/SerenityFixtures/#crew).
 I'll tell you about them in a moment, but first, let's run the scenarios.
 
 
@@ -188,9 +188,9 @@ in non-headless mode by setting the `headless` flag to `false` in [Playwright Te
 
 ```typescript title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test';
-import type { SerenityOptions } from '@serenity-js/playwright-test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
   use: {
     headless: false,
     // ...
@@ -720,15 +720,15 @@ or on demand using the interaction to [`TakeScreenshot`](/api/web/class/TakeScre
 #### Automatic screenshots
 
 To enable automatic screenshots, use your `playwright.config.ts` file to add the [`Photographer`](/api/web/class/Photographer/) to the Serenity/JS
-stage [`crew`](/api/playwright-test/interface/SerenityOptions/#crew) available in Playwright Test [worker processes](https://playwright.dev/docs/test-parallel),
+stage [`crew`](/api/playwright-test/interface/SerenityFixtures/#crew) available in Playwright Test [worker processes](https://playwright.dev/docs/test-parallel),
 and add the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/) and
 [`ArtifactArchiver`](/api/core/class/ArtifactArchiver/) to your reporter process:
 
 ```typescript title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test';
-import type { SerenityOptions } from '@serenity-js/playwright-test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
   reporter: [
       [ '@serenity-js/playwright-test', {
           crew: [
