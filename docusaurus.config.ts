@@ -72,8 +72,10 @@ const config: Config = {
             and produce comprehensive test reports that build trust between delivery teams and the business.
             `,
         banner: {
-            text: 'New Playwright Test guide is out!',
-            link: '/handbook/test-runners/playwright-test',
+            // text: 'Get started with Serenity/JS and Playwright Test',
+            // link: '/handbook/test-runners/playwright-test',
+            text: 'Serenity/JS 3.32 powers up Playwright',
+            link: '/blog/playwright-reporting-and-worker-scope-actors/',
         }
     },
 

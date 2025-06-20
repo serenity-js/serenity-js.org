@@ -115,9 +115,9 @@ To integrate [Serenity/JS reporting](/handbook/reporting/), modify the `playwrig
 
 ```typescript title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test'
-import type { SerenityOptions } from '@serenity-js/playwright-test'
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
     reporter: [
         // Serenity/JS reporting services
         [ '@serenity-js/playwright-test', {
@@ -156,7 +156,7 @@ If you'd like to use different locations for your tests or the test reports, adj
 Serenity/JS offers automatic screenshot capture for test scenarios using the [Screenplay Pattern](/handbook/design/screenplay-pattern/).
 This is handled by the [Photographer service](/handbook/reporting/photographer/), which takes screenshots based on interactions and assertion failures performed by the Serenity/JS actors.
 
-To enable automatic screenshot capture, add the `@serenity-js/web:Photographer` service to the [`crew`](/api/playwright-test/interface/SerenityOptions/#crew) array
+To enable automatic screenshot capture, add the `@serenity-js/web:Photographer` service to the [`crew`](/api/playwright-test/interface/SerenityFixtures/#crew) array
 in the appropriate `use` section of your [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) configuration file.
 
 There are three available scopes for configuring the Photographer:
@@ -168,9 +168,9 @@ For example, to take screenshots only **on assertion failures by default**, but 
 
 ```ts title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test'
-import type { SerenityOptions } from '@serenity-js/playwright-test'
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
     reporter: [
         // ...
     ],
@@ -225,7 +225,8 @@ describe('Checkout', () => {
 ```
 
 Learn more about:
-- [Serenity/JS configuration options](/api/playwright-test/interface/SerenityOptions)
+- [Serenity/JS test fixtures and configuration options](/api/playwright-test/interface/SerenityFixtures)
+- [Serenity/JS test fixtures and configuration options](/api/playwright-test/interface/SerenityWorkerFixtures)
 - [Playwright Test configuration options](https://playwright.dev/docs/test-configuration)
 
 ## Writing tests
@@ -454,13 +455,13 @@ To try this example out, check out the [Serenity/JS Playwright Test Template](ht
 
 ### Changing the default actor name
 
-You can change the name of the default `actor` by setting the [`defaultActorName`](/api/playwright-test/interface/SerenityOptions/#defaultActorName) configuration option in your [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) file:
+You can change the name of the default `actor` by setting the [`defaultActorName`](/api/playwright-test/interface/SerenityFixtures/#defaultActorName) configuration option in your [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) file:
 
 ```ts title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test'
-import type { SerenityOptions } from '@serenity-js/playwright-test'
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
     // Global configuration for all test scenarios
     use: {
         defaultActorName: 'Alice',
@@ -868,9 +869,9 @@ To enable integration with the Playwright HTML reporter, you need to:
 
 ```ts title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test'
-import type { SerenityOptions } from '@serenity-js/playwright-test'
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
     reporter: [
         // Enable Serenity/JS reporting services
         [ '@serenity-js/playwright-test', {
@@ -924,9 +925,9 @@ To use this feature, you need to:
 
 ```ts title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test'
-import type { SerenityOptions } from '@serenity-js/playwright-test'
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
-export default defineConfig<SerenityOptions>({
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
   use: {
     trace: 'on-first-retry',     // or 'on', 'retain-on-failure'
   },
