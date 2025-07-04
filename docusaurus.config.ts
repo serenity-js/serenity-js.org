@@ -149,7 +149,7 @@ const config: Config = {
         },
         announcementBar: {
             id: 'announcement-bar',
-            content: 'Get our book - <a target="_blank" rel="noopener noreferrer" href="https://www.manning.com/books/bdd-in-action-second-edition">"BDD in Action, Second Edition"</a> 📚',
+            content: 'Independence Day Sale - Save 50% on our book - <a target="_blank" rel="noopener noreferrer" href="https://www.manning.com/books/bdd-in-action-second-edition">"BDD in Action, Second Edition"</a> 📚',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },
