@@ -608,7 +608,7 @@ describe('Todo App', () => {
 
 ### Overriding abilities via `test.use`
 
-To avoid adding or overriding abilities inline, you can do so globally by overriding the [`actorCalled`](/api/playwright-test/interface/SerenityFixtures/#actorCalled) fixture
+To avoid adding or overriding abilities inline, you can do so globally by overriding the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture
 via [`test.use`](/api/playwright-test/function/test/#use):
 
 ```ts title="./spec/todo_app.spec.ts"
@@ -631,7 +631,7 @@ describe('Todo App', () => {
 
 ### Overriding abilities via `useFixtures`
 
-You can override the [`actorCalled`](/api/playwright-test/interface/SerenityFixtures/#actorCalled) fixture globally using the [`useFixtures`](/api/playwright-test/function/useFixtures/) function.
+You can override the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture globally using the [`useFixtures`](/api/playwright-test/function/useFixtures/) function.
 This function returns a test API, including functions such as `describe`, `it`, `beforeEach`, or `test`, which you can use instead of the default ones to define test scenarios.
 
 ```ts title="./spec/test-api.ts"
@@ -725,9 +725,9 @@ If your scenario requires more actors using separate browser instances, you can 
 ### Sharing notes between actors
 
 [By default](#modifying-default-abilities), each actor receives an ability to [`TakeNotes`](/api/core/class/TakeNotes/) using their own [notepad](/api/core/class/Notepad/).
-To share notes between actors, you can introduce a `notepad` fixture and override the default [`actorCalled`](/api/playwright-test/interface/SerenityFixtures/#actorCalled) function to make the actors reuse the same notepad.
+To share notes between actors, you can introduce a `notepad` fixture and override the default [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) function to make the actors reuse the same notepad.
 
-Overriding the [`actorCalled`](/api/playwright-test/interface/SerenityFixtures/#actorCalled) function allows you to customise the abilities of the actors created via the `actorCalled` fixture,
+Overriding the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) function allows you to customise the abilities of the actors created via the `actorCalled` fixture,
 as well as the default actor injected via the [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture.
 
 ```ts title="./spec/test-api.ts"
@@ -838,7 +838,7 @@ export const { describe, it, beforeEach, test } = useFixtures<{ notepad: Notepad
 })
 ```
 
-Overriding `actors` replaces the cast used to configure the actors instantiated via the [`actorCalled`](/api/playwright-test/interface/SerenityFixtures/#actorCalled) fixture, as well as the default actor injected via the [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture.
+Overriding `actors` replaces the cast used to configure the actors instantiated via the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture, as well as the default actor injected via the [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture.
 
 ## Reporting
 

@@ -38,7 +38,7 @@ For the deep dive, check out the [Serenity/JS integration guide for Playwright T
 Serenity/JS 3.32 introduces support for [Playwright Test worker-scope fixtures](https://playwright.dev/docs/test-fixtures#worker-scoped-fixtures),
 allowing you to use actors in `beforeAll` and `afterAll` hooks.
 
-To use actors in a `beforeAll` or `afterAll` hook, use the  [`actorCalled`](https://serenity-js.org/api/playwright-test/interface/SerenityFixtures/#actorCalled) fixture:
+To use actors in a `beforeAll` or `afterAll` hook, use the  [`actorCalled`](https://serenity-js.org/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture:
 
 ```ts title="github.spec.ts"
 import { afterAll, beforeAll, describe, it } from '@serenity-js/playwright-test'
