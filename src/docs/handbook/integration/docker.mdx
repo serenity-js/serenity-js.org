@@ -7,6 +7,8 @@ export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwr
 
 Serenity/JS Docker images enable you to run Serenity/JS tests in containerised environments,
 including CI/CD pipelines, cloud development environments, and local development setups.
+The images are maintained in the [serenity-js/serenity-js-docker](https://github.com/serenity-js/serenity-js-docker) repository
+and published through the [Serenity/JS GitHub Container Registry](https://github.com/orgs/serenity-js/packages).
 
 ## Using Serenity/JS Docker Images
 
@@ -18,10 +20,7 @@ Learn how to integrate Serenity/JS Docker images with your workflow:
 
 ## Available Images
 
-The Serenity/JS Docker images are maintained in the [serenity-js/serenity-js-docker](https://github.com/serenity-js/serenity-js-docker) repository
-and published through the [Serenity/JS GitHub Container Registry](https://github.com/orgs/serenity-js/packages).
-
-### Serenity/JS Playwright
+### Serenity/JS Playwright image
 
 **Recommended for**: [Playwright Test](/handbook/test-runners/playwright-test/),
 [Cucumber.js with Playwright](/handbook/test-runners/cucumber/), and [WebdriverIO](/handbook/test-runners/webdriverio/) projects using modern browsers.
@@ -55,3 +54,65 @@ Image versions follow Playwright's versioning convention to ensure compatibility
 - cURL
 - OpenSSH Client
 - Playwright system dependencies
+
+## Extending Serenity/JS Docker images
+
+Serenity/JS base images are ready for immediate use,
+but there are many situations where layering your own image provides more control.
+Common needs include installing system tools, adding language runtimes, embedding corporate CA certificates,
+or adjusting environment-level settings for browsers, Node.js, or the JVM.
+
+### Creating a Custom Image
+
+Start by using an official Serenity/JS image as your base. This preserves the full testing toolchain—browsers,
+drivers, system dependencies, and Serenity/JS reporting—while giving you space to tailor the environment.
+
+<DynamicCodeBlock lang="docker" title="Dockerfile">
+{`FROM ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble
+
+# Add your customisations here
+`}
+</DynamicCodeBlock>
+
+### Adding Custom CA Certificates
+
+Teams using Serenity/JS often run tests against internal services protected by certificates signed by private Certificate Authorities (CAs).
+Without installing those CAs, TLS requests from your test suite may fail.
+Extending the base image ensures both the OS and Node.js trust your internal CA.
+
+#### Example: Embedding and Trusting Corporate CA Certificates
+
+<DynamicCodeBlock lang="docker" title="Dockerfile">
+{`FROM ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble
+
+  # Switch to root to install system-level dependencies
+  USER root
+
+  # Copy your custom CA certs into the image.
+  # This assumes you have certificates in a local folder named \`certs/\`
+  COPY certs/my-company-root-ca.crt /usr/local/share/ca-certificates/
+
+  # Update and rehash the certificates
+  RUN apt-get update \\
+    && update-ca-certificates \\
+    && rm -rf /var/lib/apt/lists/*
+
+  # Tell Node.js about the certificates
+  ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/my-company-root-ca.crt
+
+  # (Optional) Drop back to a non-root user if the base image supports it
+  USER serenity-js
+`}
+</DynamicCodeBlock>
+
+##### Things to Watch Out For
+- **Certificate Rotation**: If you rotate or add new CA certs, you’ll need to rebuild and redeploy the image.
+- **Credential Management**: Be careful not to bake in sensitive private keys or credentials unless the image is stored in a secure (private) registry.
+- **User Permissions**: Serenity/JS images run under a non-root serenity-js user by default. When installing packages or updating certificates, switch to root temporarily and revert afterwards to maintain secure defaults.
+
+### Building and publishing your custom image
+
+To build and publish your Docker image, follow the instructions from your artifact registry vendor:
+- [Artifactory: "Docker registry"](https://jfrog.com/help/r/jfrog-artifactory-documentation/docker-registry)
+- [GitHub: "Working with the Container registry"](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+- [GitLab: "Build and push container images to the Container Registry"](https://docs.gitlab.com/ee/user/packages/container_registry/build_and_push_images.html)
