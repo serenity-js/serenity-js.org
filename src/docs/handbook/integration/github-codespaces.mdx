@@ -2,6 +2,63 @@
 title: GitHub Codespaces
 ---
 
+export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwright-core" format="exact" />;
+
 # GitHub Codespaces
 
-<ArticleComingSoon />
+[GitHub Codespaces](https://docs.github.com/en/codespaces) provide cloud-hosted development environments
+that run directly in your browser or local [VS Code](/handbook/integration/visual-studio-code/) client.
+
+## Serenity/JS Docker Image for GitHub Codespaces
+
+The official [Serenity/JS Docker image](/handbook/integration/docker/) is fully compatible with GitHub Codespaces.
+
+All [Serenity/JS Project Templates](/handbook/project-templates/) include a preconfigured `devcontainer.json` file.
+This container:
+
+- Uses the Serenity/JS Playwright Docker image
+- Installs recommended VS Code extensions
+- Configures port forwarding for any Serenity/JS report servers
+
+To launch a Codespace for any Serenity/JS project, open the repository on GitHub and select **Code → Create Codespace on main**.
+
+## Customising the Codespace
+
+You can tailor the development environment by editing the `devcontainer.json` file in `.devcontainer/`.
+This is where you can:
+
+- Add or update Dev Container Features
+- Extend the toolchain
+- Adjust VS Code extensions
+- Modify ports, mounts, or environment variables
+
+Below example configuration uses the Serenity/JS Playwright Docker image
+and adds [GitHub CLI](https://github.com/devcontainers/features/tree/main/src/github-cli) and [Light-weight Desktop](https://github.com/devcontainers/features/tree/main/src/desktop-lite) features:
+
+<DynamicCodeBlock lang="json" title=".devcontainer/devcontainer.json" >
+{`{
+    "name": "My Serenity/JS Codespace",
+    "image": "ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble",
+    "features": {
+      "ghcr.io/devcontainers/features/desktop-lite:1": {},
+      "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "dbaeumer.vscode-eslint",
+          "editorconfig.editorconfig",
+          "eamodio.gitlens",
+          "ms-playwright.playwright",
+        ]
+      }
+    }
+}`}
+</DynamicCodeBlock>
+
+## Learn More
+
+To learn more about developing with GitHub Codespaces, visit the [GitHub Codespaces Documentation](https://docs.github.com/en/codespaces).
+
+For additional configuration options, refer to the [Dev Containers specification](https://containers.dev/implementors/json_reference/).
+
