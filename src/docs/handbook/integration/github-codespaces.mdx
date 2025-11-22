@@ -9,13 +9,9 @@ export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwr
 [GitHub Codespaces](https://docs.github.com/en/codespaces) provide cloud-hosted development environments
 that run directly in your browser or local [VS Code](/handbook/integration/visual-studio-code/) client.
 
-## Serenity/JS Docker Image for GitHub Codespaces
-
-The official [Serenity/JS Docker image](/handbook/integration/docker/) is fully compatible with GitHub Codespaces.
-
-All [Serenity/JS Project Templates](/handbook/project-templates/) include a preconfigured `devcontainer.json` file.
-This container:
-
+Official [Serenity/JS Docker images](/handbook/integration/docker/) are fully compatible with GitHub Codespaces,
+and all the [Serenity/JS Project Templates](/handbook/project-templates/) include a preconfigured `devcontainer.json` file
+to ensure your Codespace:
 - Uses the Serenity/JS Playwright Docker image
 - Installs recommended VS Code extensions
 - Configures port forwarding for any Serenity/JS report servers
@@ -24,7 +20,7 @@ To launch a Codespace for any Serenity/JS project, open the repository on GitHub
 
 ## Customising the Codespace
 
-You can tailor the development environment by editing the `devcontainer.json` file in `.devcontainer/`.
+You can tailor the development environment by editing the `.devcontainer/devcontainer.json` file.
 This is where you can:
 
 - Add or update Dev Container Features
@@ -49,7 +45,7 @@ and adds [GitHub CLI](https://github.com/devcontainers/features/tree/main/src/gi
           "dbaeumer.vscode-eslint",
           "editorconfig.editorconfig",
           "eamodio.gitlens",
-          "ms-playwright.playwright",
+          "ms-playwright.playwright"
         ]
       }
     }
