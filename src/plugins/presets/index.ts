@@ -37,6 +37,55 @@ export default async function pluginPresets(
     return {
         name: 'docusaurus-plugin-serenity-js-presets',
 
+        async loadContent() {
+            // module-manager preset
+            const paths = await glob(input, { onlyFiles: false, globstar: true, absolute: true });
+
+            const packages = {};
+            let integrations = {};
+
+            for (const pathToPackageJSON of paths) {
+                const serenityPackage = JSON.parse(fs.readFileSync(pathToPackageJSON).toString('utf8'));
+
+                const dependencies = {
+                    ...serenityPackage.dependencies,
+                    ...serenityPackage.peerDependencies,
+                };
+
+                const packageIntegrations = Object.keys(dependencies)
+                    .filter(dependency => options.integrationsOfInterest.includes(dependency))
+                    .reduce((acc, key) => {
+                        acc[key] = dependencies[key];
+                        return acc;
+                    }, {});
+
+                integrations = {
+                    ...integrations,
+                    ...packageIntegrations,
+                }
+
+                packages[serenityPackage.name] = serenityPackage.version;
+            }
+
+            return {
+                engines: rootPackageJson.engines,
+                packages,
+                integrations,
+                integrationsOfInterest: options.integrationsOfInterest,
+                caching,
+                sampling,
+            };
+        },
+
+        async contentLoaded({ content, actions }) {
+            const { setGlobalData } = actions;
+            setGlobalData({
+                integrationsOfInterest: content.integrationsOfInterest,
+                integrations: content.integrations,
+                packages: content.packages,
+            });
+        },
+
         async postBuild({ siteConfig, routesPaths, outDir, head }) {
 
             // module-manager preset

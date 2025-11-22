@@ -1,0 +1,57 @@
+---
+title: Docker
+---
+export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwright-core" format="exact" />;
+
+# Docker
+
+Serenity/JS Docker images enable you to run Serenity/JS tests in containerised environments,
+including CI/CD pipelines, cloud development environments, and local development setups.
+
+## Using Serenity/JS Docker Images
+
+Learn how to integrate Serenity/JS Docker images with your workflow:
+
+- [GitHub Actions](/handbook/integration/github-actions/)
+- [GitHub Codespaces](/handbook/integration/github-codespaces/)
+- [GitLab CI](/handbook/integration/gitlab-ci/)
+
+## Available Images
+
+The Serenity/JS Docker images are maintained in the [serenity-js/serenity-js-docker](https://github.com/serenity-js/serenity-js-docker) repository
+and published through the [Serenity/JS GitHub Container Registry](https://github.com/orgs/serenity-js/packages).
+
+### Serenity/JS Playwright
+
+**Recommended for**: [Playwright Test](/handbook/test-runners/playwright-test/),
+[Cucumber.js with Playwright](/handbook/test-runners/cucumber/), and [WebdriverIO](/handbook/test-runners/webdriverio/) projects using modern browsers.
+
+The Serenity/JS Playwright Docker image provides a complete testing environment with all **Playwright browser engines**, plus the latest stable **Chrome** and **Edge** browsers.
+Image versions follow Playwright's versioning convention to ensure compatibility.
+
+<DynamicCodeBlock lang="bash" title="Install from the command line" >
+{`docker pull ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble`}
+</DynamicCodeBlock>
+
+**📦 [View all versions](https://github.com/serenity-js/serenity-js-docker/pkgs/container/playwright)**
+
+#### What's Included
+
+**Browsers:**
+- Microsoft Edge (Stable)
+- Google Chrome (Stable)
+- Playwright Chromium Engine
+- Playwright Chromium Headless Shell
+- Playwright Firefox Engine
+- Playwright WebKit Engine
+
+**Runtimes:**
+- Node.js 24
+- OpenJDK Java Runtime Environment
+
+**Operating System:**
+- Ubuntu 24.04 LTS (Noble Numbat)
+- Git
+- cURL
+- OpenSSH Client
+- Playwright system dependencies

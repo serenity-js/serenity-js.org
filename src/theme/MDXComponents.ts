@@ -3,10 +3,12 @@ import ArticleComingSoon from '@site/src/components/ArticleComingSoon'
 import BrowserWindow from '@site/src/components/BrowserWindow'
 import CurrentNodeVersion from '@site/src/components/CurrentNodeVersion'
 import DependencyTypeDescription from '@site/src/components/DependencyTypeDescription'
+import DynamicCodeBlock from '@site/src/components/DynamicCodeBlock';
 import Figure from '@site/src/components/Figure'
 import NpmLink from '@site/src/components/NpmLink'
 import SupportedNodeVersions from '@site/src/components/SupportedNodeVersions'
 import SemanticVersionRangeDescription from '@site/src/components/SemanticVersionRangeDescription'
+import SupportedIntegrationVersion from '@site/src/components/SupportedIntegrationVersion';
 import CodeBlock from '@theme/CodeBlock';
 import Image from '@theme/IdealImage';
 import MDXComponents from '@theme-original/MDXComponents'
@@ -22,11 +24,13 @@ export default {
     CurrentNodeVersion,
     CodeBlock,
     DependencyTypeDescription,
+    DynamicCodeBlock,
     Image,
     NpmLink,
     Tabs,
     TabItem,
     SemanticVersionRangeDescription,
+    SupportedIntegrationVersion,
     SupportedNodeVersions,
     Figure
 }
