@@ -17,10 +17,10 @@ import CodeBlock from '@theme/CodeBlock';
  * @param children
  * @param lang
  * @param title
- * @param highlight
+ * @param props
  * @constructor
  */
-export default function DynamicCodeBlock({ children, lang, title, highlight }) {
+export default function DynamicCodeBlock({ children, lang, title, ...props }) {
     const tempRef = useRef(null);
     const [ plainText, setPlainText ] = useState('');
 
@@ -33,8 +33,6 @@ export default function DynamicCodeBlock({ children, lang, title, highlight }) {
             return () => clearTimeout(timer);
         }
     }, [ children ]);
-
-    const metastring = highlight ? `{${ highlight }}` : '';
 
     return (
         <>
@@ -60,7 +58,7 @@ export default function DynamicCodeBlock({ children, lang, title, highlight }) {
             <CodeBlock
                 className={ lang ? `language-${ lang }` : undefined }
                 title={ title }
-                metastring={ metastring }
+                { ...props }
             >
                 { plainText }
             </CodeBlock>
