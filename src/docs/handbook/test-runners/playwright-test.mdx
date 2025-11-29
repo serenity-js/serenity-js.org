@@ -571,12 +571,13 @@ Each actor comes with a set of abilities that enable them to interact with the s
 
 :::tip Overriding abilities
 An actor can only have **one instance of each ability** type at a time.
-Therefore, providing a new instance of the same type via the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method overrides any existing ability of that type
+Therefore, providing a new instance of the same type via the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method overrides any existing ability of that type.
 :::
 
 ### Overriding abilities inline
 
-You can override the default abilities inline or add [custom abilities](/api/core/class/Ability/) within a test scenario using the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method:
+You can override the default abilities inline or add [custom abilities](/api/core/class/Ability/)
+inline within a test scenario using the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method:
 
 ```ts title="./spec/todo_app.spec.ts"
 import { describe, it, beforeEach } from '@serenity-js/playwright-test'
@@ -586,16 +587,19 @@ describe('Todo App', () => {
 
     describe('actor', () => {
 
-        it('can share notes with another actor', async ({ actorCalled, browser }) => {
+        it('can share notes with another actor', async ({ actor, actorCalled, browser }) => {
 
             const sharedNotepad = Notepad.empty()
 
-            await actorCalled('Alice')
+            // Override the default actor's ability to take notes
+            await actor
                 .whoCan(TakeNotes.using(sharedNotepad))
                 .attemptsTo(
                     // ...
                 )
 
+            // Create an extra actor with access to the same notepad
+            // to allow for sharing data between actors
             await actorCalled('Bob')
                 .whoCan(TakeNotes.using(sharedNotepad))
                 .attemptsTo(
@@ -608,21 +612,18 @@ describe('Todo App', () => {
 
 ### Overriding abilities via `test.use`
 
-To avoid adding or overriding abilities inline, you can do so globally by overriding the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture
-via [`test.use`](/api/playwright-test/function/test/#use):
+To avoid adding or overriding abilities inline, you can define them via [`test.use`](/api/playwright-test/function/test/#use) and
+using the [`extraAbilities`](/api/playwright-test/interface/SerenityFixtures/#extraAbilities) fixture.
+This approach enables you to reuse the same configuration for all the test scenarios within the given `describe` block.
 
 ```ts title="./spec/todo_app.spec.ts"
-import { describe, it, beforeEach, test } from '@serenity-js/playwright-test'
-import { TakeNotes, Notepad } from '@serenity-js/core'
+import { describe, it, test } from '@serenity-js/playwright-test'
+import { MyAbility } from './MyAbility'
 
 describe('Todo App', () => {
 
     test.use({
-        actorCalled: async ({ actorCalled }, use) => {
-            await use(actorName => actorCalled(actorName).whoCan(
-                // ...add or override the abilities
-            ));
-        },
+        extraAbilities: [ new MyAbility() ]
     });
 
     // ...
@@ -631,8 +632,10 @@ describe('Todo App', () => {
 
 ### Overriding abilities via `useFixtures`
 
-You can override the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture globally using the [`useFixtures`](/api/playwright-test/function/useFixtures/) function.
-This function returns a test API, including functions such as `describe`, `it`, `beforeEach`, or `test`, which you can use instead of the default ones to define test scenarios.
+When you have multiple test files that require the same customisations to your actor configuration or the same custom fixtures, you'll want to
+centralise it in a file like `serenity-api.ts` and leverage the [`useFixtures`](/api/playwright-test/function/useFixtures/) function.
+
+This function returns a test API, including functions such as `describe`, `it`, `beforeEach`, or `test`, which you can use instead of the default ones provided by the framework.
 
 ```ts title="./spec/test-api.ts"
 import { useFixtures } from '@serenity-js/playwright-test'
@@ -642,23 +645,30 @@ export interface MyNotes {
     testListId: string;
 }
 
-export const { describe, it, beforeEach, test } = useFixtures<{ notepad: Notepad<MyNotes> }>({
+export interface TestScopeFixtures {
+    notepad: Notepad<MyNotes>
+}
+
+export const { describe, it, beforeEach, test } = useFixtures<TestScopeFixtures>({
   notepad: Notepad.with<MyNotes>({
-     testListId: process.env.TEST_LIST_ID,
+      testListId: process.env.TEST_LIST_ID,
   }),
 
-  actorCalled: async ({ actorCalled, notepad }, use) => {
-      await use(actorName => actorCalled(actorName).whoCan(
-          TakeNotes.using(notepad),
-      ));
+  extraAbilities: async ({ notepad }, use) => {
+      const extraAbilities = [
+          TakesNotes.using(notepad),
+      ];
+
+      await use(extraAbilities);
   },
 })
 ```
 
 ```ts title="./spec/todo_app.spec.ts"
-import { describe, it, beforeEach, test, type MyNotes } from './test-api.ts'
 import { Navigate } from '@serenity-js/web'
 import { notes, q } from '@serenity-js/core'
+
+import { describe, it, beforeEach, test, type MyNotes } from './test-api.ts'
 
 describe('Todo App', () => {
 
@@ -759,14 +769,15 @@ export const { describe, it, beforeEach, afterEach, test }  = useFixtures<TestSc
     },
 
     // Override the actorCalled fixture to use the shared notepad
-    actorCalled: async ({ actorCalled, notepad }, use) => {
-        await use(actorName => actorCalled(actorName).whoCan(
+    extraAbilities: async ({ notepad }, use) => {
 
-            // The new TakeNotes ability overrides the default one
-            TakeNotes.using(notepad),
-
-            // ...add or override other abilities
-        ));
+        await use(actorName => {
+            // Return the same set of extra abilities for all the actors,
+            // or make it conditional based on the actorName
+            return [
+                TakeNotes.using(notepad),
+            ]
+        })
     },
 })
 ```
