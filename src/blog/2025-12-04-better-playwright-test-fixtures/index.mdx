@@ -1,0 +1,160 @@
+---
+slug: better-playwright-test-fixtures
+title: "Serenity/JS 3.37: Better Playwright Test Fixtures"
+authors: [jan-molak]
+tags:
+  - core
+  - playwright
+  - playwright-test
+  - web
+  - open-source
+---
+
+[**Serenity/JS 3.37**](https://github.com/serenity-js/serenity-js/releases/tag/v3.37.0) introduces a focused set of improvements to the [Playwright Test integration](/handbook/test-runners/playwright-test/), delivered in [PR #3096](https://github.com/serenity-js/serenity-js/pull/3096).
+This update strengthens the flexibility of Playwright Test fixtures while keeping the Serenity/JS API clean, expressive, and easy to maintain.
+
+Let's explore what's new!
+
+{/* truncate */}
+
+## A more versatile `useBase`
+
+This release extends the capabilities of [`useBase`](/api/playwright-test/function/useBase/), allowing it to wrap any Playwright Test base — including custom or experimental runners — into a Serenity/JS-ready test API.
+You can now combine multiple base fixtures within the same suite, create hybrid test APIs, or plug in specialised runners such as component-test frameworks.
+
+This provides a unified way to use diverse fixtures without rewriting configuration or losing access to [`SerenityFixtures`](/api/playwright-test/interface/SerenityFixtures/).
+It's especially useful when tests span multiple layers—UI components, browser workflows, and supporting infrastructure.
+
+### Using Serenity/JS with a component test runner
+
+```ts title="EmailInput.spec.tsx"
+import { test as componentTest } from '@playwright/experimental-ct-react'
+import { Enter, CssClasses } from '@serenity-js/web'
+import { Ensure, not, contain } from '@serenity-js/assertions'
+import { useBase } from '@serenity-js/playwright-test'
+
+import EmailInput from './EmailInput.js'
+
+interface MyFixtures {
+    emailAddress: string;
+}
+
+const { describe, it, test, beforeEach, afterEach } = useBase(componentTest)
+    .useFixtures<MyFixtures>({
+        emailAddress: async ({ actor }, use) => {
+          await use(`${ actor.name }@example.org`);
+        }
+    })
+
+describe('EmailInput', () => {
+
+    it('accepts a valid email address', async ({
+        mount,
+        emailAddress,
+        actor
+    }) => {
+
+        const component = PageElement.from(await mount(<EmailInput />))
+
+        await actor.attemptsTo(
+            Enter.theValue(emailAddress).into(component),
+            Ensure.that(CssClasses.of(component), not(contain('error'))),
+        )
+    })
+})
+```
+
+Explore more examples in Serenity/JS Project Template repositories:
+- [Serenity/JS Playwright Component Testing with React](https://github.com/serenity-js/serenity-js-playwright-ct-react-template)
+- [Serenity/JS Playwright Component Testing with Web Components](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template)
+
+## Clear and flexible actor configuration
+
+The new [`extraAbilities`](/api/playwright-test/interface/SerenityFixtures/#extraAbilities) fixture lets you extend what
+your actors can do — globally or per scenario — without overriding the entire [`cast of actors`](/api/playwright-test/interface/SerenityFixtures/#actors).
+
+### Using extra abilities in a test scenario
+
+```typescript title="my_feature.spec.tsts"
+import { type Ability } from '@serenity-js/core'
+import { describe, it, test } from '@serenity-js/playwright-test'
+import { MyAbility } from './MyAbility.js'
+
+describe(`My feature`, () => {
+
+    test.use({
+        extraAbilities: [ new MyAbility() ]
+    })
+
+    it(`...`, async({ actor }) => {
+      // ...
+    })
+})
+```
+
+### Using extra abilities in a customised test API
+
+```typescript title="test-api.ts"
+import { useFixtures } from '@serenity-js/playwright-test'
+
+import { MyAbility } from './MyAbility.js'
+
+export const {
+    describe,
+    it,
+    test,
+    beforeAll,
+    beforeEach,
+    afterEach,
+    afterAll,
+    expect,
+} = useFixtures({
+    extraAbilities: [ new MyAbility() ]
+})
+```
+
+Explore more examples in the [`extraAbilities` API docs](/api/playwright-test/interface/SerenityFixtures/#extraAbilities)
+
+## Improved ergonomics for multi-dimensional testing
+
+Many modern test suites evaluate applications across multiple dimensions—functional behaviour, accessibility, visual integrity, and more.
+Playwright Test-based tools and frameworks expose these capabilities as a combination of fixtures and base tests.
+
+Serenity/JS 3.37 simplifies this setup by making it easier to combine several base tests and present them through a single, consistent Serenity/JS API.
+
+### Combining component and visual testing
+
+The example below merges the [`@sand4rt/experimental-ct-web`](https://github.com/sand4rt/playwright-ct-web)
+component-test runner with the [Applitools Playwright Fixtures](https://www.npmjs.com/package/@applitools/eyes-playwright).
+
+```typescript title="test-api.ts"
+import { useBase } from '@serenity-js/playwright-test'
+import { test as componentTest } from '@sand4rt/experimental-ct-web'
+import { test as applitoolsTest } from '@applitools/eyes-playwright'
+
+export const {
+    describe,
+    it,
+    test,
+    beforeAll,
+    beforeEach,
+    afterEach,
+    afterAll,
+    expect,
+} = useBase(componentTest, applitoolsTest).useFixtures({
+    extraAbilities: async ({ eyes, /* other dependencies */ }, use) => {
+        await use([
+            // Add abilities
+        ])
+    }
+})
+```
+
+If you're using Serenity/JS with Playwright Test - [update your test suite](/releases/updating-serenity-js/) and take this latest version for a spin!
+If you're new to the framework, check out our [official tutorial](/handbook/tutorials/your-first-web-scenario/).
+
+If you're using Serenity/JS with Playwright Test, now is a great time to [upgrade your test suite](/releases/updating-serenity-js/)
+and take this latest version for a spin!
+If you're getting started, our [official tutorial](/handbook/tutorials/your-first-web-scenario/) is the best place to begin.
+
+Enjoy Serenity! 🎉
