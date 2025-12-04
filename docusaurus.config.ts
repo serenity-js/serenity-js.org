@@ -75,7 +75,7 @@ const config: Config = {
             // text: 'Get started with Serenity/JS and Playwright Test',
             // link: '/handbook/test-runners/playwright-test',
             text: 'S/JS 3.37: Better Playwright Fixtures',
-            link: '/blog/improving-playwright-test-fixtures/',
+            link: '/blog/better-playwright-test-fixtures/',
         }
     },
 
