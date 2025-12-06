@@ -4,59 +4,77 @@ sidebar_position: 4
 ---
 # Proposing enhancements
 
-Serenity/JS is an open-source project and is open to your contributions and [Pull Requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
+Serenity/JS welcomes ideas and contributions of all sizes. Before starting any work, check whether your enhancement aligns with community needs:
+- Open an issue on the [Serenity/JS GitHub repository](https://github.com/serenity-js/serenity-js/issues/new)
+- Chat with the team on the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im) on Gitter
 
-Before putting your time and effort into a pull request, though, please gauge the potential interest in incorporating your idea either by raising a ticket on [Serenity/JS GitHub](https://github.com/serenity-js/serenity-js/issues/new) or chatting with the development team on the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im) on Gitter.
+Both options help confirm interest and reduce the chance of duplicate or unnecessary work.
 
-[![Serenity/JS Contributors Chat](https://img.shields.io/badge/Matrix-Serenity%2FJS%20Contributors%20Chat-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js-contributors:gitter.im)
+## Working with the Serenity/JS codebase
 
-### Working with the Serenity/JS codebase
+Once you’re ready to propose a change, follow this workflow.
 
-If you have decided to work on a pull request, you'll need to:
-- [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [Serenity/JS mono-repo](https://github.com/serenity-js/serenity-js) to your GitHub account
-- [Create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository) in your forked repository
-- Click on the [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/serenity-js/serenity-js) badge in the readme of your forked repository to provision your free Gitpod workspace.
-- When you're done, run the full local build `make clean verify report`
-- Commit your changes following the conventional commits standard, push them to your forked repository, and raise a pull request - more on commit message standard and automated releases below.
+### Prepare your working environment
 
-:::tip Did you know?
-Clicking on the Gitpod badge in the readme on your branch in your forked repository will provision a new Gitpod workspace.
-The workspace is created with all the dependencies necessary to successfully build and test Serenity/JS, including the operating system-level dependencies, web browsers, Node.js, and node modules.
+**Option A: Use GitHub Codespaces (recommended)**
 
-This virtual workspace is free of charge thanks to the [generous free tier](https://www.gitpod.io/pricing) offered by Gitpod to open-source projects, and typically gets provisioned in seconds thanks to the effort Serenity/JS maintainers have put into optimising it for you 😊
-:::
+- [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [Serenity/JS mono-repo](https://github.com/serenity-js/serenity-js)
+- [Create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository) in your fork
+- Create a GitHub Codespace in your fork: [**Code → Create Codespace on main**](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository)
+- After implementing your changes, run the full build:
+```shell
+make clean verify report
+```
 
-Alternatively, if you prefer to work on the pull request on your own machine instead of using Gitpod, you'll need to:
-
+**Option B: Develop locally**
+- [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [Serenity/JS mono-repo](https://github.com/serenity-js/serenity-js)
+- [Create a new branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository) in your fork
 - [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) your fork to your machine
 - Install the [runtime dependencies](/handbook/installation/): Node.js LTS and Java Runtime Environment
-- Run `make install` in the project root to install the Node.js dependencies. Serenity/JS uses [Lerna.js](https://github.com/lerna/lerna), [PnPm](https://pnpm.io/) and [Node.js Corepack](https://github.com/nodejs/corepack) to manage the `@serenity-js/*` modules in the mono-repo, `make install` installs all three for you. Note that this step happens automatically in the Gitpod workspace.
-- Run `make clean test` to make sure you can build the Serenity/JS project on your machine and all the unit tests are passing before introducing any changes.
-- Introduce the changes you wish to propose and update or introduce any package-scope and integration tests that are relevant.
-- Commit your changes following the [Serenity/JS conventional commits standard](/community/contributing/commit-message-conventions/), push them to your forked repository, and raise a pull request.
-- Run **full local build** - `make clean verify report` before raising a pull request
+- Install the Node.js dependencies - Serenity/JS uses [Lerna.js](https://github.com/lerna/lerna), [PnPm](https://pnpm.io/) and [Node.js Corepack](https://github.com/nodejs/corepack)
+```shell
+make install
+```
+- Verify your environment is set up correctly and all tests are passing:
+```shell
+make clean test
+```
 
-### Serenity/JS mono-repo structure
+### Implement your changes
+- Implement your change and update/add tests
+- Run a full local build before submitting:
+```shell
+make clean verify report
+```
 
-Serenity/JS mono-repo contains the following main directories:
-- [`packages`](https://github.com/serenity-js/serenity-js/tree/main/packages) - this is where all the [Serenity/JS modules](/api) and their associated unit and package-scope tests live
-- [`integration`](https://github.com/serenity-js/serenity-js/tree/main/integration) - this is the home of the integration tests that exercise the Serenity/JS modules once they're transpiled from TypeScript to JavaScript
-- [`examples`](https://github.com/serenity-js/serenity-js/tree/main/examples) - when the changes you want to introduce pass their unit tests and integration tests, you can use the mini-projects located here for exploratory testing and experimentation. Those example projects simulate the framework's target execution environment, so you can use them to look at your changes from the perspective of the people who'll be using them soon!
-- [`documentation`](https://github.com/serenity-js/serenity-js/tree/main/documentation) - Serenity/JS website
+### Submit your changes
 
-### Building and testing Serenity/JS
+- Follow the [conventional commits standard](/community/contributing/commit-message-conventions/) when writing commit messages
+- Push your branch to your fork
+- Open a pull request
+- If automated checks fail, update your branch and rebuild until everything passes
 
-Serenity/JS [Makefile](https://github.com/serenity-js/serenity-js/blob/master/Makefile) drives the entire build process.
+## Understanding the Serenity/JS codebase
 
-Here's a list of commands you'll need to build and test Serenity/JS locally:
-- `make` - same as running `make install clean compile`,
-- `make install` - installs dependencies across the Serenity/JS monorepo,
-- `make cc` - removes Nx.js build cache
-- `make clean` - removes any artifacts produced while running the tests,
-- `make test` - executes the unit tests located under `packages/*/spec`
-- `make integration-test` - executes the integration tests located under `integration/*/spec`,
-- `make verify` - runs ESLint, transpiles TypeScript to JavaScript, runs the unit tests and other package-scope tests, runs the integration tests located under `integration/*/`
-- `make verify report` - same as verify, but additionally generates aggregated test and coverage reports. This is the **full local build** you should run at least once before submitting the pull request.
+The Serenity/JS mono-repo includes three main areas:
+- [`packages/`](https://github.com/serenity-js/serenity-js/tree/main/packages) - Source for all [Serenity/JS modules](/api), along with unit and package-level tests
+- [`integration/`](https://github.com/serenity-js/serenity-js/tree/main/integration) - Integration tests that run against transpiled JavaScript artifacts
+- [`examples/`](https://github.com/serenity-js/serenity-js/tree/main/examples) - Small sample projects that let you experiment with your changes in a realistic environment
 
-If you encounter any issues, let us know on the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im).
+Documentation for the Serenity/JS website lives in a separate repository: [`serenity-js/serenity-js.org`](https://github.com/serenity-js/serenity-js.org)
+For documentation-focused contributions, see the [Improving Documentation](/community/contributing/improving-documentation/) guide.
+
+## Building and testing Serenity/JS
+
+The build process is driven by the main [Makefile](https://github.com/serenity-js/serenity-js/blob/main/Makefile). Common commands:
+- `make` - runs install, clean, compile
+- `make install` - installs all mono-repo dependencies
+- `make cc` - clears Nx.js build cache
+- `make clean` - removes build artifacts
+- `make test` - runs unit tests in `packages/*/spec`
+- `make integration-test` - runs integration tests in `integration/*/spec`,
+- `make verify` - runs linting, transpilation, unit tests, and integration tests
+- `make verify report` - full build, generating aggregated test and coverage reports (Run this at least once before submitting a pull request)
+
+If you run into issues, connect with the team via the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im).
 And don't be shy, we're here to help 😊

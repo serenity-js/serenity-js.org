@@ -13,10 +13,10 @@ you're a test automation expert or just starting on your journey.
 If you found anything here that could have been clearer, please let me know in the comments or
 [submit a correction](https://github.com/serenity-js/serenity-js.org/blob/main/src/docs/handbook/tutorials/your-first-web-scenario.mdx).
 
-To keep things simple, we'll use a [**Gitpod.io workspace**](/handbook/project-templates/#serenityjs-gitpods) to work with Serenity/JS in your web browser, so there's **no need to install anything** on your computer.
+To keep things simple, we'll use a [**GitHub Codespace**](/handbook/project-templates/#serenityjs-codespaces) to work with Serenity/JS in your web browser, so there's **no need to install anything** on your computer.
 If you prefer to set up Serenity/JS locally instead, follow the installation instructions in [Serenity/JS + Playwright Test project template](https://github.com/serenity-js/serenity-js-playwright-test-template).
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/serenity-js/serenity-js-playwright-test-template)
+👉 [Start a GitHub Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-test-template&ref=main)
 
 In this tutorial, you'll learn that:
 - Serenity/JS works well with popular development environments, including the free [Visual Studio Code](https://code.visualstudio.com/),
@@ -33,7 +33,7 @@ If you get lost or stumble upon a problem you're not quite sure how to solve - a
 ## Launching your workspace
 
 All [Serenity/JS project templates](/handbook/project-templates/), such as the one we'll use in this chapter,
-[support Gitpod.io workspaces](/handbook/project-templates/#serenityjs-gitpods) and are configured to
+support [GitHub Codespaces](/handbook/project-templates/#serenityjs-codespaces) and are configured to
 make it easy for you to use them in a Visual Studio Code-based development environment.
 Of course, since Serenity/JS tests are standards-based Node.js code, they'll work just as well in any other modern <abbr title="Integrated Development Environment">IDE</abbr>.
 
@@ -44,22 +44,18 @@ The test suite we'll work on interacts with a simple to-do list app that you can
 To launch your workspace, make sure you have a [GitHub account](/community/),
 which will make it easier for you to use all the other Serenity/JS resources, too.
 
-Next, launch your Gitpod.io web IDE using the "Open in Gitpod" button below
-and sign in to your [Gitpod.io workspace](https://gitpod.io/#https://github.com/serenity-js/serenity-js-playwright-test-template)
-using your GitHub account.
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/serenity-js/serenity-js-playwright-test-template)
+Next, 👉 [create your GitHub Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-test-template&ref=main).
 
 :::info Did you know?
 Serenity/JS integrates with several popular test runners, such as Cucumber, Mocha, Jasmine and Playwright Test, as well as various web integration tools,
-such as Selenium, Playwright and WebdriverIO. Once you know your way around your first [Serenity/JS project template](https://github.com/serenity-js/?q=template&type=all&language=&sort=),
+such as Selenium, Playwright and WebdriverIO. Once you know your way around your first [Serenity/JS project template](/handbook/project-templates/),
 picking the one right for your team and your project will become a breeze.
 :::
 
 ## Running tests in Visual Studio Code
 
 [Serenity/JS + Playwright Test template](https://github.com/serenity-js/serenity-js-playwright-test-template)
-you've just opened in your Gitpod workspace includes several example test scenarios
+you've just opened in your GitHub Codespace includes several example test scenarios
 located under the [`spec` directory](https://github.com/serenity-js/serenity-js-playwright-test-template/tree/main/spec).
 
 You can view them using your [Visual Studio Code Project Explorer sidebar](https://code.visualstudio.com/docs/getstarted/userinterface), which should show a directory structure similar to this:
@@ -145,7 +141,7 @@ Well done, you've just created your first Serenity/JS test scenario!
 Make sure that you can run this new scenario and that it's passing, and we'll analyse its structure line by line in just a moment.
 
 <Figure
-    caption='Adding a new Serenity/JS test scenario using Visual Studio Code on Gitpod.io'
+    caption='Adding a new Serenity/JS test scenario using Visual Studio Code in GitHub Codespace'
     img={require('@site/static/images/web-testing/your-first-web-scenario/vs-code-adding-a-new-serenity-js-scenario.gif')}
 />
 
@@ -165,18 +161,18 @@ or to access the developer tools offered by your browser to [debug your test sce
 or the system under test.
 
 In addition to being able to interact with the browser when running the tests locally, the
-[Serenity/JS + Playwright Test GitPod.io workspace](https://github.com/serenity-js/serenity-js-playwright-test-template)
+[Serenity/JS + Playwright Test GitHub Codespace](https://github.com/serenity-js/serenity-js-playwright-test-template)
 I have prepared for you comes equipped with [VNC](https://en.wikipedia.org/wiki/Virtual_Network_Computing),
-so you can see the browser on Gitpod.io as well.
+so you can see the browser as well.
 
 To see the browser:
 - Enable ["Show browser"](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright#show-browsers) checkbox in the Playwright panel
-- In the "Ports" panel, open VNC running on port `6080` in "Preview" mode (this step applies only to Gitpod.io)
+- In the "Ports" panel, open VNC running on port `6080` in "Preview" mode (this step applies only to GitHub Codespaces)
     - If your "Ports" panel is empty, click the bell in the lower right corner and click the appropriate "Open preview" button.
 - Run the test!
 
 <Figure
-    caption='Viewing the browser window while running Serenity/JS test scenarios in Visual Studio Code on Gitpod.io'
+    caption='Viewing the browser window while running Serenity/JS test scenarios in Visual Studio Code in GitHub Codespace'
     img={require('@site/static/images/web-testing/your-first-web-scenario/vs-code-showing-the-browser.gif')}
 />
 
@@ -697,7 +693,7 @@ To explore them, run the full test suite by invoking `npm test` in your terminal
 />
 
 When the test suite is finished, you'll find your [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter)
-generated under `target/site/serenity`, and served on port `8080` on Gitpod:
+generated under `target/site/serenity`, and served on port `8080` in GitHub Codespace:
 
 <Figure
     caption='Serenity BDD reports'
@@ -705,7 +701,7 @@ generated under `target/site/serenity`, and served on port `8080` on Gitpod:
 />
 
 [Playwright Test reports](/handbook/test-runners/playwright-test/#reporting) are generated
-under `playwright-report` and served on port `8181` on Gitpod:
+under `playwright-report` and served on port `8181` in GitHub Codespace:
 
 <Figure
     caption='Enhanced Playwright Test reports'
