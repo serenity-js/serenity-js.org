@@ -22,7 +22,7 @@
     "link": "npm install --install-links ../serenity-js/packages/*"
   },
   "dependencies": {
-    "@docusaurus/core": "3.7.0",
+    "@docusaurus/core": "3.9.2",
     "@docusaurus/plugin-client-redirects": "3.7.0",
     "@docusaurus/plugin-content-docs": "3.7.0",
     "@docusaurus/plugin-ideal-image": "3.7.0",
