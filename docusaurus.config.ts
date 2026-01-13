@@ -461,10 +461,9 @@ const config: Config = {
             },
         ],
         [
-            require.resolve('./src/plugins/piwik'),
+            require.resolve('./src/plugins/simple-analytics'),
             {
-                id: '8497b9df-f942-4fb6-9f4f-eade34bab231',
-                enable: true,
+                enabled: true,
             }
         ],
         [
