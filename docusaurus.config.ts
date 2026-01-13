@@ -113,7 +113,7 @@ const config: Config = {
                         const sidebarItems = await defaultSidebarItemsGenerator(args);
                         // DEBUG sidebar items
                         // console.log({ sidebarItems })
-                        return sidebarItems.filter(item => ! item.id.endsWith('index'));
+                        return sidebarItems.filter(item => ! item.id?.endsWith('index'));
                     },
                 },
                 blog: {
