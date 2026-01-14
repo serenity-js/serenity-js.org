@@ -34,6 +34,14 @@ export default async function pluginSimpleAnalytics(
                         },
                     },
                     {
+                        tagName: 'script',
+                        attributes: {
+                            async: true,
+                            defer: true,
+                            src: `https://${ scriptDomain }/auto-events.js`,
+                        },
+                    },
+                    {
                         tagName: 'noscript',
                         innerHTML: `<img src="https://${ noScriptDomain }/noscript.gif?collect-dnt=true" alt="" referrerpolicy="no-referrer-when-downgrade" />`,
                     },
