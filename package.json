@@ -58,7 +58,7 @@
     "sass": "1.97.3",
     "tiny-types": "1.24.3",
     "typedoc": "0.27.6",
-    "typedoc-plugin-mdn-links": "4.0.11",
+    "typedoc-plugin-mdn-links": "5.1.1",
     "typedoc-plugin-replace-text": "4.1.0"
   },
   "devDependencies": {
