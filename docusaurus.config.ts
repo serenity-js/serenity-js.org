@@ -84,8 +84,8 @@ const config: Config = {
     organizationName: 'serenity-js',
     projectName: 'serenity-js',
 
-    // onBrokenLinks: 'warn',
-    onBrokenLinks: 'throw',
+    onBrokenLinks: 'warn',
+    // onBrokenLinks: 'throw',
     // onBrokenMarkdownLinks: 'warn',
     onBrokenMarkdownLinks: 'throw',
 

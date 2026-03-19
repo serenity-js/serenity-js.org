@@ -1,5 +1,5 @@
 import { ReflectionTransformation } from './ReflectionTransformation';
-import { isRecord } from 'tiny-types/lib/objects';
+import { isRecord } from 'tiny-types/objects';
 
 export class ReflectionTransformer {
     constructor(private readonly transformations: Array<ReflectionTransformation<any>>) {
