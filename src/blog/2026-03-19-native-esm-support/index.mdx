@@ -1,0 +1,183 @@
+---
+title: "Serenity/JS 3.42: Native ESM Support"
+authors: [jan-molak]
+tags:
+  - core
+  - release
+date: 2026-03-19
+---
+
+# Serenity/JS 3.42: Native ESM Support
+
+Serenity/JS 3.42 brings native ECMAScript Module (ESM) support to all packages, enabling you to use modern `import` syntax while maintaining full backwards compatibility with CommonJS `require()`. This release also includes Node.js 24 compatibility fixes and addresses the dual-package hazard that can occur when mixing ESM and CJS in the same project.
+
+<!-- truncate -->
+
+## What's new
+
+### Native ESM imports
+
+You can now use native ES module imports with Serenity/JS:
+
+```typescript
+import { actorCalled, configure } from '@serenity-js/core';
+import { Ensure, equals } from '@serenity-js/assertions';
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright';
+
+await actorCalled('Alice').attemptsTo(
+    Ensure.that('hello', equals('hello')),
+);
+```
+
+No configuration changes needed — Node.js [conditional exports](https://nodejs.org/api/packages.html#conditional-exports) handle the resolution automatically based on whether you're using `import` or `require`.
+
+### Packages with ESM support
+
+The following packages now ship dual ESM/CJS builds:
+
+- `@serenity-js/core`
+- `@serenity-js/assertions`
+- `@serenity-js/rest`
+- `@serenity-js/cucumber`
+- `@serenity-js/mocha`
+- `@serenity-js/jasmine`
+- `@serenity-js/console-reporter`
+- `@serenity-js/local-server`
+- `@serenity-js/web`
+- `@serenity-js/playwright`
+- `@serenity-js/playwright-test`
+- `@serenity-js/webdriverio`
+- `@serenity-js/webdriverio-8`
+
+Two packages remain CJS-only due to their dependencies:
+- `@serenity-js/protractor` — Protractor itself has no ESM support
+- `@serenity-js/serenity-bdd` — CLI tooling uses patterns incompatible with ESM
+
+### Clean submodule imports
+
+Serenity/JS 3.42 also introduces cleaner import paths for submodules:
+
+```typescript
+// New clean paths (recommended)
+import { SceneFinished } from '@serenity-js/core/events';
+import { FileSystem } from '@serenity-js/core/io';
+import { Name } from '@serenity-js/core/model';
+
+// Legacy paths (still work)
+import { SceneFinished } from '@serenity-js/core/lib/events';
+import { FileSystem } from '@serenity-js/core/lib/io';
+import { Name } from '@serenity-js/core/lib/model';
+```
+
+Available clean submodule paths include:
+- `@serenity-js/core/adapter`
+- `@serenity-js/core/config`
+- `@serenity-js/core/errors`
+- `@serenity-js/core/events`
+- `@serenity-js/core/io`
+- `@serenity-js/core/model`
+- `@serenity-js/core/screenplay`
+- `@serenity-js/core/stage`
+- `@serenity-js/web/scripts`
+- `@serenity-js/cucumber/adapter`
+- `@serenity-js/mocha/adapter`
+- `@serenity-js/jasmine/adapter`
+- `@serenity-js/playwright-test/events`
+
+## Dual-package hazard mitigations
+
+When a package is loaded via both `import` and `require` in the same Node.js process, two separate module instances are created. This is known as the [dual-package hazard](https://nodejs.org/api/packages.html#dual-commonjses-module-packages) and can break `instanceof` checks and singleton patterns.
+
+This scenario is common with test runners like Cucumber.js, which might load formatters via ESM while support files use CJS.
+
+Serenity/JS 3.42 addresses this at multiple levels:
+
+### Global singleton for the `serenity` instance
+
+The `serenity` singleton now uses `Symbol.for()` on `globalThis` to ensure the same instance is shared regardless of how the module was loaded:
+
+```typescript
+// Both resolve to the same Serenity instance
+import { serenity } from '@serenity-js/core';        // ESM
+const { serenity } = require('@serenity-js/core');   // CJS
+```
+
+### Cross-boundary `instanceof` checks
+
+Custom `Symbol.hasInstance` implementations ensure that `instanceof` checks work even when the class constructor comes from a different module instance:
+
+```typescript
+import { Ability } from '@serenity-js/core';
+
+// Works correctly even if MyAbility was loaded from a different module instance
+if (ability instanceof Ability) {
+    // ...
+}
+```
+
+This applies to `Ability`, `RuntimeError`, `Outcome` and its subclasses, and `Key`.
+
+## Node.js 24 compatibility
+
+Serenity/JS 3.42 includes fixes for Node.js 24:
+- Updated error message formatting for Symbol values
+- Fixed lazy-loading for modules affected by Node.js 24's removal of the legacy `http_parser`
+
+## Migrating from `ts-node` to `tsx`
+
+If you're using `ts-node` with Node.js 22+ and experiencing issues, consider switching to [tsx](https://tsx.is/):
+
+```diff
+# .mocharc.yml
+require:
+-  - ts-node/register
++  - tsx
+```
+
+```diff
+// package.json
+"devDependencies": {
+-  "ts-node": "10.9.2",
++  "tsx": "4.21.0",
+}
+```
+
+## Updating `tiny-types`
+
+If your project has a direct dependency on `tiny-types`, update it to version 2.x:
+
+```diff
+"dependencies": {
+-  "tiny-types": "1.24.3",
++  "tiny-types": "2.0.5",
+}
+```
+
+The TinyTypes 2.x API is backwards-compatible with 1.x and includes its own ESM support and `Symbol.hasInstance` fixes.
+
+## No breaking changes
+
+This release is fully backwards-compatible:
+
+- All existing `require()` calls continue to work
+- All existing deep imports (`@serenity-js/core/lib/events`) continue to work
+- `instanceof` checks work across ESM/CJS boundaries
+- The `tiny-types` peer dependency range accepts both 1.x and 2.x
+
+## Updating your project
+
+To update your Serenity/JS project to version 3.42.0, run:
+
+```bash
+npx -y npm-check-updates '/@serenity-js/' -u
+```
+
+Follow the official [Serenity/JS installation guide](/releases/updating-serenity-js/) to learn how to automate your dependency updates.
+
+## Learn more
+
+- [Serenity/JS on GitHub](https://github.com/serenity-js/serenity-js)
+- [Node.js Conditional Exports](https://nodejs.org/api/packages.html#conditional-exports)
+- [Dual Package Hazard](https://nodejs.org/api/packages.html#dual-commonjses-module-packages)
+
+Your feedback matters! If you encounter any issues with the new ESM support, please [report them on GitHub](https://github.com/serenity-js/serenity-js/issues).
