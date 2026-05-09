@@ -1,0 +1,241 @@
+---
+sidebar_position: 3
+---
+
+# Writing tests
+
+Serenity/JS is designed to integrate seamlessly with your existing Playwright Test codebase, even if you are not using the [Screenplay Pattern](/handbook/design/screenplay-pattern/) yet.
+Additionally, the framework enables you to **mix Screenplay and non-Screenplay scenarios** within the same codebase, helping your team gradually adopt the pattern where appropriate.
+
+In this section, you will learn how to write test scenarios using Playwright Test and Serenity/JS APIs and how to leverage actors to structure your test interactions.
+
+## Defining a test scenario
+
+A typical Playwright Test scenario is defined using the `test` function imported from the `@playwright/test` module:
+
+```ts
+import { test, expect } from '@playwright/test'
+
+test('todo list lets a guest user record a new todo', async ({ page }) => {
+
+    await page.goto('https://todo-app.serenity-js.org/#/');
+
+    await page.locator('.new-todo').fill('Read a book');
+    await page.locator('.new-todo').press('Enter');
+
+    await expect(page.locator('.view label')).toHaveText([ 'Read a book' ]);
+});
+```
+
+To use Serenity/JS Screenplay Pattern APIs and benefit from in-depth reporting capabilities,
+you need to **import Serenity/JS `test` function** instead of the default one:
+
+```diff
+- import { test, expect } from '@playwright/test'
++ import { test, expect } from '@serenity-js/playwright-test'
+
+test('todo list lets a guest user record a new todo', async ({ page }) => {
+
+    // ...
+});
+```
+
+:::tip Migrating existing Playwright Test codebase
+When migrating an existing test codebase, a great first step is to use the "find and replace" feature of your IDE to replace any `@playwright/test` imports
+in your test scenarios with `@serenity-js/playwright-test`.
+:::
+
+## Grouping test scenarios
+
+Apart from the default `test` function, the `@serenity-js/playwright-test` module
+offers the more concise BDD-style syntax:
+- [`describe`](/api/playwright-test/function/describe/) - Alias for [`test.describe`](/api/playwright-test/function/test/#describe).
+- [`it`](/api/playwright-test/function/it/) - Alias for [`test`](/api/playwright-test/function/test/).
+
+To make the most of [Serenity BDD reporting capabilities](/handbook/reporting/serenity-bdd-reporter/),
+you should use a **single outermost `describe` block** to describe the **component** or **feature** being exercised by the scenarios in the test file.
+You can then use as many nested `describe` blocks as necessary to group related scenarios within the test file.
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, expect } from '@serenity-js/playwright-test'
+
+// Feature or component name (matching the file name, see below)
+describe('Todo App', () => {
+
+    // One or more nested `describe` blocks grouping multiple scenarios by context
+    describe('Guest user', () => {
+
+        // Expected behaviour
+        it('should start with an empty todo list', async ({ page }) => {
+            // ...
+        })
+
+        it('should be able to record a new todo', async ({ page }) => {)
+            // ...
+        })
+    })
+
+    describe('Registered user', () => {
+
+        it('should start with the last todo list they used', async ({ page }) => {
+            // ...
+        })
+
+        // ...
+    })
+})
+```
+
+:::tip Serenity BDD File naming conventions
+To ensure [Serenity BDD](/handbook/reporting/serenity-bdd-reporter) correctly associates test results with test files
+and generates [feature coverage reports](https://serenity-bdd.github.io/docs/reporting/the_serenity_reports), you **must**:
+- Use **one and only one** outermost `describe` block per test file.
+- Ensure the outermost `describe` block name **matches the test file name**, e.g. `'Todo App'` and `todo_app.spec.ts`.
+
+Learn more about [Serenity BDD best practices](/handbook/reporting/serenity-bdd-reporter/#serenity-bdd-best-practices).
+:::
+
+## Using the Screenplay Pattern APIs
+
+The [Screenplay Pattern](/handbook/design/screenplay-pattern/) is an innovative, user-centred approach to writing high-quality automated acceptance tests.
+It promotes effective use of layers of abstraction, helps your test scenarios reflect the business vernacular of your domain,
+and encourages good testing and software engineering practices within your team.
+
+Serenity/JS provides Playwright Test [fixtures](/api/playwright-test/interface/SerenityFixtures/) that automatically inject one or multiple [actors](/api/core/class/Actor)
+into your scenarios. Each actor is [automatically equipped](/handbook/test-runners/playwright-test/customising-actors/) with a set of [abilities](/api/core/class/Ability/) that enable them to interact with the system under test using the Serenity/JS Screenplay Pattern APIs.
+You can also create custom abilities and write your own implementations of Screenplay Pattern APIs to extend your actors' capabilities.
+
+To use the Screenplay Pattern APIs, import the relevant [interactions](/api/core/class/Interaction/) and [questions](/api/core/class/Question/) from the appropriate modules,
+and instruct your actors to perform them using the [`actor.attemptsTo`](/api/core/class/Actor/#attemptsTo) method.
+
+The most commonly used Screenplay Pattern APIs come from the following modules:
+
+| When you need to... | Use |
+|---|---|
+| Interact with web pages (click, type, navigate) | [`@serenity-js/web`](/api/web) |
+| Assert conditions and verify expectations | [`@serenity-js/assertions`](/api/assertions) |
+| Send HTTP requests and inspect responses | [`@serenity-js/rest`](/api/rest) |
+| Use Playwright-specific features | [`@serenity-js/playwright`](/api/playwright) |
+| Wait, control flow, or log information | [`@serenity-js/core`](/api/core) |
+
+## Writing single-actor scenarios
+
+If your test scenario requires a single actor, inject the default instance using the [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture:
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, expect } from '@serenity-js/playwright-test'
+import { Navigate, Text, PageElements, By } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+import { TodoApp } from './screenplay/TodoApp'
+
+describe('Todo App', () => {
+
+    describe('Guest user', () => {
+
+        it('should start with an empty todo list', async ({ page, actor }) => {
+
+            const recordedItems = () =>
+                Text.ofAll(PageElements.located(By.css('.todo-list li')))
+                    .describedAs('displayed items');
+
+            await actor.attemptsTo(
+                Navigate.to('https://todo-app.serenity-js.org/#/'),
+                Ensure.that(TodoApp.recordedItems().count(), equals(0)),
+            )
+        })
+    })
+})
+```
+
+:::tip Default actor and page
+The default `actor` fixture is linked with the default `page` fixture, allowing you to use the actor model in your existing Playwright Test scenarios, even alongside the regular Playwright Test APIs.
+:::
+
+## Reusing interactions with tasks
+
+One of the key benefits of using the Screenplay Pattern is that it allows you to use [tasks](/api/core/class/Task/) to **encapsulate** and **reuse** sequences of interactions across multiple test scenarios.
+You can introduce tasks in-line in your test scenarios as you develop them, extract them into separate files, or organise them into classes to make your test scenarios more readable and maintainable.
+
+:::tip Task composition
+Tasks can be composed of other tasks, allowing you to build complex sequences of interactions from smaller, reusable building blocks.
+:::
+
+In the example below, we've extracted the interactions with the To-do App into a separate `TodoApp` class, but you can organise them in any way that makes sense for your project. Check out the ["Design" chapter](/handbook/design/) of this Handbook for inspiration.
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, beforeEach } from '@serenity-js/playwright-test'
+import { Navigate } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+import { TodoApp } from './screenplay/TodoApp'
+
+describe('Todo App', () => {
+
+    describe('Guest user', () => {
+
+        beforeEach(async ({ actor }) => {
+            await actor.attemptsTo(
+                Navigate.to('https://todo-app.serenity-js.org/#/'),
+            )
+        })
+
+        it('should start with an empty todo list', async ({ actor }) => {
+
+            await actor.attemptsTo(
+                Ensure.that(TodoApp.recordedItems().count(), equals(0)),
+            )
+        })
+
+        it('should be able to record a new todo', async ({ actor }) => {
+
+            await actor.attemptsTo(
+                TodoApp.recordItem('Read a book'),
+                Ensure.that(TodoApp.recordedItems(), equals([
+                    'Read a book'
+                ])),
+            )
+        })
+    })
+})
+```
+
+We've implemented the `TodoApp` class using `private` static methods to hide the implementation details of [page elements and selectors](/handbook/web-testing/page-element-query-language/) used to identify interactive elements and `public` static methods to expose the tasks to the test scenarios.
+
+```ts title="./spec/screenplay/TodoApp.ts"
+import { PageElement, PageElements, By, Enter, Key, Press, Text } from '@serenity-js/web'
+import { Task } from '@serenity-js/core'
+
+class TodoApp {
+    private static newTodoInput = () =>
+        PageElement.located(By.css('.new-todo'))
+            .describedAs('"What needs to be done?" input box');
+
+    private static items = () =>
+        PageElements.located(By.css('.todo-list li'))
+            .describedAs('displayed items');
+
+    static recordItem = (name: string) =>
+        Task.where(`#actor records an item called ${ name }`,
+            Enter.theValue(name).into(this.newTodoInput()),
+            Press.the(Key.Enter).in(this.newTodoInput()),
+        )
+
+    static recordedItems = () =>
+        Text.ofAll(this.items())
+            .describedAs('displayed items');
+}
+```
+
+To try this example out, check out the [Serenity/JS Playwright Test Template](https://github.com/serenity-js/serenity-js-playwright-test-template/blob/main/spec/recording_items.spec.ts) on GitHub.
+
+## What you learnt
+
+- Replace `@playwright/test` imports with `@serenity-js/playwright-test` to enable Serenity/JS features.
+- Use `describe`/`it` for BDD-style grouping that integrates with Serenity BDD reports.
+- Inject the `actor` fixture to use Screenplay Pattern APIs in your scenarios.
+- Extract reusable interactions into [tasks](/api/core/class/Task/) to keep test scenarios readable and DRY.
+
+## Next step
+
+Learn how to implement [multi-actor scenarios](/handbook/test-runners/playwright-test/multi-actor-scenarios/) or jump to [customising actors](/handbook/test-runners/playwright-test/customising-actors/).

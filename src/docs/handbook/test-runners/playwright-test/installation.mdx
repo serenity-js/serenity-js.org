@@ -1,0 +1,65 @@
+---
+sidebar_position: 1
+---
+
+# Installation
+
+To use Serenity/JS with Playwright Test, follow the [Serenity/JS installation guide](/handbook/installation/)
+to set up your development environment and core runtime dependencies.
+Then, create a new Playwright Test project or add Serenity/JS integration and reporting modules to an existing project.
+
+## Initialising a Playwright Test project
+
+If you already have a Playwright Test project, skip this step and proceed to [installing Serenity/JS](#installing-serenityjs).
+
+To create a new Playwright Test project, follow the Playwright Test [installation instructions](https://playwright.dev/docs/intro#installing-playwright)
+and run the following command:
+
+```sh npm2yarn
+npm init playwright@latest
+```
+
+Expected output (example):
+
+```
+Getting started with writing end-to-end tests with Playwright:
+Initialising project in '.'
+✔ Do you want to use TypeScript or JavaScript? · TypeScript
+✔ Where to put your end-to-end tests? · tests
+✔ Add a GitHub Actions workflow? (y/N) · false
+✔ Install Playwright browsers (can be done manually via 'npx playwright install')? (Y/n) · true
+```
+
+:::tip TypeScript or JavaScript?
+Using TypeScript improves code completion support in [JetBrains IDEs](/handbook/integration/jetbrains-idea) and
+[Visual Studio Code](/handbook/integration/visual-studio-code), reducing common coding errors.
+:::
+
+## Installing Serenity/JS
+
+To add Serenity/JS to a Playwright Test project, install the following modules:
+
+```sh npm2yarn
+npm install --save-dev @serenity-js/core @serenity-js/console-reporter @serenity-js/playwright @serenity-js/playwright-test @serenity-js/rest @serenity-js/web @serenity-js/serenity-bdd
+```
+
+This command installs:
+- [`@serenity-js/core`](/api/core)
+- [`@serenity-js/console-reporter`](/api/console-reporter)
+- [`@serenity-js/playwright`](/api/playwright)
+- [`@serenity-js/playwright-test`](/api/playwright-test)
+- [`@serenity-js/rest`](/api/rest)
+- [`@serenity-js/web`](/api/web)
+- [`@serenity-js/serenity-bdd`](/api/serenity-bdd)
+
+To ensure that your version of Playwright Test is compatible with the latest version of Serenity/JS, check the [Serenity/JS releases and compatibility page](/releases/).
+
+## What you learnt
+
+- Initialise a Playwright Test project with `npm init playwright@latest`.
+- Install Serenity/JS modules (`@serenity-js/core`, `@serenity-js/playwright-test`, etc.) as dev dependencies.
+- Check the [releases page](/releases/) for version compatibility.
+
+## Next step
+
+Once you've installed the dependencies, proceed to [configuring Serenity/JS reporting](/handbook/test-runners/playwright-test/configuration/).

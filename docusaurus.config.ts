@@ -74,8 +74,8 @@ const config: Config = {
         banner: {
             // text: 'Get started with Serenity/JS and Playwright Test',
             // link: '/handbook/test-runners/playwright-test',
-            text: 'S/JS 3.37: Better Playwright Fixtures',
-            link: '/blog/better-playwright-test-fixtures/',
+            text: 'S/JS 3.43: Testing Electron Apps',
+            link: '/blog/support-for-electron-apps/',
         }
     },
 
