@@ -1,0 +1,121 @@
+---
+sidebar_position: 4
+---
+
+# Multi-actor scenarios
+
+The Screenplay Pattern is particularly useful when modelling interactions between multiple actors, each with their own responsibilities, and playing their role in the workflow.
+Examples include a buyer and a seller in an e-commerce scenario, a customer and a support agent in a customer service scenario, or a doctor and a patient in a healthcare scenario.
+
+## Using multiple actors in a scenario
+
+To inject multiple actors into your test scenario, use the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture:
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, beforeEach } from '@serenity-js/playwright-test'
+import { Navigate } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+import { TodoApp } from './screenplay/TodoApp'
+
+describe('Todo App', () => {
+
+    describe('Guest user', () => {
+
+        it('shares the list with other guests using the same browser', async ({ actorCalled }) => {
+
+            await actorCalled('Alice').attemptsTo(
+                Navigate.to('https://todo-app.serenity-js.org/#/'),
+                TodoApp.recordItem('Read a book'),
+                Ensure.that(TodoApp.recordedItems(), equals([
+                    'Read a book'
+                ])),
+            )
+
+            // By default, Alice and Bob use the same browser session
+            // so Bob sees the same list as Alice
+
+            await actorCalled('Bob').attemptsTo(
+                Ensure.that(TodoApp.recordedItems(), equals([
+                    'Read a book'
+                ])),
+            )
+        })
+    })
+})
+```
+
+:::tip Multi-browser test scenarios
+By default, all actors share the same browser session. To make them use **independent browsers**, see [Using multiple browsers](/handbook/test-runners/playwright-test/customising-actors/#using-multiple-browsers).
+:::
+
+## Changing the default actor name
+
+By default, the single [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture is named `"Actor"`. You can change this by setting the [`defaultActorName`](/api/playwright-test/interface/SerenityFixtures/#defaultActorName) configuration option in your [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) file:
+
+```ts title="playwright.config.ts"
+import { defineConfig, devices } from '@playwright/test'
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    // Global configuration for all test scenarios
+    use: {
+        defaultActorName: 'Alice',
+    },
+
+    projects: [
+        // Per-project configuration, overrides the global defaults.
+        {
+            name: 'chromium',
+            use: {
+                ...devices['Desktop Chrome'],
+                defaultActorName: 'Alice',
+            },
+        },
+    }
+    // ...
+});
+```
+
+You can also set it directly in your test file via [`test.use`](/api/playwright-test/function/test/#use):
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, beforeEach, test } from '@serenity-js/playwright-test'
+import { Navigate } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+import { TodoApp } from './screenplay/TodoApp'
+
+describe('Todo App', () => {
+
+    describe('Guest user', () => {
+
+        test.use({
+            defaultActorName: 'Guest',
+        });
+
+        beforeEach(async ({ actor }) => {
+            await actor.attemptsTo(
+                Navigate.to('https://todo-app.serenity-js.org/#/'),
+            )
+        })
+
+        it('should start with an empty todo list', async ({ actor }) => {
+
+            await actor.attemptsTo(
+                Ensure.that(TodoApp.recordedItems().count(), equals(0)),
+            )
+        })
+    })
+})
+```
+
+## What you learnt
+
+- Use the `actorCalled` fixture to introduce multiple named actors into a scenario.
+- By default, all actors share the same browser session (same `page` instance).
+- The `defaultActorName` option lets you give a meaningful name to the default `actor` fixture.
+
+## Next step
+
+Learn how to [customise actor abilities](/handbook/test-runners/playwright-test/customising-actors/), including using multiple browsers and sharing notes between actors.

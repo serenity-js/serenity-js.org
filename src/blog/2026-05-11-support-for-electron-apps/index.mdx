@@ -1,0 +1,166 @@
+---
+slug: support-for-electron-apps
+title: "Serenity/JS 3.43: Testing Electron Apps"
+authors: [jan-molak]
+tags:
+  - core
+  - playwright
+  - playwright-test
+  - web
+  - release
+  - open-source
+date: 2026-05-11
+---
+
+[**Serenity/JS 3.43**](https://github.com/serenity-js/serenity-js/releases/tag/v3.43.3) introduces support for testing [Electron](https://www.electronjs.org/) desktop applications using the same Screenplay Pattern APIs you already know from web testing.
+This release also brings a completely revamped [Playwright Test documentation](/handbook/test-runners/playwright-test/) — split into focused, digestible guides to help you get productive faster.
+
+Let's explore what's new!
+
+{/* truncate */}
+
+## Testing Electron apps with Serenity/JS
+
+Electron powers some of the most popular desktop applications — VS Code, Slack, Discord, and many more.
+With Serenity/JS 3.43, you can now test your Electron apps using the same [`Click`](/api/web/class/Click/), [`Enter`](/api/web/class/Enter/), [`Ensure`](/api/assertions/class/Ensure/), and other interactions you'd use for browser-based testing.
+
+Under the hood, Serenity/JS leverages [Playwright's Electron support](https://playwright.dev/docs/api/class-electron) to connect to your app's renderer process.
+This means you get all the benefits of the Screenplay Pattern — expressive tests, reusable interactions, and rich reporting — for your desktop applications.
+
+### Self-launching: fresh app per test
+
+The simplest approach lets Serenity/JS manage the Electron app lifecycle automatically.
+Each test gets a fresh instance, ensuring complete isolation:
+
+```ts title="spec/my-app.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions'
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
+import { describe, it, test } from '@serenity-js/playwright-test'
+import { Click, Text, PageElement, By } from '@serenity-js/web'
+import path from 'path'
+
+const electronAppPath = path.resolve(__dirname, '../../my-electron-app')
+
+describe('My Electron App', () => {
+
+    test.use({
+        extraAbilities: [
+            BrowseTheWebWithPlaywright.launchingElectronApp({
+                args: [ path.join(electronAppPath, 'lib', 'main.js') ],
+                cwd: electronAppPath,
+            })
+        ],
+    })
+
+    it('displays the welcome screen', async ({ actor }) => {
+        await actor.attemptsTo(
+            Ensure.that(
+                Text.of(PageElement.located(By.css('h1'))),
+                equals('Welcome'),
+            ),
+        )
+    })
+
+    it('responds to user interactions', async ({ actor }) => {
+        await actor.attemptsTo(
+            Click.on(PageElement.located(By.id('start-button'))),
+            Ensure.that(
+                Text.of(PageElement.located(By.id('status'))),
+                equals('Started'),
+            ),
+        )
+    })
+})
+```
+
+### Externally-managed: full control over the app lifecycle
+
+When you need to manage the Electron app yourself — for example, to share a single instance across tests in a worker — use [`BrowseTheWebWithPlaywright.usingElectronApp()`](/api/playwright/class/BrowseTheWebWithPlaywright/#usingElectronApp):
+
+```ts title="spec/my-app.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions'
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
+import { describe, it, test } from '@serenity-js/playwright-test'
+import { Text, PageElement, By } from '@serenity-js/web'
+import path from 'path'
+import * as playwright from 'playwright'
+
+const electronAppPath = path.resolve(__dirname, '../../my-electron-app')
+
+describe('My Electron App', () => {
+
+    test.use({
+        extraAbilities: [
+            async ({}, use) => {
+                const electronApp = await playwright._electron.launch({
+                    args: [ path.join(electronAppPath, 'lib', 'main.js') ],
+                    cwd: electronAppPath,
+                })
+
+                await use([
+                    BrowseTheWebWithPlaywright.usingElectronApp(electronApp)
+                ])
+
+                await electronApp.close()
+            },
+            { scope: 'test' },
+        ]
+    })
+
+    it('allows the actor to read content from the app', async ({ actor }) => {
+        await actor.attemptsTo(
+            Ensure.that(
+                Text.of(PageElement.located(By.css('h1'))),
+                equals('Welcome'),
+            ),
+        )
+    })
+})
+```
+
+### Worker-scoped apps for faster test suites
+
+For test suites where launching the app per test is too slow, you can share a single Electron instance across all tests in a worker using the new [`extraWorkerAbilities`](/api/playwright-test/interface/SerenityWorkerFixtures/#extraWorkerAbilities) fixture:
+
+```ts
+test.use({
+    extraWorkerAbilities: [
+        async ({}, use) => {
+            await use((actorName: string) => [
+                BrowseTheWebWithPlaywright.launchingElectronApp({
+                    args: [ path.join(electronAppPath, 'lib', 'main.js') ],
+                    cwd: electronAppPath,
+                })
+            ])
+        }, { scope: 'worker' }],
+})
+```
+
+This keeps the app running for the lifetime of the worker, so state carries over between tests — useful for testing multi-step workflows.
+
+### Learn more
+
+Check out the full [Testing Electron apps](/handbook/test-runners/playwright-test/electron-testing/) guide for detailed examples, including how to organise page elements using the [Lean Page Objects Pattern](/handbook/web-testing/page-objects-pattern/).
+
+## Revamped Playwright Test documentation
+
+The [Playwright Test integration guide](/handbook/test-runners/playwright-test/) has been completely restructured into focused, standalone articles:
+
+1. [**Installation**](/handbook/test-runners/playwright-test/installation/) — Get up and running quickly
+2. [**Configuration**](/handbook/test-runners/playwright-test/configuration/) — Set up reporting and automatic screenshots
+3. [**Writing tests**](/handbook/test-runners/playwright-test/writing-tests/) — Use the Screenplay Pattern with Playwright Test
+4. [**Multi-actor scenarios**](/handbook/test-runners/playwright-test/multi-actor-scenarios/) — Model interactions between multiple users
+5. [**Testing Electron apps**](/handbook/test-runners/playwright-test/electron-testing/) — Test desktop applications
+6. [**Customising actors**](/handbook/test-runners/playwright-test/customising-actors/) — Override abilities, share notes, use multiple browsers
+7. [**Reporting**](/handbook/test-runners/playwright-test/reporting/) — Generate Serenity BDD and Playwright HTML reports
+8. [**Integration architecture**](/handbook/test-runners/playwright-test/integration-architecture/) — Understand how it all fits together
+
+Each page includes a "What you learnt" summary and links to the next step, making it easy to follow the learning path or jump straight to the topic you need.
+
+## Get started
+
+If you're already using Serenity/JS with Playwright Test, [update your dependencies](/releases/updating-serenity-js/) to take advantage of Electron testing support.
+
+If you're new to the framework, our [15-minute web testing tutorial](/handbook/tutorials/your-first-web-scenario/) is the best place to start.
+
+Enjoy Serenity! 🎉

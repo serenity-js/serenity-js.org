@@ -1,0 +1,69 @@
+---
+sidebar_position: 8
+---
+
+# Integration architecture
+
+Serenity/JS integrates with Playwright Test through the [`@serenity-js/playwright-test`](/api/playwright-test) module,
+which acts as a [test runner adapter](/handbook/architecture/#serenityjs-test-runner-adapters) and:
+- Captures test execution events from Playwright Test
+- Translates them into [Serenity/JS domain events](/handbook/reporting/domain-events)
+- Makes them available to [Serenity/JS reporting services](/handbook/reporting/)
+
+This modular architecture enables Serenity/JS to enhance both classic Playwright Test scenarios and those following the Screenplay Pattern with advanced reporting capabilities.
+
+To enable this integration, you need to:
+1. Configure [Serenity/JS test runner adapter and reporting services](/handbook/test-runners/playwright-test/configuration/#integrating-serenityjs-reporting) in your `playwright.config.ts` file
+2. Optionally, use the [Serenity/JS test fixtures](/handbook/test-runners/playwright-test/writing-tests/#using-the-screenplay-pattern-apis) to enable Screenplay Pattern APIs in your Playwright Test scenarios
+
+<figure>
+
+```mermaid
+graph TB
+    DEV(["💻 Developer"])
+    TR(["playwright test"])
+    TS(["Playwright Test scenarios"])
+    SC(["@serenity-js/core"])
+    PTAPI(["@serenity-js/playwright-test"])
+    CF["playwright.config.ts"]
+    R(["Serenity/JS reporting services"])
+
+    DEV -- invokes --> TR
+    TR -- runs --> TS
+    TS -- use --> PTAPI
+    TR -- loads --> CF
+    PTAPI -- notifies --> SC
+    CF -- configures --> SC
+    SC -- notifies --> R
+
+    click R "/handbook/reporting"
+    click SC "/api/core"
+    click TRA "/api/mocha"
+```
+<figcaption>Serenity/JS + Playwright Test integration architecture</figcaption>
+</figure>
+
+## Next steps
+
+Well done, your Playwright Test codebase is now integrated with Serenity/JS! 🎉🎉🎉
+
+To take things further, check out:
+- [Your first web scenario (Serenity/JS + Playwright Test tutorial)](/handbook/tutorials/your-first-web-scenario)
+- [The Screenplay Pattern](/handbook/design/screenplay-pattern/)
+- [Serenity/JS Web Testing Patterns](/handbook/web-testing/)
+- [Serenity/JS Playwright project templates](/handbook/project-templates/#playwright)
+- [Serenity/JS Web API docs](/api/web/)
+- [Serenity/JS Assertions API docs](/api/assertions/)
+- [Serenity/JS examples on GitHub](https://github.com/serenity-js/serenity-js/tree/main/examples/)
+- 📚 Our book, ["BDD in Action, Second Edition"](https://www.manning.com/books/bdd-in-action-second-edition)
+
+Remember, new features, tutorials, and demos are coming soon!
+Follow [Serenity/JS on LinkedIn](https://www.linkedin.com/company/serenity-js),
+subscribe to [Serenity/JS channel on YouTube](https://www.youtube.com/@serenity-js) and join the [Serenity/JS Community Chat](https://matrix.to/#/#serenity-js:gitter.im) to stay up to date!
+
+Don't forget to ⭐️ [Serenity/JS on GitHub](https://github.com/serenity-js/serenity-js) to help others discover the framework!
+
+[![Follow Serenity/JS on LinkedIn](https://img.shields.io/badge/Follow-Serenity%2FJS%20-0077B5?logo=linkedin)](https://www.linkedin.com/company/serenity-js)
+[![Watch Serenity/JS on YouTube](https://img.shields.io/badge/Watch-@serenity--js-E62117?logo=youtube)](https://www.youtube.com/@serenity-js)
+[![Join Serenity/JS Community Chat](https://img.shields.io/badge/Chat-Serenity%2FJS%20Community-FBD30B?logo=matrix)](https://matrix.to/#/#serenity-js:gitter.im)
+[![GitHub stars](https://img.shields.io/github/stars/serenity-js/serenity-js?label=Serenity%2FJS&logo=github&style=badge)](https://github.com/serenity-js/serenity-js)

@@ -1,0 +1,313 @@
+---
+sidebar_position: 6
+---
+
+# Customising actors
+
+Each actor comes with a set of abilities that enable them to interact with the system under test. By default, these abilities include:
+- [`BrowseTheWebWithPlaywright`](/api/playwright/class/BrowseTheWebWithPlaywright/) - Allows interaction with the browser using the default [`page`](https://playwright.dev/docs/test-fixtures#built-in-fixtures) fixture.
+- [`TakeNotes.usingAnEmptyNotepad()`](/api/core/class/TakeNotes/) - Facilitates storing and retrieving information during the test run.
+- [`CallAnApi`](/api/rest/class/CallAnApi/) - Enables interaction with RESTful APIs using an Axios HTTP client configured
+  with [`baseURL`](https://playwright.dev/docs/api/class-testoptions#test-options-base-url),
+  [`extraHTTPHeaders`](https://playwright.dev/docs/api/class-testoptions#test-options-extra-http-headers),
+  and proxy configuration derived from the [`proxy`](https://playwright.dev/docs/api/class-testoptions#test-options-proxy) fixture.
+
+:::tip Which approach should I use?
+- **One-off customisation in a single test** → [Override abilities inline](#overriding-abilities-inline) with `actor.whoCan(...)`.
+- **Same customisation for all tests in a file** → [Use `test.use`](#overriding-abilities-via-testuse) with `extraAbilities`.
+- **Same customisation across multiple files** → [Use `useFixtures`](#overriding-abilities-via-usefixtures) to centralise configuration.
+- **Full control over actor creation** → [Replace the default actors](#replacing-the-default-actors) with a custom `Cast`.
+:::
+
+:::info Overriding abilities
+An actor can only have **one instance of each ability** type at a time.
+Therefore, providing a new instance of the same type via the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method overrides any existing ability of that type.
+:::
+
+## Overriding abilities inline
+
+You can override the default abilities inline or add [custom abilities](/api/core/class/Ability/)
+inline within a test scenario using the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method:
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, beforeEach } from '@serenity-js/playwright-test'
+import { TakeNotes, Notepad } from '@serenity-js/core'
+
+describe('Todo App', () => {
+
+    describe('actor', () => {
+
+        it('can share notes with another actor', async ({ actor, actorCalled, browser }) => {
+
+            const sharedNotepad = Notepad.empty()
+
+            // Override the default actor's ability to take notes
+            await actor
+                .whoCan(TakeNotes.using(sharedNotepad))
+                .attemptsTo(
+                    // ...
+                )
+
+            // Create an extra actor with access to the same notepad
+            // to allow for sharing data between actors
+            await actorCalled('Bob')
+                .whoCan(TakeNotes.using(sharedNotepad))
+                .attemptsTo(
+                    // ...
+                )
+        })
+    })
+})
+```
+
+## Overriding abilities via `test.use`
+
+To avoid adding or overriding abilities inline, you can define them via [`test.use`](/api/playwright-test/function/test/#use) and
+using the [`extraAbilities`](/api/playwright-test/interface/SerenityFixtures/#extraAbilities) fixture.
+This approach enables you to reuse the same configuration for all the test scenarios within the given `describe` block.
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, test } from '@serenity-js/playwright-test'
+import { MyAbility } from './MyAbility'
+
+describe('Todo App', () => {
+
+    test.use({
+        extraAbilities: [ new MyAbility() ]
+    });
+
+    // ...
+})
+```
+
+## Overriding abilities via `useFixtures`
+
+When you have multiple test files that require the same customisations to your actor configuration or the same custom fixtures, you'll want to
+centralise it in a file like `serenity-api.ts` and leverage the [`useFixtures`](/api/playwright-test/function/useFixtures/) function.
+
+This function returns a test API, including functions such as `describe`, `it`, `beforeEach`, or `test`, which you can use instead of the default ones provided by the framework.
+
+```ts title="./spec/test-api.ts"
+import { useFixtures } from '@serenity-js/playwright-test'
+import { TakeNotes, Notepad } from '@serenity-js/core'
+
+export interface MyNotes {
+    testListId: string;
+}
+
+export interface TestScopeFixtures {
+    notepad: Notepad<MyNotes>
+}
+
+export const { describe, it, beforeEach, test } = useFixtures<TestScopeFixtures>({
+  notepad: Notepad.with<MyNotes>({
+      testListId: process.env.TEST_LIST_ID,
+  }),
+
+  extraAbilities: async ({ notepad }, use) => {
+      const extraAbilities = [
+          TakesNotes.using(notepad),
+      ];
+
+      await use(extraAbilities);
+  },
+})
+```
+
+```ts title="./spec/todo_app.spec.ts"
+import { Navigate } from '@serenity-js/web'
+import { notes, q } from '@serenity-js/core'
+
+import { describe, it, beforeEach, test, type MyNotes } from './test-api.ts'
+
+describe('Todo App', () => {
+
+    it('uses shared notes', async ({ actor }) => {
+        await actor.attemptsTo(
+            Navigate.to(q`/lists/${ notes<MyNotes>().testListId }`),
+            // ...
+        )
+    });
+
+    // ...
+})
+```
+
+## Using multiple browsers
+
+By default, scenarios with [multiple actors](/handbook/test-runners/playwright-test/multi-actor-scenarios/) reuse the same underlying `page` instance to align with Playwright Test defaults.
+While this is useful for simulating multiple users interacting within the same browser session, it may not be appropriate for scenarios where different actors represent distinct users or roles.
+For instance, a doctor and a patient using a healthcare system would not share the same browser session or user interface.
+
+To address this, use the [`actor.whoCan`](/api/core/class/Actor/#whoCan) method to override the default ability to [`BrowseTheWebWithPlaywright`](/api/playwright/class/BrowseTheWebWithPlaywright).
+This allows actors who require a separate browser to have their own instance.
+
+In this modified implementation below, `Alice` uses the default browser instance, associated with the `page` fixture,
+while `Bob` uses a separate browser instance launched using the [`browser`](https://playwright.dev/docs/test-fixtures#built-in-fixtures) fixture.
+
+```ts title="./spec/todo_app.spec.ts"
+import { describe, it, beforeEach } from '@serenity-js/playwright-test'
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
+import { Navigate } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+import { TodoApp } from './screenplay/TodoApp'
+
+describe('Todo App', () => {
+
+    describe('Guest user', () => {
+
+
+        it('does not share lists across browsers', async ({ actorCalled, browser }) => {
+
+            await actorCalled('Alice').attemptsTo(
+                Navigate.to('https://todo-app.serenity-js.org/#/'),
+                TodoApp.recordItem('Read a book'),
+                Ensure.that(TodoApp.recordedItems(), equals([
+                    'Read a book'
+                ])),
+            )
+
+            await actorCalled('Bob')
+                .whoCan(BrowseTheWebWithPlaywright.using(browser))
+                .attemptsTo(
+                    Navigate.to('https://todo-app.serenity-js.org/#/'),
+                    Ensure.that(TodoApp.recordedItems(), equals([ ])),
+                )
+        })
+    })
+})
+```
+
+If your scenario requires more actors using separate browser instances, you can override the default ability to [`BrowseTheWeb`](/api/web/class/BrowseTheWeb) for each actor in the same way.
+
+## Sharing notes between actors
+
+By default, each actor receives an ability to [`TakeNotes`](/api/core/class/TakeNotes/) using their own [notepad](/api/core/class/Notepad/).
+To share notes between actors, you can introduce a `notepad` fixture and override the default [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) function to make the actors reuse the same notepad.
+
+Overriding the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) function allows you to customise the abilities of the actors created via the `actorCalled` fixture,
+as well as the default actor injected via the [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture.
+
+```ts title="./spec/test-api.ts"
+import { useFixtures } from '@serenity-js/playwright-test';
+import { Notepad, notes, TakeNotes } from '@serenity-js/core';
+
+export interface SharedNotes {
+    items: string[];
+}
+
+export interface TestScopeFixtures {
+    notepad: Notepad<SharedNotes>
+}
+
+export const { describe, it, beforeEach, afterEach, test }  = useFixtures<TestScopeFixtures>({
+
+    // Shared notepad instantiated before each test
+    notepad: async ({ }, use) => {
+
+        // Create an empty notepad to share between actors
+        const notepad = Notepad.empty<SharedNotes>()
+
+        // Alternatively, pre-populate the notepad with some data
+        // const notepad = Notepad.with<SharedNotes>({
+        //     items: ['strawberries', 'bananas'],
+        // })
+
+        await use(notepad)
+    },
+
+    // Override the actorCalled fixture to use the shared notepad
+    extraAbilities: async ({ notepad }, use) => {
+
+        await use(actorName => {
+            // Return the same set of extra abilities for all the actors,
+            // or make it conditional based on the actorName
+            return [
+                TakeNotes.using(notepad),
+            ]
+        })
+    },
+})
+```
+
+```ts title="./spec/todo_app.spec.ts"
+import { notes } from '@serenity-js/core'
+import { Ensure, equals } from '@serenity-js/assertions'
+import { describe, it, SharedNotes } from './test-api'
+
+describe('Todo App', () => {
+
+    describe('actor', () => {
+
+        it('can access a shared notepad', async ({ actor, actorCalled, browser }) => {
+
+            // default actor
+            await actor.attemptsTo(
+                notes<SharedNotes>().set('items', [
+                  'apples',
+                  'oranges',
+                ]),
+            )
+
+            // additional actor, sharing the same notes
+            await actorCalled('Bobby').attemptsTo(
+                Ensure.that(
+                  notes<SharedNotes>().get('items'),
+                  equals([
+                    'apples',
+                    'oranges',
+                  ]),
+                ),
+            )
+        })
+    })
+})
+```
+
+## Replacing the default actors
+
+For advanced Serenity/JS users, rather than modifying individual abilities, you can replace the default [`Cast`](/api/core/class/Cast) of `actors` with a custom implementation.
+
+For example, a custom cast can ensure each actor receives their own browser instance while sharing [notes](/api/core/function/notes).
+
+```ts title="./spec/test-api.ts"
+import { useFixtures } from '@serenity-js/playwright-test'
+import { TakeNotes, Notepad } from '@serenity-js/core'
+
+export interface MyNotes {
+    testListId: string;
+}
+
+export const { describe, it, beforeEach, test } = useFixtures<{ notepad: Notepad<MyNotes> }>({
+    notepad: Notepad.with<MyNotes>({
+       testListId: process.env.TEST_LIST_ID,
+    }),
+
+    actors: async ({ browser, contextOptions, notepad }, use) => {
+        const cast = Cast.where(actor => actor.whoCan(
+            BrowseTheWebWithPlaywright.using(browser, {
+                ...contextOptions,
+                userAgent: `${ actor.name }`
+            }),
+            TakeNotes.using<MyNotes>(notepad),
+        ))
+
+        await use(cast)
+    },
+})
+```
+
+Overriding `actors` replaces the cast used to configure the actors instantiated via the [`actorCalled`](/api/playwright-test/interface/SerenityWorkerFixtures/#actorCalled) fixture, as well as the default actor injected via the [`actor`](/api/playwright-test/interface/SerenityFixtures/#actor) fixture.
+
+## What you learnt
+
+- Actors come with default abilities (`BrowseTheWebWithPlaywright`, `TakeNotes`, `CallAnApi`) that you can override.
+- Use `actor.whoCan(...)` for one-off changes, `test.use` for file-level config, and `useFixtures` for cross-file reuse.
+- Give actors separate browser instances with `BrowseTheWebWithPlaywright.using(browser)`.
+- Share data between actors by providing them with the same `Notepad` instance.
+- For full control, replace the entire `Cast` via the `actors` fixture.
+
+## Next step
+
+Learn about the [reporting capabilities](/handbook/test-runners/playwright-test/reporting/) available with Serenity/JS and Playwright Test.
