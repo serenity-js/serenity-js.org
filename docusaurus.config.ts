@@ -84,9 +84,8 @@ const config: Config = {
     organizationName: 'serenity-js',
     projectName: 'serenity-js',
 
-    onBrokenLinks: 'warn',
-    // onBrokenLinks: 'throw',
-    // onBrokenMarkdownLinks: 'warn',
+    onBrokenAnchors: 'warn',
+    onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'throw',
 
     // Even if you don't use internationalization, you can use this field to set
