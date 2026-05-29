@@ -385,28 +385,6 @@ Notice the Task code imports from `@serenity-js/web` and `@serenity-js/core` —
 
 ## Choosing your level
 
-```mermaid
-flowchart TD
-    A[Do you want to change your existing test code?] -->|No| B[Reporting-Only]
-    A -->|Yes, for new tests| C[Are you doing BDD with Gherkin?]
-    C -->|No| D[Lean Screenplay]
-    C -->|Yes| E[Full Screenplay + BDD]
-
-    B --> F[Start here, grow later]
-    D --> G[Best balance of effort vs. value]
-    E --> H[Maximum structure and documentation]
-```
-
-| | Vanilla | Reporting-Only | Full Screenplay |
-|---|---|---|---|
-| **Setup** | None | 5 minutes | 1–2 hours to learn |
-| **Code changes** | — | Change one import | Restructure into Tasks |
-| **Reporting** | Pass/fail + trace | Activity breakdown + screenshots | Hierarchical tasks + living docs |
-| **Code reuse** | Copy-paste | Same as vanilla | Composable Tasks |
-| **Multi-actor** | Manual | Manual | Built-in |
-| **Tool portability** | Locked in | Locked in | Tasks work anywhere |
-| **Best for** | Small suites | Better reports now | Growing suites |
-
 :::tip Start with Level 2, grow into Level 3
 Most teams get the best ROI by starting with **reporting-only mode** (one import change, zero risk) and gradually introducing Tasks for new tests. You don't have to rewrite anything.
 :::
