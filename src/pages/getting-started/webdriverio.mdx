@@ -180,6 +180,8 @@ This test uses [`actorCalled`](/api/core/function/actorCalled) and Screenplay in
 
 → Learn more: [Screenplay Pattern](/handbook/design/screenplay-pattern/) | [Your first web scenario](/handbook/tutorials/your-first-web-scenario/)
 
+For a more advanced example showing composable Tasks, the Lean Page Objects pattern, and masked credentials, see the [Complete example](#complete-example) below.
+
 :::tip Same Tasks, different tool
 Screenplay code is identical whether you use Playwright or WebdriverIO — only the config differs. See [Serenity/JS with Playwright](/getting-started/playwright/).
 :::
@@ -281,7 +283,7 @@ describe('Website', () => {
 
 ```typescript title="test/specs/swag-labs.spec.ts"
 import { describe, it } from 'mocha';
-import { actorCalled, Task } from '@serenity-js/core';
+import { actorCalled, Masked, Task } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
 import { Navigate, Click, Enter, Text, PageElement, By } from '@serenity-js/web';
 
@@ -291,7 +293,7 @@ describe('Swag Labs', () => {
         await actorCalled('Alice').attemptsTo(
             Navigate.to('https://www.saucedemo.com/'),
             Authenticate.withCredentials('standard_user', 'secret_sauce'),
-            Cart.addItem('Sauce Labs Backpack'),
+            Inventory.productCalled('Sauce Labs Backpack').addToCart(),
             Checkout.completeWith({
                 firstName: 'Alice',
                 lastName: 'Smith',
@@ -305,52 +307,101 @@ describe('Swag Labs', () => {
 // --- Screenplay Tasks ---
 
 class Authenticate {
+    private static usernameField =
+        PageElement.located(By.css('[data-test="username"]')).describedAs('username field');
+
+    private static passwordField =
+        PageElement.located(By.css('[data-test="password"]')).describedAs('password field');
+
+    private static loginButton =
+        PageElement.located(By.css('[data-test="login-button"]')).describedAs('login button');
+
     static withCredentials = (username: string, password: string) =>
         Task.where(`#actor logs in as ${ username }`,
-            Enter.theValue(username).into(
-                PageElement.located(By.css('[data-test="username"]')).describedAs('username field')
-            ),
-            Enter.theValue(password).into(
-                PageElement.located(By.css('[data-test="password"]')).describedAs('password field')
-            ),
-            Click.on(
-                PageElement.located(By.css('[data-test="login-button"]')).describedAs('login button')
-            ),
+            Enter.theValue(username).into(Authenticate.usernameField),
+            Enter.theValue(Masked.valueOf(password)).into(Authenticate.passwordField),
+            Click.on(Authenticate.loginButton),
         );
 }
 
-class Cart {
-    static addItem = (itemName: string) =>
-        Task.where(`#actor adds "${ itemName }" to the cart`,
-            Click.on(
-                PageElement.located(By.css(
-                    `[data-test="add-to-cart-${ itemName.toLowerCase().replace(/ /g, '-') }"]`
-                )).describedAs(`"Add to cart" button for ${ itemName }`)
-            ),
+class ProductCard {
+    constructor(private name: string) {}
+
+    private card = PageElement.located(By.css(
+        `[data-test="inventory-item"]:has([data-test="inventory-item-name"]:text("${ this.name }"))`
+    )).describedAs(`product card for "${ this.name }"`);
+
+    private inventoryItemPrice =
+        PageElement.located(By.css('[data-test="inventory-item-price"]'))
+            .of(this.card).describedAs(`price of "${ this.name }"`);
+
+    private addToCartButton =
+        PageElement.located(By.css('[data-test^="add-to-cart"]'))
+            .of(this.card).describedAs(`"Add to cart" button for "${ this.name }"`);
+
+    price = () =>
+        Text.of(this.inventoryItemPrice);
+
+    addToCart = () =>
+        Task.where(`#actor adds "${ this.name }" to the cart`,
+            Click.on(this.addToCartButton),
         );
+}
+
+class Inventory {
+    static productCalled = (name: string) => new ProductCard(name);
+}
+
+class Cart {
+    private static cartLink =
+        PageElement.located(By.css('[data-test="shopping-cart-link"]')).describedAs('shopping cart link');
+
+    private static checkoutButton =
+        PageElement.located(By.css('[data-test="checkout"]')).describedAs('checkout button');
 
     static open = () =>
         Task.where('#actor opens the shopping cart',
-            Click.on(
-                PageElement.located(By.css('[data-test="shopping-cart-link"]')).describedAs('shopping cart link')
-            ),
+            Click.on(Cart.cartLink),
+        );
+
+    static checkout = () =>
+        Task.where('#actor proceeds to checkout',
+            Cart.open(),
+            Click.on(Cart.checkoutButton),
         );
 }
 
 class Checkout {
+    private static firstNameField =
+        PageElement.located(By.css('[data-test="firstName"]')).describedAs('first name');
+
+    private static lastNameField =
+        PageElement.located(By.css('[data-test="lastName"]')).describedAs('last name');
+
+    private static postalCodeField =
+        PageElement.located(By.css('[data-test="postalCode"]')).describedAs('postal code');
+
+    private static continueButton =
+        PageElement.located(By.css('[data-test="continue"]')).describedAs('continue button');
+
+    private static finishButton =
+        PageElement.located(By.css('[data-test="finish"]')).describedAs('finish button');
+
+    private static confirmationHeader =
+        PageElement.located(By.css('[data-test="complete-header"]')).describedAs('confirmation heading');
+
     static completeWith = (info: { firstName: string; lastName: string; postalCode: string }) =>
         Task.where(`#actor completes checkout`,
-            Cart.open(),
-            Click.on(PageElement.located(By.css('[data-test="checkout"]')).describedAs('checkout button')),
-            Enter.theValue(info.firstName).into(PageElement.located(By.css('[data-test="firstName"]')).describedAs('first name')),
-            Enter.theValue(info.lastName).into(PageElement.located(By.css('[data-test="lastName"]')).describedAs('last name')),
-            Enter.theValue(info.postalCode).into(PageElement.located(By.css('[data-test="postalCode"]')).describedAs('postal code')),
-            Click.on(PageElement.located(By.css('[data-test="continue"]')).describedAs('continue button')),
-            Click.on(PageElement.located(By.css('[data-test="finish"]')).describedAs('finish button')),
+            Cart.checkout(),
+            Enter.theValue(info.firstName).into(Checkout.firstNameField),
+            Enter.theValue(info.lastName).into(Checkout.lastNameField),
+            Enter.theValue(info.postalCode).into(Checkout.postalCodeField),
+            Click.on(Checkout.continueButton),
+            Click.on(Checkout.finishButton),
         );
 
     static confirmationHeading = () =>
-        Text.of(PageElement.located(By.css('[data-test="complete-header"]')).describedAs('confirmation heading'));
+        Text.of(Checkout.confirmationHeader);
 }
 ```
 
