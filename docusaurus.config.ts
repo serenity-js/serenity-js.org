@@ -163,16 +163,23 @@ const config: Config = {
                 className: 'serenity-js-logo',
             },
             items: [
+                {
+                    label: 'Get Started',
+                    position: 'left',
+                    type: 'dropdown',
+                    items: [
+                        { label: 'Serenity/JS for Playwright Users', to: '/getting-started/playwright/' },
+                        { label: 'Serenity/JS for WebdriverIO Users', to: '/getting-started/webdriverio/' },
+                        { label: 'Compare Approaches', to: '/compare/' },
+                        { label: 'Tutorials', to: '/handbook/tutorials' },
+                        { label: 'Project Templates', to: '/handbook/project-templates' },
+                    ],
+                },
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
                 { label: 'API', to: '/api/', position: 'left' },
                 { to: '/blog', label: 'News', position: 'left' },
                 { label: `Releases`, to: 'releases', position: 'left' },
                 { to: '/community', label: 'Community', position: 'left' },
-                {
-                    to: 'https://github.com/sponsors/serenity-js',
-                    label: 'Sponsor',
-                    position: 'left',
-                },
                 {
                     href: 'https://www.youtube.com/@serenity-js',
                     'aria-label': 'Serenity/JS YouTube channel',
@@ -193,10 +200,19 @@ const config: Config = {
             copyright: `Made with 💛 in London, UK. Copyright © 2016-${ new Date().getFullYear() } <a href="https://janmolak.com">Jan Molak</a>, smartcode ltd.`,
             links: [
                 {
+                    title: 'Get Started',
+                    items: [
+                        { label: 'Serenity/JS with Playwright', to: '/getting-started/playwright/' },
+                        { label: 'Serenity/JS with WebdriverIO', to: '/getting-started/webdriverio/' },
+                        { label: 'Compare Approaches', to: '/compare/' },
+                        { label: 'Tutorials', to: '/handbook/tutorials' },
+                        { label: 'Project Templates', to: '/handbook/project-templates' },
+                    ],
+                },
+                {
                     title: 'Handbook',
                     items: [
                         { label: 'Why Serenity/JS', to: '/handbook/' },
-                        { label: 'Tutorials', to: '/handbook/tutorials' },
                         { label: 'Core Design Patterns', to: '/handbook/design' },
                         { label: 'Web Testing', to: '/handbook/web-testing' },
                         { label: 'API Testing', to: '/handbook/api-testing' },
