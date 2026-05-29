@@ -385,11 +385,13 @@ Notice the Task code imports from `@serenity-js/web` and `@serenity-js/core` —
 
 ## How to start
 
-Most teams get the best ROI by starting with **reporting-only mode** (Level 2) — one import change, zero risk, immediate value. Once you see the activity breakdown in your reports, introduce the Screenplay Pattern gradually for new tests. You don't have to rewrite anything.
+**Start with reporting** — add Serenity/JS in reporting-only mode (Level 2). One import change, zero risk, five minutes. Your existing tests immediately produce detailed activity reports that show what went wrong and where.
 
-Over time, identify high-value legacy scenarios — the ones that break often or are hard to understand — and convert them to Screenplay for better reporting and easier maintenance. Periodically review lower-value scenarios: convert them gradually if they'd benefit from the structure, or delete them if your newer Screenplay tests already cover the same scope more effectively.
+**Use Screenplay for new tests** — when you write your next scenario, use the actor model and composable Tasks. Old tests stay untouched; new tests get better structure from day one.
 
-Remember, you're in control of how many or how few scenarios follow the improved structure — Serenity/JS supports both architectures side by side in the same project.
+**Migrate what matters** — identify the legacy scenarios that break often or are hard to understand, and convert them to Screenplay. Better reports, easier maintenance, less time debugging. For lower-value scenarios, either convert them gradually or delete them when your Screenplay tests already cover the same ground more effectively.
+
+You're in control of how many scenarios follow the improved structure — Serenity/JS supports both architectures side by side in the same project. There's no big-bang rewrite.
 
 ---
 
