@@ -1,6 +1,8 @@
 # IntelliJ
 .idea
 *.iml
+.vscode
+.playwright-mcp
 
 # Dependencies
 /node_modules
