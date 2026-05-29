@@ -24,29 +24,29 @@ Dave Farley's [Four-Layer Separation of Concerns](https://www.youtube.com/watch?
 
 ```mermaid
 block-beta
-    columns 4
+    columns 1
 
-    block:tests:4
+    block:tests
+        columns 4
         t1["Test Case"] t2["Test Case"] t3["Test Case"] t4["Test Case"]
     end
 
-    space:4
+    space
 
-    block:dsl:4
-        columns 1
+    block:dsl
         d1["Domain-Specific Language (DSL)"]
     end
 
-    space:4
+    space
 
-    block:drivers:4
+    block:drivers
+        columns 4
         dr1["Protocol Driver\n(Web UI)"] dr2["Protocol Driver\n(REST API)"] dr3["Protocol Driver\n(Mobile)"] dr4["Protocol Driver\n(Ext. System)"]
     end
 
-    space:4
+    space
 
-    block:sut:4
-        columns 1
+    block:sut
         s1["System Under Test"]
     end
 
