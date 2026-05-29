@@ -207,11 +207,17 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
 
 The Screenplay Pattern structures tests around **user goals** (Tasks) rather than page mechanics. Tests read like a description of what the user does, not how the browser is manipulated.
 
+<Tabs>
+<TabItem value="spec" label="swag-labs.spec.ts" default>
+
 ```typescript title="tests/swag-labs.spec.ts"
 import { describe, it } from '@serenity-js/playwright-test';
 import { Ensure, equals } from '@serenity-js/assertions';
-import { Masked, Task } from '@serenity-js/core';
-import { Navigate, Click, Enter, Text, PageElement, By } from '@serenity-js/web';
+import { Navigate } from '@serenity-js/web';
+
+import { Authenticate } from '../screenplay/Authenticate';
+import { Inventory } from '../screenplay/Inventory';
+import { Checkout } from '../screenplay/Checkout';
 
 describe('Swag Labs', () => {
 
@@ -229,10 +235,16 @@ describe('Swag Labs', () => {
         );
     });
 });
+```
 
-// --- Screenplay Tasks ---
+</TabItem>
+<TabItem value="authenticate" label="Authenticate.ts">
 
-class Authenticate {
+```typescript title="screenplay/Authenticate.ts"
+import { Masked, Task } from '@serenity-js/core';
+import { Click, Enter, PageElement, By } from '@serenity-js/web';
+
+export class Authenticate {
     private static usernameField =
         PageElement.located(By.css('[data-test="username"]')).describedAs('username field');
 
@@ -249,8 +261,16 @@ class Authenticate {
             Click.on(Authenticate.loginButton),
         );
 }
+```
 
-class ProductCard {
+</TabItem>
+<TabItem value="inventory" label="Inventory.ts">
+
+```typescript title="screenplay/Inventory.ts"
+import { Task } from '@serenity-js/core';
+import { Click, Text, PageElement, By } from '@serenity-js/web';
+
+export class ProductCard {
     constructor(private name: string) {}
 
     private card = PageElement.located(By.css(
@@ -274,11 +294,21 @@ class ProductCard {
         );
 }
 
-class Inventory {
+export class Inventory {
     static productCalled = (name: string) => new ProductCard(name);
 }
+```
 
-class Cart {
+</TabItem>
+<TabItem value="checkout" label="Checkout.ts">
+
+```typescript title="screenplay/Checkout.ts"
+import { Task } from '@serenity-js/core';
+import { Click, Enter, Text, PageElement, By } from '@serenity-js/web';
+
+import { Cart } from './Cart';
+
+export class Cart {
     private static cartLink =
         PageElement.located(By.css('[data-test="shopping-cart-link"]')).describedAs('shopping cart link');
 
@@ -297,7 +327,7 @@ class Cart {
         );
 }
 
-class Checkout {
+export class Checkout {
     private static firstNameField =
         PageElement.located(By.css('[data-test="firstName"]')).describedAs('first name');
 
@@ -330,6 +360,9 @@ class Checkout {
         Text.of(Checkout.confirmationHeader);
 }
 ```
+
+</TabItem>
+</Tabs>
 
 :::tip Tasks are portable
 Notice the Task code imports from `@serenity-js/web` and `@serenity-js/core` — not from Playwright or WebdriverIO directly. Your Tasks are **portable**. Switch tools (or use both) without rewriting test logic. Only the [Ability](/api/core/class/Ability/) configuration changes.
