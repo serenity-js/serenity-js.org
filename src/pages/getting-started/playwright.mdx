@@ -82,6 +82,10 @@ Update your `playwright.config.ts` to add the Serenity/JS reporter. You need to 
 2. Add type parameters to `defineConfig`
 3. Replace the `reporter` option with the Serenity/JS reporter configuration
 
+:::note Reading the diffs
+Lines marked with `+` should be added to your file; lines marked with `-` should be removed. Don't copy the `+`/`-` prefixes themselves.
+:::
+
 ```diff title="playwright.config.ts"
 - import { defineConfig, devices } from '@playwright/test';
 + import { defineConfig, devices } from '@playwright/test';
