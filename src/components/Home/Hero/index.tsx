@@ -34,12 +34,10 @@ export default function Hero(): React.JSX.Element {
                     />
                 </h1>
                 <p>
-                    <strong>Serenity/JS</strong> is an innovative <strong>test automation framework</strong> designed to
-                    help you
-                    create <strong>high-quality, business-focused test scenarios</strong> that interact with <strong>any
-                    interface of your system</strong> and
-                    produce <strong>comprehensive test reports</strong> that <strong>build trust</strong> between
-                    delivery teams and the business.
+                    <strong>Serenity/JS</strong> gives your <strong>Playwright</strong>, <strong>WebdriverIO</strong>,
+                    or <strong>Cucumber</strong> test suite the architecture it needs to
+                    scale — <strong>meaningful reports</strong> for every audience,
+                    and <strong>reusable test code</strong> to support your entire organisation.
                 </p>
                 <CallToAction>
                     <Link id="cta-start-automating" className="button button--primary"
