@@ -158,6 +158,17 @@ npm test
 
 That's it. Your existing scenarios run as before, but now produce a rich HTML report in `reports/serenity/`. Open `reports/serenity/index.html` in your browser to view it.
 
+:::tip Running a single scenario
+The `[...]` wildcard in the `test` script is provided by [npm-failsafe](https://www.npmjs.com/package/npm-failsafe) and passes any arguments you provide directly to Cucumber. For example, to run scenarios by name:
+```bash
+npm test -- --name="descriptive title"
+```
+Or to run scenarios by tag:
+```bash
+npm test -- --tags="@smoke"
+```
+:::
+
 → Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
 
 <Figure

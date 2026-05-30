@@ -140,6 +140,13 @@ npm run serenity
 
 That's it. Your existing tests run as before, but now produce a rich HTML report in `target/site/serenity/`. Open `target/site/serenity/index.html` in your browser to view it.
 
+:::tip Running a single test
+The `[...]` wildcard in the `serenity` script is provided by [npm-failsafe](https://www.npmjs.com/package/npm-failsafe) and passes any arguments you provide directly to WebdriverIO. For example, to run a single spec file:
+```bash
+npm run serenity -- --spec=test/specs/website.spec.ts
+```
+:::
+
 → Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
 
 <Figure

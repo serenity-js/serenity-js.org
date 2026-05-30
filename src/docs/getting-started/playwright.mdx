@@ -149,6 +149,17 @@ npm test
 
 That's it. Your existing tests run as before, but now produce a rich HTML report in `reports/serenity/`. Open `reports/serenity/index.html` in your browser to view it.
 
+:::tip Running a single test
+The `[...]` wildcard in the `test` script is provided by [npm-failsafe](https://www.npmjs.com/package/npm-failsafe) and passes any arguments you provide directly to Playwright Test. For example, to run a single spec file:
+```bash
+npm test -- --spec=tests/website.spec.ts
+```
+Or to run tests matching a specific name:
+```bash
+npm test -- --grep="descriptive title"
+```
+:::
+
 → Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
 
 <Figure
