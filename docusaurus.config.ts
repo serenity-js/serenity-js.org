@@ -168,9 +168,9 @@ const config: Config = {
                     position: 'left',
                     type: 'dropdown',
                     items: [
+                        { label: 'Compare Test Architectures', to: '/compare/' },
                         { label: 'Serenity/JS for Playwright Users', to: '/getting-started/playwright/' },
                         { label: 'Serenity/JS for WebdriverIO Users', to: '/getting-started/webdriverio/' },
-                        { label: 'Compare Test Architectures', to: '/compare/' },
                         { label: 'Tutorials', to: '/handbook/tutorials' },
                         { label: 'Project Templates', to: '/handbook/project-templates' },
                     ],
@@ -202,9 +202,9 @@ const config: Config = {
                 {
                     title: 'Get Started',
                     items: [
+                        { label: 'Compare Test Architectures', to: '/compare/' },
                         { label: 'Serenity/JS with Playwright', to: '/getting-started/playwright/' },
                         { label: 'Serenity/JS with WebdriverIO', to: '/getting-started/webdriverio/' },
-                        { label: 'Compare Test Architectures', to: '/compare/' },
                         { label: 'Tutorials', to: '/handbook/tutorials' },
                         { label: 'Project Templates', to: '/handbook/project-templates' },
                     ],
