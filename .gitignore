@@ -3,6 +3,10 @@
 *.iml
 .vscode
 .playwright-mcp
+.kiro
+
+# Private
+ADOPTION_PLAN.md
 
 # Dependencies
 /node_modules

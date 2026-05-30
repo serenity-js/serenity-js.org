@@ -168,7 +168,7 @@ const config: Config = {
                     position: 'left',
                     type: 'dropdown',
                     items: [
-                        { label: 'Why Serenity/JS?', to: '/compare/' },
+                        { label: 'Why Serenity/JS?', to: '/why-serenity-js/' },
                         { label: 'Serenity/JS for Playwright Users', to: '/getting-started/playwright/' },
                         { label: 'Serenity/JS for WebdriverIO Users', to: '/getting-started/webdriverio/' },
                         { label: 'Tutorials', to: '/handbook/tutorials' },
@@ -202,7 +202,7 @@ const config: Config = {
                 {
                     title: 'Get Started',
                     items: [
-                        { label: 'Why Serenity/JS?', to: '/compare/' },
+                        { label: 'Why Serenity/JS?', to: '/why-serenity-js/' },
                         { label: 'Serenity/JS with Playwright', to: '/getting-started/playwright/' },
                         { label: 'Serenity/JS with WebdriverIO', to: '/getting-started/webdriverio/' },
                         { label: 'Tutorials', to: '/handbook/tutorials' },

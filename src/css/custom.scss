@@ -64,6 +64,28 @@ aside.theme-doc-sidebar-container  > div > div > a > b {
     color: #fcd30a;
 }
 
+.navbar .navbar__item.dropdown > .navbar__link {
+    white-space: nowrap;
+}
+
+/*
+ * Collapse navbar to hamburger menu at 1080px instead of the default 996px.
+ * This prevents items from overlapping at mid-width viewports.
+ */
+@media (max-width: 1080px) {
+    .navbar > .navbar__inner > .navbar__items:not(.navbar__items--right) > *:not(.navbar__toggle):not(.navbar__brand) {
+        display: none;
+    }
+
+    .navbar > .navbar__inner > .navbar__items--right > *:not(.DocSearch) {
+        display: none;
+    }
+
+    .navbar__toggle {
+        display: inherit !important;
+    }
+}
+
 .navbar {
 
     .navbar-github-link {
