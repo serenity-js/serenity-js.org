@@ -133,11 +133,15 @@ AfterAll(async () => {
 
 Add the following scripts to your `package.json`:
 
+:::note Reading the diffs
+Lines marked with `+` should be added to your file; lines marked with `-` should be removed. Don't copy the `+`/`-` prefixes themselves.
+:::
+
 ```diff title="package.json"
  {
    "scripts": {
 +    "clean": "rimraf target",
-+    "test": "failsafe clean test:execute test:report",
++    "test": "failsafe clean test:execute [...] test:report",
 +    "test:execute": "cucumber-js",
 +    "test:report": "serenity-bdd run --features='./features' --source='./reports/serenity' --destination='./reports/serenity'"
    }
@@ -472,11 +476,11 @@ Serenity/JS supports all modern versions of `@cucumber/cucumber`. The adapter de
 
 ## Next steps
 
-- **[Why Serenity/JS?](/getting-started/)** — see how Serenity/JS transforms flat test scripts into structured, maintainable code
+- **[Why Serenity/JS?](/getting-started/)** — same test at three levels of abstraction
 - **[15-minute tutorial](/handbook/tutorials/your-first-web-scenario/)** — build your first Screenplay test
 - **[Cucumber integration guide](/handbook/test-runners/cucumber/)** — detailed setup and configuration
 - **[Project templates](/getting-started/project-templates/)** — all available starter projects
 
 :::note Using Playwright Test instead of Cucumber?
-If you don't need Gherkin syntax, Serenity/JS works directly with Playwright Test for a simpler setup. See [Serenity/JS with Playwright](/getting-started/playwright/).
+If you don't need Gherkin syntax, Serenity/JS works directly with Playwright Test or WebdriverIO for a simpler setup. See [Serenity/JS with Playwright](/getting-started/playwright/) or [Serenity/JS with WebdriverIO](/getting-started/webdriverio/).
 :::

@@ -172,7 +172,7 @@ describe('Website', () => {
 });
 ```
 
-Run `npm run serenity again. In the Serenity BDD report you'll now see each interaction ([`Navigate.to`](/api/web/class/Navigate), [`Ensure.that`](/api/assertions/class/Ensure)) listed as a separate step with timing — giving you a clear activity breakdown without any extra configuration.
+Run `npm run serenity` again. In the Serenity BDD report you'll now see each interaction ([`Navigate.to`](/api/web/class/Navigate), [`Ensure.that`](/api/assertions/class/Ensure)) listed as a separate step with timing — giving you a clear activity breakdown without any extra configuration.
 
 This test uses [`actorCalled`](/api/core/function/actorCalled) and Screenplay interactions instead of WebdriverIO's `browser` object directly. The key differences:
 
@@ -198,7 +198,7 @@ A self-contained project you can copy in full. It includes:
 - `test/specs/website.spec.ts` — a simple Screenplay test using [`Navigate`](/api/web/class/Navigate) and [`Ensure`](/api/assertions/class/Ensure) (same pattern as Step 4)
 - `test/specs/swag-labs.spec.ts` — a more advanced test interacting with the [Swag Labs](https://www.saucedemo.com/) demo website, using composable [`Task`](/api/core/class/Task) definitions and the [Lean Page Objects pattern](/handbook/web-testing/page-objects-pattern/)
 
-Run `npm install` then `npm run serenity` — the Serenity BDD HTML report lands in `reports/serenity/index.html`.
+Run `npm install` then `npm run serenity` — the Serenity BDD HTML report lands in `target/site/serenity/index.html`.
 
 <Tabs>
 <TabItem value="package" label="package.json" default>
@@ -447,8 +447,8 @@ Yes, for the Serenity BDD HTML reports (Java 11+). If you'd rather stay Java-fre
 ## Next steps
 
 - **[Why Serenity/JS?](/getting-started/)** — same test at three levels of abstraction
-- **[WebdriverIO integration guide](/handbook/test-runners/webdriverio/)** — detailed setup and configuration
 - **[15-minute tutorial](/handbook/tutorials/your-first-web-scenario/)** — build your first Screenplay test
+- **[WebdriverIO integration guide](/handbook/test-runners/webdriverio/)** — detailed setup and configuration
 - **[Project templates](/getting-started/project-templates/)** — all available starter projects
 
 :::note Using Playwright instead?
