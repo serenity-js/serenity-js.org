@@ -42,8 +42,8 @@ export const LeaderRecommendations: RecommendationItem[] = [
             `WebdriverIO is proud to be a part of the Serenity/JS ecosystem, and I'm excited to see what the future holds for this fantastic project!`,
         ],
         learnMore: {
-            path: '/handbook/test-runners/webdriverio/',
-            text: 'Learn about using WebdriverIO with Serenity/JS'
+            path: '/getting-started/webdriverio/',
+            text: 'Get started with WebdriverIO and Serenity/JS'
         }
     },
 ]

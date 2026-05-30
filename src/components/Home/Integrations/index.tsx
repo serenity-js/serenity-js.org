@@ -15,11 +15,11 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
     return (
         <Section className={ clsx(className) }>
             <SectionTitle
-                title="Designed to support Continuous Improvement"
+                title="Add Serenity/JS to your project"
                 description={
                     <>
-                        Serenity/JS is designed to work well with your existing tools and infrastructure
-                        and supports progressive modernisation and continuous improvement of existing codebases.
+                        Serenity/JS works with your existing tools and infrastructure
+                        and supports progressive adoption without disrupting your current workflow.
                     </>
                 }
             />

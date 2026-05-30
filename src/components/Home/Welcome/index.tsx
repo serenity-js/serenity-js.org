@@ -23,9 +23,9 @@ export default function Welcome({ className }: WelcomeProps) {
                     width="300"
                     height="300"
                 />
-                <h2 className={ styles.title }>Welcome to the Serenity/JS Community!</h2>
+                <h2 className={ styles.title }>Ready to try Serenity/JS?</h2>
                 <CallToAction>
-                    <Link id="cta-welcome-start-automating"
+                    <Link id="cta-welcome-get-started"
                           className={ clsx('button', 'button--primary', styles.primaryButton) }
                           data-sa-link-event="cta_welcome_get_started"
                           to="/getting-started/">
