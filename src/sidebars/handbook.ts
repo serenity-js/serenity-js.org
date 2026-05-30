@@ -24,7 +24,6 @@ const sidebars: SidebarsConfig = {
             items: [
                 'installation',
                 'architecture',
-                'project-templates',
             ]
         },
         {
