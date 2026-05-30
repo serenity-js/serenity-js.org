@@ -1,0 +1,460 @@
+---
+title: "Serenity/JS for Cucumber Users"
+sidebar_label: "For Cucumber Users"
+sidebar_position: 4
+description: "Add Serenity/JS to your Cucumber.js project for the Screenplay Pattern, structured reporting, and multi-actor support — with Playwright or WebdriverIO as the browser driver."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Serenity/JS with Cucumber
+
+Already using Cucumber.js? Serenity/JS plugs right into your existing setup — with Playwright or WebdriverIO driving the browser.
+
+You keep Cucumber's Gherkin syntax, step definitions, and hooks. Serenity/JS adds the Screenplay Pattern, structured reporting, and multi-actor support that matter once your feature files outgrow a handful of scenarios.
+
+---
+
+## Why add Serenity/JS?
+
+Serenity/JS works on top of Cucumber.js — your existing feature files, step definitions, and CI/CD pipeline all stay exactly as they are. You don't need to rewrite anything.
+
+Here's how Serenity/JS helps you address common Cucumber challenges:
+
+| Challenge | How Serenity/JS helps |
+|---|---|
+| **Step definitions coupled to selectors** | The [Screenplay Pattern](/handbook/design/screenplay-pattern/) gives you composable Tasks that separate what from how |
+| **Reports show only pass/fail** | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/) generate living documentation organised by feature and capability |
+| **Multi-user workflows are awkward** | [Multi-actor support](/handbook/design/screenplay-pattern/) is built in — `actorCalled('Alice')` and `actorCalled('Bob')` in the same scenario |
+| **Step definitions are hard to reuse** | Screenplay Tasks are composable and portable — reuse them across step definitions, scenarios, and projects |
+| **Locked into one browser driver** | Screenplay Tasks work with both [Playwright](/api/playwright/) and [WebdriverIO](/api/webdriverio/) — switch without rewriting logic |
+
+---
+
+## Get started in 5 minutes
+
+The progression most teams go through looks like this:
+
+1. **Add reporting** (Steps 1–3) — configure the Serenity/JS adapter and reporters. Existing scenarios get better reports immediately.
+2. **Use Screenplay for new step definitions** (Step 4) — use the actor model for new scenarios. Old step definitions stay untouched.
+3. **Extract shared Tasks** — refactor common workflows into reusable building blocks.
+4. **Blended testing** — mix UI and API interactions in the same scenario for speed and reliability.
+
+### Step 0: Create a Cucumber project
+
+:::tip Already have a Cucumber project?
+Skip this step and proceed with the remaining steps from your project directory.
+:::
+
+Create a new directory and initialise a Cucumber project:
+
+```bash
+mkdir my-serenity-project
+cd my-serenity-project
+npm init -y
+npm install --save-dev @cucumber/cucumber typescript ts-node @types/node
+```
+
+Create a `tsconfig.json`:
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "commonjs",
+    "lib": ["ES2021"],
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "./lib"
+  }
+}
+```
+
+### Step 1: Install
+
+:::info Prerequisites
+You'll need a recent [Node.js LTS](https://nodejs.org/en/download/) version (Serenity/JS supports Node <SupportedNodeVersions conjunction="and" />), as well as [Java 11+](https://adoptium.net/) for the Serenity BDD reports.
+:::
+
+```sh npm2yarn
+npm install --save-dev @serenity-js/core @serenity-js/cucumber @serenity-js/web @serenity-js/assertions @serenity-js/playwright @serenity-js/console-reporter @serenity-js/serenity-bdd rimraf npm-failsafe playwright
+```
+
+→ Learn more: [Full Cucumber installation guide](/handbook/test-runners/cucumber/) | [Why Serenity/JS?](/getting-started/)
+
+### Step 2: Configure
+
+Create a Cucumber profile that attaches the Serenity/JS adapter:
+
+```yaml title="cucumber.yaml"
+default:
+  requireModule:
+    - ts-node/register
+  format:
+    - '@serenity-js/cucumber'
+  require:
+    - ./features/**/*.steps.ts
+    - ./features/**/*.config.ts
+```
+
+Create a Serenity/JS configuration file:
+
+```typescript title="features/support/serenity.config.ts"
+import { BeforeAll, AfterAll } from '@cucumber/cucumber'
+import { configure, Cast } from '@serenity-js/core'
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
+
+import * as playwright from 'playwright'
+
+let browser: playwright.Browser;
+
+BeforeAll(async () => {
+    browser = await playwright.chromium.launch({ headless: true });
+
+    configure({
+        actors: Cast.where(actor =>
+            actor.whoCan(BrowseTheWebWithPlaywright.using(browser)),
+        ),
+        crew: [
+            '@serenity-js/console-reporter',
+            [ '@serenity-js/serenity-bdd', { specDirectory: './features' } ],
+            [ '@serenity-js/core:ArtifactArchiver', {
+                outputDirectory: './reports/serenity'
+            } ],
+        ],
+    });
+});
+
+AfterAll(async () => {
+    await browser?.close();
+});
+```
+
+Add the following scripts to your `package.json`:
+
+```diff title="package.json"
+ {
+   "scripts": {
++    "clean": "rimraf target",
++    "test": "failsafe clean test:execute test:report",
++    "test:execute": "cucumber-js",
++    "test:report": "serenity-bdd run --features='./features' --source='./reports/serenity' --destination='./reports/serenity'"
+   }
+ }
+```
+
+→ Learn more: [Cucumber configuration](/handbook/test-runners/cucumber/) | [Serenity BDD reporter setup](/handbook/reporting/serenity-bdd-reporter/)
+
+### Step 3: Run
+
+```bash
+npm test
+```
+
+That's it. Your existing scenarios run as before, but now produce a rich HTML report in `reports/serenity/`. Open `reports/serenity/index.html` in your browser to view it.
+
+→ Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
+
+<Figure
+    caption='Example Serenity BDD report generated by Serenity/JS'
+    img={require('@site/static/images/reporting/serenity-bdd-reporter.png')}
+    externalLink={'https://serenity-js.github.io/serenity-js-cucumber-playwright-template/'}
+/>
+
+### Step 4 (optional): Write your first Screenplay scenario
+
+Steps 1–3 give you better reporting with zero changes to your step definitions. When you're ready to see what the Screenplay Pattern looks like with Cucumber, add a new feature file and step definitions:
+
+```gherkin title="features/website.feature"
+Feature: Website
+
+  Scenario: Serenity/JS website should have a descriptive title
+    When Serena navigates to the Serenity/JS website
+    Then she should see that the page title includes "Serenity/JS"
+```
+
+```typescript title="features/step-definitions/website.steps.ts"
+import { When, Then } from '@cucumber/cucumber'
+import { actorCalled } from '@serenity-js/core'
+import { Ensure, includes } from '@serenity-js/assertions'
+import { Navigate, Page } from '@serenity-js/web'
+
+When('{actor} navigates to the Serenity/JS website', async (actor) => {
+    await actor.attemptsTo(
+        Navigate.to('https://serenity-js.org/'),
+    );
+});
+
+Then('{pronoun} should see that the page title includes {string}', async (actor, expectedTitle) => {
+    await actor.attemptsTo(
+        Ensure.that(
+            Page.current().title().describedAs('current page title'),
+            includes(expectedTitle),
+        ),
+    );
+});
+```
+
+Run `npm test` again. In the Serenity BDD report you'll now see each interaction ([`Navigate.to`](/api/web/class/Navigate), [`Ensure.that`](/api/assertions/class/Ensure)) listed as a separate step with timing.
+
+The key differences from plain Cucumber step definitions:
+
+- **[`actorCalled('Serena')`](/api/core/function/actorCalled)** creates a named actor — the actor *has* a browser, but can also interact with REST APIs, multiple browser contexts, etc.
+- **[`Navigate.to()`](/api/web/class/Navigate)** and **[`Ensure.that()`](/api/assertions/class/Ensure)** are composable interactions that show up as named steps in your reports.
+- **`{actor}` and `{pronoun}`** are Serenity/JS [Cucumber expression parameters](/api/cucumber/) that automatically resolve to the correct actor instance.
+
+For a more advanced example showing composable Tasks, the Lean Page Objects pattern, and masked credentials, see the [Complete example](#complete-example) below.
+
+→ Learn more: [Screenplay Pattern](/handbook/design/screenplay-pattern/) | [Your first web scenario](/handbook/tutorials/your-first-web-scenario/)
+
+:::tip Same Tasks, different runner
+Screenplay Tasks are identical whether you use Cucumber, Playwright Test, or WebdriverIO as your test runner — only the configuration differs. See [Serenity/JS with Playwright](/getting-started/playwright/).
+:::
+
+---
+
+## Reference projects
+
+### Complete example
+
+A self-contained project you can copy in full. It includes:
+- `features/website.feature` — a simple Screenplay scenario using [`Navigate`](/api/web/class/Navigate) and [`Ensure`](/api/assertions/class/Ensure) (same pattern as Step 4)
+- `features/swag-labs.feature` — a more advanced scenario interacting with the [Swag Labs](https://www.saucedemo.com/) demo website, using composable [`Task`](/api/core/class/Task) definitions and the [Lean Page Objects pattern](/handbook/web-testing/page-objects-pattern/)
+
+Run `npm install` then `npm test` — the Serenity BDD HTML report lands in `reports/serenity/index.html`.
+
+<Tabs>
+<TabItem value="feature" label="swag-labs.feature" default>
+
+```gherkin title="features/swag-labs.feature"
+Feature: Swag Labs
+
+  Scenario: Standard user completes checkout
+    Given Alice has logged in with credentials "standard_user" and "secret_sauce"
+     When she adds "Sauce Labs Backpack" to the cart
+      And she completes checkout with:
+        | firstName  | Alice |
+        | lastName   | Smith |
+        | postalCode | 90210 |
+     Then she should see the confirmation "Thank you for your order!"
+```
+
+</TabItem>
+<TabItem value="steps" label="Step definitions">
+
+```typescript title="features/step-definitions/swag-labs.steps.ts"
+import { Given, When, Then, DataTable } from '@cucumber/cucumber'
+import { actorCalled } from '@serenity-js/core'
+import { Navigate } from '@serenity-js/web'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+import { Authenticate } from '../screenplay/Authenticate'
+import { Inventory } from '../screenplay/Inventory'
+import { Checkout } from '../screenplay/Checkout'
+
+Given('{actor} has logged in with credentials {string} and {string}',
+    async (actor, username, password) => {
+        await actor.attemptsTo(
+            Navigate.to('https://www.saucedemo.com/'),
+            Authenticate.withCredentials(username, password),
+        );
+    }
+);
+
+When('{pronoun} adds {string} to the cart',
+    async (actor, itemName) => {
+        await actor.attemptsTo(
+            Inventory.productCalled(itemName).addToCart(),
+        );
+    }
+);
+
+When('{pronoun} completes checkout with:', async (actor, dataTable: DataTable) => {
+    const info = dataTable.rowsHash();
+    await actor.attemptsTo(
+        Checkout.completeWith(info),
+    );
+});
+
+Then('{pronoun} should see the confirmation {string}',
+    async (actor, expectedText) => {
+        await actor.attemptsTo(
+            Ensure.that(Checkout.confirmationHeading(), equals(expectedText)),
+        );
+    }
+);
+```
+
+</TabItem>
+<TabItem value="authenticate" label="Authenticate.ts">
+
+```typescript title="features/screenplay/Authenticate.ts"
+import { Masked, Task } from '@serenity-js/core';
+import { Click, Enter, PageElement, By } from '@serenity-js/web';
+
+export class Authenticate {
+    private static usernameField =
+        PageElement.located(By.css('[data-test="username"]')).describedAs('username field');
+
+    private static passwordField =
+        PageElement.located(By.css('[data-test="password"]')).describedAs('password field');
+
+    private static loginButton =
+        PageElement.located(By.css('[data-test="login-button"]')).describedAs('login button');
+
+    static withCredentials = (username: string, password: string) =>
+        Task.where(`#actor logs in as ${ username }`,
+            Enter.theValue(username).into(Authenticate.usernameField),
+            Enter.theValue(Masked.valueOf(password)).into(Authenticate.passwordField),
+            Click.on(Authenticate.loginButton),
+        );
+}
+```
+
+</TabItem>
+<TabItem value="inventory" label="Inventory.ts">
+
+```typescript title="features/screenplay/Inventory.ts"
+import { Task } from '@serenity-js/core';
+import { Click, Text, PageElement, By } from '@serenity-js/web';
+
+export class ProductCard {
+    constructor(private name: string) {}
+
+    private card = PageElement.located(By.css(
+        `[data-test="inventory-item"]:has([data-test="inventory-item-name"]:text("${ this.name }"))`
+    )).describedAs(`product card for "${ this.name }"`);
+
+    private inventoryItemPrice =
+        PageElement.located(By.css('[data-test="inventory-item-price"]'))
+            .of(this.card).describedAs(`price of "${ this.name }"`);
+
+    private addToCartButton =
+        PageElement.located(By.css('[data-test^="add-to-cart"]'))
+            .of(this.card).describedAs(`"Add to cart" button for "${ this.name }"`);
+
+    price = () =>
+        Text.of(this.inventoryItemPrice);
+
+    addToCart = () =>
+        Task.where(`#actor adds "${ this.name }" to the cart`,
+            Click.on(this.addToCartButton),
+        );
+}
+
+export class Inventory {
+    static productCalled = (name: string) => new ProductCard(name);
+}
+```
+
+</TabItem>
+<TabItem value="checkout" label="Checkout.ts">
+
+```typescript title="features/screenplay/Checkout.ts"
+import { Task } from '@serenity-js/core';
+import { Click, Enter, Text, PageElement, By } from '@serenity-js/web';
+
+export class Cart {
+    private static cartLink =
+        PageElement.located(By.css('[data-test="shopping-cart-link"]')).describedAs('shopping cart link');
+
+    private static checkoutButton =
+        PageElement.located(By.css('[data-test="checkout"]')).describedAs('checkout button');
+
+    static open = () =>
+        Task.where('#actor opens the shopping cart',
+            Click.on(Cart.cartLink),
+        );
+
+    static checkout = () =>
+        Task.where('#actor proceeds to checkout',
+            Cart.open(),
+            Click.on(Cart.checkoutButton),
+        );
+}
+
+export class Checkout {
+    private static firstNameField =
+        PageElement.located(By.css('[data-test="firstName"]')).describedAs('first name');
+
+    private static lastNameField =
+        PageElement.located(By.css('[data-test="lastName"]')).describedAs('last name');
+
+    private static postalCodeField =
+        PageElement.located(By.css('[data-test="postalCode"]')).describedAs('postal code');
+
+    private static continueButton =
+        PageElement.located(By.css('[data-test="continue"]')).describedAs('continue button');
+
+    private static finishButton =
+        PageElement.located(By.css('[data-test="finish"]')).describedAs('finish button');
+
+    private static confirmationHeader =
+        PageElement.located(By.css('[data-test="complete-header"]')).describedAs('confirmation heading');
+
+    static completeWith = (info: { firstName: string; lastName: string; postalCode: string }) =>
+        Task.where(`#actor completes checkout`,
+            Cart.checkout(),
+            Enter.theValue(info.firstName).into(Checkout.firstNameField),
+            Enter.theValue(info.lastName).into(Checkout.lastNameField),
+            Enter.theValue(info.postalCode).into(Checkout.postalCodeField),
+            Click.on(Checkout.continueButton),
+            Click.on(Checkout.finishButton),
+        );
+
+    static confirmationHeading = () =>
+        Text.of(Checkout.confirmationHeader);
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Project templates
+
+If you'd rather start from a fully configured project than add Serenity/JS to an existing one, use one of these GitHub template repositories. Each comes with CI configuration, example tests, and live reports you can preview.
+
+| Stack | Live Report |
+|---|---|
+| [Cucumber + Playwright](https://github.com/serenity-js/serenity-js-cucumber-playwright-template) | [Serenity BDD](https://serenity-js.github.io/serenity-js-cucumber-playwright-template/) |
+| [Cucumber + WebdriverIO](https://github.com/serenity-js/serenity-js-cucumber-webdriverio-template) | [Serenity BDD](https://serenity-js.github.io/serenity-js-cucumber-webdriverio-template/) |
+
+→ [All project templates](/getting-started/project-templates/)
+
+---
+
+## FAQ
+
+### Does it slow down my tests?
+
+No. Serenity/JS adds negligible overhead. Your scenarios still run on Cucumber's engine with the same parallelism.
+
+### Do I have to rewrite all my step definitions?
+
+No. Mix Screenplay and non-Screenplay step definitions in the same project. Start with reporting and introduce Screenplay gradually for new scenarios.
+
+### Can I use it with WebdriverIO instead of Playwright?
+
+Yes. Replace `@serenity-js/playwright` with `@serenity-js/webdriverio` and configure the cast of actors accordingly. Your Tasks stay identical — only the Ability configuration changes. See the [Cucumber + WebdriverIO template](https://github.com/serenity-js/serenity-js-cucumber-webdriverio-template).
+
+### Do I need Java?
+
+Yes, for the Serenity BDD HTML reports (Java 11+). If you'd rather stay Java-free, use the [console reporter](/handbook/reporting/console-reporter/) alone.
+
+### What Cucumber versions are supported?
+
+Serenity/JS supports all modern versions of `@cucumber/cucumber`. The adapter detects your version automatically.
+
+---
+
+## Next steps
+
+- **[Why Serenity/JS?](/getting-started/)** — see how Serenity/JS transforms flat test scripts into structured, maintainable code
+- **[15-minute tutorial](/handbook/tutorials/your-first-web-scenario/)** — build your first Screenplay test
+- **[Cucumber integration guide](/handbook/test-runners/cucumber/)** — detailed setup and configuration
+- **[Project templates](/getting-started/project-templates/)** — all available starter projects
+
+:::note Using Playwright Test instead of Cucumber?
+If you don't need Gherkin syntax, Serenity/JS works directly with Playwright Test for a simpler setup. See [Serenity/JS with Playwright](/getting-started/playwright/).
+:::

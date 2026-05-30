@@ -26,8 +26,8 @@ export const LeaderRecommendations: RecommendationItem[] = [
             `Kudos to Jan and the contributors for all this fantastic work! The world needs more devs and entrepreneurs like you 😄`,
         ],
         learnMore: {
-            path: '/handbook/test-runners/cucumber/',
-            text: 'Learn about using Cucumber.js with Serenity/JS'
+            path: '/getting-started/cucumber/',
+            text: 'Get started with Cucumber and Serenity/JS'
         }
     },
     {
