@@ -456,6 +456,17 @@ const config: Config = {
         [
             'content-docs',
             {
+                id: 'getting-started',
+                editUrl,
+                path: './src/docs/getting-started',
+                routeBasePath: 'getting-started',
+                sidebarPath: './src/sidebars/getting-started.ts',
+                ...remarkOptions,
+            },
+        ],
+        [
+            'content-docs',
+            {
                 id: 'community',
                 editUrl,
                 path: './src/docs/community',
