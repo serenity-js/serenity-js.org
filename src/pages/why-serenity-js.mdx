@@ -138,7 +138,7 @@ test('should complete checkout successfully', async ({ page }) => {
 
 ### Level 2: Add Serenity/JS reporting
 
-Change one import. Your test code stays identical, but you get structured activity reports showing what each test did, step by step.
+Change one import. Your test code stays identical, but your test results are now organised by business capability and system feature — based on your directory structure — instead of a flat list of pass/fail results.
 
 ```typescript title="tests/checkout.spec.ts"
 import { test, expect } from '@serenity-js/playwright-test';  // ← only change
@@ -165,7 +165,12 @@ test('should complete checkout successfully', async ({ page }) => {
 });
 ```
 
-**What you gain:** Activity breakdown with timing, automatic screenshots on failure, Serenity BDD living documentation — all with zero changes to your test logic.
+**What you gain:**
+- Test results organised per feature and capability (based on your test directory structure) instead of a flat list
+- [Serenity BDD living documentation](/handbook/reporting/serenity-bdd-reporter/) that stakeholders can navigate by business area
+- **Zero changes to your test logic**
+
+**What requires Screenplay (Level 3):** In-depth activity breakdown showing each interaction with timing, and automated screenshots captured at each step.
 
 → [Set this up in 5 minutes](/getting-started/playwright/#step-1-install)
 
