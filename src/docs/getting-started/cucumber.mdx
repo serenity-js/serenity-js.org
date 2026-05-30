@@ -169,24 +169,45 @@ Steps 1–3 give you better reporting with zero changes to your step definitions
 ```gherkin title="features/website.feature"
 Feature: Website
 
-  Scenario: Serenity/JS website should have a descriptive title
-    When Serena navigates to the Serenity/JS website
+  Scenario: The serenity-js.org website should have a descriptive title
+    When Serena navigates to "https://serenity-js.org/"
     Then she should see that the page title includes "Serenity/JS"
+```
+
+```typescript title="features/step-definitions/parameter.steps.ts"
+import { defineParameterType } from '@cucumber/cucumber'
+import { actorCalled, actorInTheSpotlight } from '@serenity-js/core'
+
+defineParameterType({
+    regexp: /[A-Z][a-z]+/,
+    transformer(name: string) {
+        return actorCalled(name);
+    },
+    name: 'actor',
+});
+
+defineParameterType({
+    regexp: /he|she|they|his|her|their/,
+    transformer() {
+        return actorInTheSpotlight();
+    },
+    name: 'pronoun',
+});
 ```
 
 ```typescript title="features/step-definitions/website.steps.ts"
 import { When, Then } from '@cucumber/cucumber'
-import { actorCalled } from '@serenity-js/core'
+import { Actor } from '@serenity-js/core'
 import { Ensure, includes } from '@serenity-js/assertions'
 import { Navigate, Page } from '@serenity-js/web'
 
-When('{actor} navigates to the Serenity/JS website', async (actor) => {
+When('{actor} navigates to {string}', async (actor: Actor, url: string) => {
     await actor.attemptsTo(
-        Navigate.to('https://serenity-js.org/'),
+        Navigate.to(url),
     );
 });
 
-Then('{pronoun} should see that the page title includes {string}', async (actor, expectedTitle) => {
+Then('{pronoun} should see that the page title includes {string}', async (actor: Actor, expectedTitle: string) => {
     await actor.attemptsTo(
         Ensure.that(
             Page.current().title().describedAs('current page title'),
@@ -200,9 +221,10 @@ Run `npm test` again. In the Serenity BDD report you'll now see each interaction
 
 The key differences from plain Cucumber step definitions:
 
+- **`parameter.steps.ts`** registers the `{actor}` and `{pronoun}` [Cucumber expression parameter types](https://cucumber.io/docs/cucumber/cucumber-expressions/) that Serenity/JS uses to resolve actors by name.
 - **[`actorCalled('Serena')`](/api/core/function/actorCalled)** creates a named actor — the actor *has* a browser, but can also interact with REST APIs, multiple browser contexts, etc.
 - **[`Navigate.to()`](/api/web/class/Navigate)** and **[`Ensure.that()`](/api/assertions/class/Ensure)** are composable interactions that show up as named steps in your reports.
-- **`{actor}` and `{pronoun}`** are Serenity/JS [Cucumber expression parameters](/api/cucumber/) that automatically resolve to the correct actor instance.
+- **`{actor}` and `{pronoun}`** automatically resolve to the correct actor instance based on the name or pronoun used in the Gherkin step.
 
 For a more advanced example showing composable Tasks, the Lean Page Objects pattern, and masked credentials, see the [Complete example](#complete-example) below.
 
