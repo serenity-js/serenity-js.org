@@ -20,60 +20,69 @@ The examples below use [Playwright Test](/getting-started/playwright/), but Sere
 
 ## Why abstraction matters
 
-Dave Farley's [Four-Layer Separation of Concerns](https://www.youtube.com/watch?v=JDD5EEJgpHU) model explains why well-structured test suites survive change while brittle ones rot:
+## Why layered test architecture matters
+
+As test suites grow, flat test scripts that mix business intent with page-level mechanics become brittle and expensive to maintain. A UI redesign forces you to update hundreds of tests. A new workflow means copy-pasting selectors across files. Debugging a failure means reading through low-level clicks and fills to understand what the test was even trying to do.
+
+The solution, as described in [BDD in Action, Second Edition](https://www.manning.com/books/bdd-in-action-second-edition), is to structure your test automation as a **layered system** — the same architectural principle that makes production software maintainable at scale.
 
 ```mermaid
 block-beta
     columns 1
 
-    block:tests
-        columns 4
-        t1["Test Case"] t2["Test Case"] t3["Test Case"] t4["Test Case"]
+    block:spec
+        columns 1
+        s1["Specification Layer\n(test scenarios, business rules, workflows)"]
     end
 
     space
 
-    block:dsl
-        d1["Domain-Specific Language (DSL)"]
+    block:domain
+        columns 1
+        d1["Domain Layer\n(Tasks — business-level activities)"]
     end
 
     space
 
-    block:drivers
-        columns 4
-        dr1["Protocol Driver\n(Web UI)"] dr2["Protocol Driver\n(REST API)"] dr3["Protocol Driver\n(Mobile)"] dr4["Protocol Driver\n(Ext. System)"]
+    block:integration
+        columns 3
+        i1["Web\nIntegration"] i2["REST API\nIntegration"] i3["Mobile\nIntegration"]
     end
 
     space
 
     block:sut
-        s1["System Under Test"]
+        columns 1
+        sut1["System Under Test"]
     end
 
-    tests --> dsl
-    dsl --> drivers
-    drivers --> sut
+    spec --> domain
+    domain --> integration
+    integration --> sut
 ```
 
-The key insight: **separate what you're testing from how you're testing it.**
+Each layer has a single responsibility:
 
-- **Business rules change** → update the tests. DSL and drivers stay the same.
-- **API endpoint changes** → update the API driver. Tests and UI driver don't move.
-- **UI redesign** → update the UI driver. Tests and API driver don't move.
-- **New feature** → add new tests and extend the DSL. Everything else stays untouched.
+- **Specification layer** — captures *what* the system should do: workflows, business rules, and acceptance criteria. This is where your test scenarios live (`describe`, `it`, or Gherkin features).
+- **Domain layer** — models *how* actors accomplish business goals using composable Tasks. Tasks use the vocabulary of your business domain (`Authenticate.withCredentials`, `Inventory.productCalled`, `Checkout.completeWith`) and are independent of any specific integration tool.
+- **Integration layer** — bridges the domain and the technology. It translates actor activities into low-level interactions with specific external interfaces (web UI, REST APIs, mobile apps) using tool-specific drivers.
 
-That's the difference between tests that rot and tests that last.
+The essential principle: **each layer depends only on the layer below it.** When something changes, only the affected layer needs updating:
 
-**How Serenity/JS maps to this model:**
+- **UI redesign** → update the Integration layer (selectors, page elements). Domain and Specification layers stay untouched.
+- **New business rule** → add a scenario in the Specification layer and extend the Domain layer. Integration stays the same.
+- **Switch from Playwright to WebdriverIO** → swap the Integration layer configuration. Your Tasks and tests don't change.
+- **Add API testing** → extend the Integration layer with REST interactions. Reuse the same Domain layer Tasks.
+
+**How Serenity/JS implements this architecture:**
 
 | Layer | Serenity/JS concept | Example |
 |---|---|---|
-| Test Cases | Test scenarios (`it`, `describe`) | `it('should let a user checkout', ...)` |
-| DSL | [Tasks](/api/core/class/Task/) | `Checkout.completeWith(...)` |
-| Protocol Drivers | [Abilities](/api/core/class/Ability/) + [Interactions](/api/core/class/Interaction/) | `BrowseTheWebWithPlaywright`, `Click`, `Enter` |
-| System Under Test | Your application | `https://www.saucedemo.com/` |
+| Specification | Test scenarios (`describe`, `it`) | `it('should let a user checkout', ...)` |
+| Domain | [Tasks](/api/core/class/Task/) | `Checkout.completeWith(...)`, `Authenticate.withCredentials(...)` |
+| Integration | [Interactions](/api/core/class/Interaction/) + [Lean Page Objects](/handbook/web-testing/page-objects-pattern/) | `Click.on(...)`, `Enter.theValue(...)`, `PageElement.located(...)` |
 
-The Screenplay Pattern **is** this four-layer architecture, implemented as a TypeScript framework. Tasks are your DSL. Abilities and Interactions are your protocol drivers. When you swap Playwright for WebdriverIO, only the driver layer changes — your tests and DSL stay put.
+The Screenplay Pattern **is** this layered architecture, expressed as a TypeScript framework. Tasks are your Domain layer. Interactions and Page Elements are your Integration layer. When you swap Playwright for WebdriverIO, only the integration configuration changes — your tests and Tasks stay put.
 
 → Learn more: [Screenplay Pattern](/handbook/design/screenplay-pattern/) | [BDD in Action, Second Edition](https://www.manning.com/books/bdd-in-action-second-edition)
 
@@ -184,7 +193,7 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
 {
   "scripts": {
     "clean": "rimraf target",
-    "test": "failsafe clean test:execute test:report",
+    "test": "failsafe clean test:execute [...] test:report",
     "test:execute": "npx playwright test",
     "test:report": "serenity-bdd run --features='./tests' --source='./reports/serenity' --destination='./reports/serenity'"
   }
@@ -395,7 +404,7 @@ You're in control of how many scenarios follow the improved structure — Sereni
 
 ---
 
-## Ready to try it?
+## Ready to try Serenity/JS?
 
 - **[For Playwright users](/getting-started/playwright/)** — guide for teams using Playwright Test
 - **[For WebdriverIO users](/getting-started/webdriverio/)** — guide for teams using WebdriverIO
