@@ -3,6 +3,7 @@ import React from 'react';
 
 import Features from './Features';
 import Hero from './Hero';
+import BookPromo from './BookPromo';
 import Integrations from './Integrations';
 import Recommendations from './Recommendations';
 import Welcome  from './Welcome';
@@ -18,7 +19,8 @@ export default function Home(): React.JSX.Element {
             <main>
                 <Features className={clsx(styles.section)} />
                 <Recommendations className={clsx(styles.section, styles.sectionAlt)} />
-                <Integrations className={clsx(styles.section)} />
+                <BookPromo className={clsx(styles.section)} />
+                <Integrations className={clsx(styles.section, styles.sectionAlt)} />
                 <Welcome className={clsx(styles.section, styles.sectionAlt)} />
             </main>
         </>

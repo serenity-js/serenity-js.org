@@ -148,7 +148,7 @@ const config: Config = {
         },
         announcementBar: {
             id: 'announcement-bar',
-            content: 'Save 40% on our book - <a target="_blank" rel="noopener noreferrer" href="https://www.manning.com/books/bdd-in-action-second-edition">"BDD in Action, Second Edition"</a> 📚',
+            content: 'New! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and the Screenplay Pattern to your Playwright or WebdriverIO project in 5 minutes 🚀',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },
