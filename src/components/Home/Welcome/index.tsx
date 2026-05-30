@@ -27,7 +27,8 @@ export default function Welcome({ className }: WelcomeProps) {
                 <CallToAction>
                     <Link id="cta-welcome-start-automating"
                           className={ clsx('button', 'button--primary', styles.primaryButton) }
-                          to="/handbook/">
+                          data-sa-link-event="cta_welcome_get_started"
+                          to="/getting-started/">
                         <Translate>Get started 🚀</Translate>
                     </Link>
                 </CallToAction>

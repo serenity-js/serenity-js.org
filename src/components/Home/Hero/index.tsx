@@ -43,7 +43,8 @@ export default function Hero(): React.JSX.Element {
                 </p>
                 <CallToAction>
                     <Link id="cta-start-automating" className="button button--primary"
-                          to="/handbook/tutorials/your-first-web-scenario">
+                          data-sa-link-event="cta_hero_start_automating"
+                          to="/getting-started/">
                         <Translate>Start automating 🚀</Translate>
                     </Link>
                     <span className={ styles.indexCtasGitHubButtonWrapper }>

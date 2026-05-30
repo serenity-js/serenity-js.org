@@ -38,7 +38,8 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                             </p>
                             <p className={ styles.cardActions }>
                                 <Link id="cta-homepage-playwright-test"
-                                      to="/handbook/test-runners/playwright-test/">
+                                      data-sa-link-event="cta_homepage_playwright"
+                                      to="/getting-started/playwright/">
                                     Learn more
                                 </Link>
                             </p>
@@ -58,7 +59,8 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                             </p>
                             <p className={ styles.cardActions }>
                                 <Link id="cta-homepage-webdirverio"
-                                      to="/handbook/test-runners/webdriverio/">
+                                      data-sa-link-event="cta_homepage_webdriverio"
+                                      to="/getting-started/webdriverio/">
                                     Learn more
                                 </Link>
                             </p>
