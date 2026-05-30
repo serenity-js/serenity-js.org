@@ -8,6 +8,10 @@ export default {
         // { from: '/community/sponsors.html',            to: '' },
         // { from: '/support.html', to: '' },
 
+        { from: '/handbook/project-templates/', to: '/getting-started/project-templates/' },
+        { from: '/handbook/project-templates', to: '/getting-started/project-templates/' },
+        { from: '/handbook/tutorials/upgrading-from-serenity-js-2/', to: '/releases/upgrading-from-serenity-js-2/' },
+
         { from: '/handbook/web-testing/your-first-web-scenario/', to: '/handbook/tutorials/your-first-web-scenario/' },
         { from: '/handbook/api-testing/your-first-api-scenario/', to: '/handbook/tutorials/your-first-api-scenario/' },
         { from: '/handbook/getting-started/serenity-js-with-playwright-test/', to: '/handbook/test-runners/playwright-test/' },
@@ -45,7 +49,7 @@ export default {
                 '/handbook/release-notes/serenity-js-2.html',
                 '/handbook/release-notes/serenity-js-3.html',
             ],
-            to: '/handbook/tutorials/upgrading-from-serenity-js-2/' },
+            to: '/releases/upgrading-from-serenity-js-2/' },
 
         { from: '/handbook/getting-started/serenity-js-with-webdriverio/', to: '/handbook/test-runners/webdriverio' },
 

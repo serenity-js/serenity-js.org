@@ -172,7 +172,7 @@ const config: Config = {
                         { label: 'Serenity/JS for Playwright Users', to: '/getting-started/playwright/' },
                         { label: 'Serenity/JS for WebdriverIO Users', to: '/getting-started/webdriverio/' },
                         { label: 'Tutorials', to: '/handbook/tutorials' },
-                        { label: 'Project Templates', to: '/handbook/project-templates' },
+                        { label: 'Project Templates', to: '/getting-started/project-templates' },
                     ],
                 },
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
@@ -206,7 +206,7 @@ const config: Config = {
                         { label: 'Serenity/JS with Playwright', to: '/getting-started/playwright/' },
                         { label: 'Serenity/JS with WebdriverIO', to: '/getting-started/webdriverio/' },
                         { label: 'Tutorials', to: '/handbook/tutorials' },
-                        { label: 'Project Templates', to: '/handbook/project-templates' },
+                        { label: 'Project Templates', to: '/getting-started/project-templates' },
                     ],
                 },
                 {
