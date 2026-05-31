@@ -38,38 +38,24 @@ The solution is the same one that works for production software: **separate conc
 As described in [BDD in Action, Second Edition](https://www.manning.com/books/bdd-in-action-second-edition), a well-structured test automation system has three layers:
 
 ```mermaid
-block-beta
-    columns 1
-
-    block:spec
-        columns 1
-        s1["Specification Layer\n(test scenarios, business rules, workflows)"]
-    end
-
-    space
-
-    block:domain
-        columns 1
-        d1["Domain Layer\n(Tasks — business-level activities)"]
-    end
-
-    space
-
-    block:integration
-        columns 3
-        i1["Web\nIntegration"] i2["REST API\nIntegration"] i3["Mobile\nIntegration"]
-    end
-
-    space
-
-    block:sut
-        columns 1
-        sut1["System Under Test"]
-    end
+flowchart TD
+    sut["System Under Test"]
 
     spec --> domain
     domain --> integration
     integration --> sut
+
+    subgraph spec["Specification Layer"]
+        s1["Test scenarios, business rules, workflows"]
+    end
+
+    subgraph domain["Domain Layer"]
+        d1["Tasks — business-level activities"]
+    end
+
+    subgraph integration["Integration Layer"]
+        web["Web\nIntegration"] ~~~ rest["REST API\nIntegration"] ~~~ mobile["Mobile\nIntegration"]
+    end
 ```
 
 - **Specification layer** — *what* the system should do. Test scenarios expressed in business language.
