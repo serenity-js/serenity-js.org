@@ -48,15 +48,16 @@
     margin: 20px 36px;
 }
 
-.indexCtasGitHubButtonWrapper {
-    display: inline-flex;
+.heroBadges {
+    display: flex;
     align-items: center;
-    gap: 8px;
-    margin-left: 12px;
+    gap: 10px;
+    margin-top: 1rem;
+    opacity: 0.85;
 }
 
-.indexCtasGitHubButtonWrapper img {
-    vertical-align: middle;
+.heroBadges img {
+    height: 20px;
 }
 
 .indexCtaTryNowButton:hover {
@@ -98,7 +99,8 @@
         margin: 20px 36px;
     }
 
-    .indexCtasGitHubButtonWrapper {
-        display: none;
+    .heroBadges {
+        justify-content: center;
+        flex-wrap: wrap;
     }
 }
