@@ -26,7 +26,7 @@ export default function Hero(): React.JSX.Element {
                             __html: translate({
                                 id: 'homepage.hero.title',
                                 message:
-                                    `Enable <b>collaborative<br /> test automation</b><br /> at <b>any scale</b>!`,
+                                    `<b>Test automation</b><br /> that <b>scales across</b><br /> your <b>teams</b>`,
                                 description:
                                     'Home page hero title, can contain simple html tags',
                             }),
@@ -34,10 +34,14 @@ export default function Hero(): React.JSX.Element {
                     />
                 </h1>
                 <p>
-                    <strong>Serenity/JS</strong> gives your <strong>Playwright</strong>, <strong>WebdriverIO</strong>,
+                    <strong>Serenity/JS</strong> is a <strong>TypeScript-native</strong> framework that gives
+                    your <strong>Playwright</strong>, <strong>WebdriverIO</strong>,
                     or <strong>Cucumber</strong> test suite the architecture it needs to
                     scale — <strong>meaningful reports</strong> for every audience,
                     and <strong>reusable test code</strong> to support your entire organisation.
+                </p>
+                <p className={ styles.heroMeta }>
+                    Apache-2.0 licensed · Commercial support available · Works with your CI/CD pipeline
                 </p>
                 <CallToAction>
                     <Link id="cta-start-automating" className="button button--primary"
@@ -53,6 +57,13 @@ export default function Hero(): React.JSX.Element {
                             height={ 30 }
                             title="GitHub Stars"
                         />
+                        <a href="https://www.npmjs.com/package/@serenity-js/core" target="_blank" rel="noopener noreferrer">
+                            <img
+                                src="https://img.shields.io/npm/dm/%40serenity-js%2Fcore?style=for-the-badge&label=downloads"
+                                alt="NPM Downloads"
+                                height={ 28 }
+                            />
+                        </a>
                     </span>
                 </CallToAction>
             </div>

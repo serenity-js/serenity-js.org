@@ -148,7 +148,7 @@ const config: Config = {
         },
         announcementBar: {
             id: 'announcement-bar',
-            content: 'New! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and the Screenplay Pattern to your Playwright or WebdriverIO project in 5 minutes 🚀',
+            content: 'New! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project with incremental adoption 🚀',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },
@@ -216,7 +216,7 @@ const config: Config = {
                 {
                     title: 'Handbook',
                     items: [
-                        { label: 'Why Serenity/JS', to: '/handbook/' },
+                        { label: 'Introduction', to: '/handbook/' },
                         { label: 'Core Design Patterns', to: '/handbook/design' },
                         { label: 'Web Testing', to: '/handbook/web-testing' },
                         { label: 'API Testing', to: '/handbook/api-testing' },

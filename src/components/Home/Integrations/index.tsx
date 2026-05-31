@@ -20,6 +20,7 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                     <>
                         Serenity/JS works with your existing tools and infrastructure
                         and supports progressive adoption without disrupting your current workflow.
+                        Integrates with <a href="/handbook/integration/">GitHub Actions, Jenkins, GitLab CI, and more</a>.
                     </>
                 }
             />
@@ -71,16 +72,17 @@ export default function Integrations({ className }: IntegrationsProps): React.JS
                     <div className={ clsx('card') }>
                         <div className={ clsx('card__body') }>
                             <h4 className={ styles.cardTitle }>
-                                Migrate from Protractor
+                                Test Electron desktop apps
                             </h4>
                             <p>
-                                Transition from Protractor to modern frameworks like Playwright Test or WebdriverIO,
-                                leveraging Serenity/JS portable web APIs for smooth migration, enhanced reporting,
-                                and reusable test automation patterns.
+                                Test your Electron applications using the same Screenplay Pattern APIs
+                                as web testing — with structured reporting, reusable interactions,
+                                and automatic app lifecycle management.
                             </p>
                             <p className={ styles.cardActions }>
-                                <Link id="cta-homepage-protractor"
-                                      to="/handbook/test-runners/protractor/">
+                                <Link id="cta-homepage-electron"
+                                      data-sa-link-event="cta_homepage_electron"
+                                      to="/getting-started/electron/">
                                     Learn more
                                 </Link>
                             </p>
