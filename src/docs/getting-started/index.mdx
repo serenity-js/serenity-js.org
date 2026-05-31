@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 # Why Serenity/JS
 
-Serenity/JS isn't a replacement for Playwright or WebdriverIO — it's a **layer on top** that adds structure, reporting, and reusability as your test suite grows.
+Serenity/JS helps you evolve from writing test scripts to designing a **test automation system** — with the architecture, reporting, and reusability that implies. It's a layer on top of Playwright, WebdriverIO, or Cucumber that adds structure as your test suite grows.
 
 This page shows the **same scenario** at three levels of architecture so you can see what each one gives you and decide where to start.
 
@@ -329,6 +329,7 @@ export class Checkout {
 - **Rich reports** — hierarchical activity breakdown: "completes checkout" → "proceeds to checkout" → "clicks on checkout button"
 - **Masked credentials** — sensitive values appear as `[MASKED]` in reports
 - **Multi-actor support** — buyer + seller, admin + user scenarios become trivial
+- **Blended testing** — use APIs for fast test data setup, UI only where it matters
 - **Tool independence** — swap Playwright for WebdriverIO without touching test logic
 
 :::tip Tasks are portable
@@ -346,6 +347,8 @@ The Task code imports from `@serenity-js/web` and `@serenity-js/core` — not fr
 **Use Screenplay for new tests** — when you write your next scenario, use the actor model and composable Tasks. Old tests stay untouched; new tests get better structure from day one.
 
 **Migrate what matters** — identify the legacy scenarios that break often or are hard to understand, and convert them to Screenplay. Better reports, easier maintenance, less time debugging. For lower-value scenarios, either convert them gradually or delete them when your Screenplay tests already cover the same ground more effectively.
+
+**Speed up slow suites with blended testing** — use API interactions for test data setup while testing through the UI only where it demonstrates value. The same Task can have a fast API-based implementation for preconditions and a thorough UI-based one for the scenario you're actually verifying.
 
 You're in control of how many scenarios follow the improved structure — Serenity/JS supports both architectures side by side in the same project. There's no big-bang rewrite.
 
