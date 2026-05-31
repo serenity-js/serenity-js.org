@@ -32,6 +32,20 @@ export default function Welcome({ className }: WelcomeProps) {
                         <Translate>Get started 🚀</Translate>
                     </Link>
                 </CallToAction>
+                <div className={ styles.badges }>
+                    <a href="https://www.npmjs.com/package/@serenity-js/core" target="_blank" rel="noopener noreferrer">
+                        <img src="https://img.shields.io/npm/dm/%40serenity-js%2Fcore?style=flat&logo=npm&label=downloads" alt="NPM Downloads" />
+                    </a>
+                    <a href="https://github.com/serenity-js/serenity-js/stargazers" target="_blank" rel="noopener noreferrer">
+                        <img src="https://img.shields.io/github/stars/serenity-js/serenity-js?style=flat&logo=github" alt="GitHub Stars" />
+                    </a>
+                    <a href="https://github.com/serenity-js/serenity-js/graphs/contributors" target="_blank" rel="noopener noreferrer">
+                        <img src="https://img.shields.io/github/contributors/serenity-js/serenity-js?style=flat&logo=github&label=contributors" alt="Contributors" />
+                    </a>
+                    <a href="https://www.codefactor.io/repository/github/serenity-js/serenity-js" target="_blank" rel="noopener noreferrer">
+                        <img src="https://www.codefactor.io/repository/github/serenity-js/serenity-js/badge" alt="CodeFactor" />
+                    </a>
+                </div>
             </div>
         </div>
     );

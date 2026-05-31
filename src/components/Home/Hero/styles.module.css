@@ -48,18 +48,6 @@
     margin: 20px 36px;
 }
 
-.heroBadges {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 1rem;
-    opacity: 0.85;
-}
-
-.heroBadges img {
-    height: 20px;
-}
-
 .indexCtaTryNowButton:hover {
     color: var(--ifm-color-primary);
 }
@@ -97,10 +85,5 @@
 
     .indexCtas a {
         margin: 20px 36px;
-    }
-
-    .heroBadges {
-        justify-content: center;
-        flex-wrap: wrap;
     }
 }
