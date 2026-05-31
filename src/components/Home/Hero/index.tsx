@@ -41,7 +41,7 @@ export default function Hero(): React.JSX.Element {
                     and <strong>reusable test code</strong> to support your entire organisation.
                 </p>
                 <p className={ styles.heroMeta }>
-                    Apache-2.0 licensed · Commercial support available · Works with your CI/CD pipeline
+                    Apache-2.0 licensed · Commercial support available · Works with your existing tools and CI/CD infrastructure
                 </p>
                 <CallToAction>
                     <Link id="cta-start-automating" className="button button--primary"
@@ -50,16 +50,16 @@ export default function Hero(): React.JSX.Element {
                         <Translate>Start automating 🚀</Translate>
                     </Link>
                     <span className={ styles.indexCtasGitHubButtonWrapper }>
-                        <iframe
-                            className={ styles.indexCtasGitHubButton }
-                            src="https://ghbtns.com/github-btn.html?user=serenity-js&amp;repo=serenity-js&amp;type=star&amp;count=true&amp;size=large"
-                            width={ 160 }
-                            height={ 30 }
-                            title="GitHub Stars"
-                        />
+                        <a href="https://github.com/serenity-js/serenity-js" target="_blank" rel="noopener noreferrer">
+                            <img
+                                src="https://img.shields.io/github/stars/serenity-js/serenity-js?style=for-the-badge&logo=github&label=stars"
+                                alt="GitHub Stars"
+                                height={ 28 }
+                            />
+                        </a>
                         <a href="https://www.npmjs.com/package/@serenity-js/core" target="_blank" rel="noopener noreferrer">
                             <img
-                                src="https://img.shields.io/npm/dm/%40serenity-js%2Fcore?style=for-the-badge&label=downloads"
+                                src="https://img.shields.io/npm/dm/%40serenity-js%2Fcore?style=for-the-badge&logo=npm&label=downloads"
                                 alt="NPM Downloads"
                                 height={ 28 }
                             />

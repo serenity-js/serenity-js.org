@@ -49,11 +49,14 @@
 }
 
 .indexCtasGitHubButtonWrapper {
-    display: flex;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
 }
 
-.indexCtasGitHubButton {
-    overflow: hidden;
+.indexCtasGitHubButtonWrapper img {
+    vertical-align: middle;
 }
 
 .indexCtaTryNowButton:hover {
@@ -95,7 +98,7 @@
         margin: 20px 36px;
     }
 
-    .indexCtasGitHubButton {
+    .indexCtasGitHubButtonWrapper {
         display: none;
     }
 }
