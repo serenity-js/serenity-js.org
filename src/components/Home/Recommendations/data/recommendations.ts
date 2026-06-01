@@ -38,7 +38,7 @@ export const LeaderRecommendations: RecommendationItem[] = [
         },
         lines: [
             `Serenity/JS has a genuinely inspiring mission: to make test automation collaborative, enjoyable, and accessible for everyone, from business to technical audiences.`,
-            `The project's dedication to quality, user experience, and innovation shines through in every aspect of the framework, helping you create maintainable and scalable tst suites while adhering to open standards and leveraging reliable open-source tools.`,
+            `The project's dedication to quality, user experience, and innovation shines through in every aspect of the framework, helping you create maintainable and scalable test suites while adhering to open standards and leveraging reliable open-source tools.`,
             `WebdriverIO is proud to be a part of the Serenity/JS ecosystem, and I'm excited to see what the future holds for this fantastic project!`,
         ],
         learnMore: {

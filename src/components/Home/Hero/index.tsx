@@ -35,7 +35,7 @@ export default function Hero(): React.JSX.Element {
                 </h1>
                 <p>
                     <strong>Serenity/JS</strong> is a <strong>TypeScript-native</strong> framework that gives
-                    your <strong>Playwright</strong>, <strong>WebdriverIO</strong>,
+                    your <strong>Playwright Test</strong>, <strong>WebdriverIO</strong>,
                     or <strong>Cucumber</strong> test suite the architecture it needs to
                     scale — <strong>meaningful reports</strong> for every audience,
                     and <strong>reusable test code</strong> to support your entire organisation.

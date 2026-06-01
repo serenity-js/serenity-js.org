@@ -112,7 +112,7 @@ const config: Config = {
                         const sidebarItems = await defaultSidebarItemsGenerator(args);
                         // DEBUG sidebar items
                         // console.log({ sidebarItems })
-                        return sidebarItems.filter(item => ! item.id?.endsWith('index'));
+                        return sidebarItems.filter(item => ! item?.id?.endsWith('index'));
                     },
                 },
                 blog: {
@@ -120,7 +120,7 @@ const config: Config = {
                     editUrl,
                     path: './src/blog',
                     showReadingTime: true,
-                    blogSidebarTitle: 'Serenity/JS News',
+                    blogSidebarTitle: 'Serenity/JS Blog',
                     blogSidebarCount: 'ALL',
                     onUntruncatedBlogPosts: 'ignore',
                 },
@@ -179,7 +179,7 @@ const config: Config = {
                 },
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
                 { label: 'API', to: '/api/', position: 'left' },
-                { to: '/blog', label: 'News', position: 'left' },
+                { to: '/blog', label: 'Blog', position: 'left' },
                 { label: `Releases`, to: 'releases', position: 'left' },
                 { to: '/community', label: 'Community', position: 'left' },
                 {
@@ -263,7 +263,7 @@ const config: Config = {
                         { label: 'API Docs', to: '/api/' },
                         {
                             label: 'Project Templates',
-                            to: 'https://github.com/serenity-js/?q=template&type=all&language=&sort='
+                            to: '/getting-started/project-templates/',
                         },
                         { label: 'Serenity/JS GitHub', href: 'https://github.com/serenity-js', },
                         { label: 'Report an issue', href: '/community/contributing/reporting-issues/', },
