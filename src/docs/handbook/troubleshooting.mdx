@@ -1,0 +1,545 @@
+---
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Troubleshooting
+
+This page covers the most common issues you might encounter when setting up or running Serenity/JS, along with their solutions.
+
+## Setup and configuration
+
+### Using a supported Node.js version
+
+Serenity/JS is tested with the latest versions of Node.js <SupportedNodeVersions conjunction="and" />. Use a recent [Long-Term Support (LTS)](https://github.com/nodejs/Release) version for optimal stability. While non-LTS versions may work, they are not officially supported.
+
+Check your version with:
+
+```shell
+node --version
+```
+
+→ [Node.js installation guide](/handbook/installation/#installing-nodejs)
+
+### `Cannot find module '@serenity-js/...'`
+
+**Symptoms:** TypeScript or Node.js cannot resolve Serenity/JS modules.
+
+**Common causes:**
+
+- **Missing installation** — run `npm install` to ensure all dependencies are present.
+- **Incompatible `tsconfig.json`** — Serenity/JS works best with modern module resolution. Make sure your `tsconfig.json` includes:
+  ```json
+  {
+    "compilerOptions": {
+      "lib": ["ES2023"],
+      "module": "nodenext",
+      "target": "ES2023"
+    }
+  }
+  ```
+- **Monorepo hoisting issues** — if you're using a monorepo with hoisted dependencies, ensure `@serenity-js/*` packages are installed in the workspace that runs the tests.
+
+### Version mismatch errors
+
+**Symptoms:** Runtime errors mentioning incompatible versions, or unexpected behaviour after upgrading.
+
+**Solution:** All `@serenity-js/*` packages in your project must be on the same version. Check for mismatches:
+
+```shell
+npm ls | grep @serenity-js
+```
+
+Update all Serenity/JS packages together:
+
+```shell
+npm update @serenity-js/core @serenity-js/web @serenity-js/playwright @serenity-js/playwright-test @serenity-js/assertions @serenity-js/serenity-bdd @serenity-js/console-reporter
+```
+
+Check the [Releases](/releases/) page for the current compatibility matrix, and follow the [Updating Serenity/JS](/releases/updating-serenity-js/) guide for step-by-step instructions.
+
+---
+
+## Reporting
+
+### Serenity BDD reports not generating
+
+**Symptoms:** Tests run successfully but no HTML report appears in `target/site/serenity`.
+
+**Common causes:**
+
+#### Java is not installed or not found
+
+The Serenity BDD CLI requires Java 11 or newer. Verify your installation:
+
+```shell
+java -version
+```
+
+If Java is not found, follow the [installation guide](/handbook/installation/#installing-the-jre) to set it up.
+
+If you have multiple Java versions installed, make sure `JAVA_HOME` points to the correct one:
+
+```shell
+echo $JAVA_HOME
+```
+
+#### ArtifactArchiver is not configured
+
+The [`ArtifactArchiver`](/api/core/class/ArtifactArchiver/) must be registered as a crew member for report artifacts to be written to disk.
+Without it, the Serenity BDD Reporter emits events but nothing gets saved.
+
+Make sure your configuration includes the `ArtifactArchiver` alongside the reporters. Here's the correct setup for each tool:
+
+<Tabs>
+<TabItem value="playwright" label="Playwright Test" default>
+
+```typescript title="playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './tests',
+    reporter: [
+        [ 'line' ],
+        [ '@serenity-js/playwright-test', {
+            crew: [
+                '@serenity-js/console-reporter',
+                [ '@serenity-js/serenity-bdd', {
+                    specDirectory: './tests'
+                } ],
+                [ '@serenity-js/core:ArtifactArchiver', {
+                    outputDirectory: './reports/serenity'
+                } ],
+            ]
+        }]
+    ],
+});
+```
+
+→ [Full Playwright Test setup guide](/getting-started/playwright/#step-2-configure)
+
+</TabItem>
+<TabItem value="webdriverio" label="WebdriverIO">
+
+```typescript title="wdio.conf.ts"
+import { WebdriverIOConfig } from '@serenity-js/webdriverio';
+
+export const config: WebdriverIOConfig = {
+    framework: '@serenity-js/webdriverio',
+    serenity: {
+        runner: 'mocha',
+        crew: [
+            '@serenity-js/console-reporter',
+            [ '@serenity-js/serenity-bdd', { specDirectory: './test/specs' } ],
+            [ '@serenity-js/core:ArtifactArchiver', {
+                outputDirectory: './target/site/serenity'
+            } ],
+        ],
+    },
+    // ...
+};
+```
+
+→ [Full WebdriverIO setup guide](/getting-started/webdriverio/#step-2-configure)
+
+</TabItem>
+<TabItem value="cucumber" label="Cucumber">
+
+```typescript title="features/support/serenity.config.ts"
+import { configure } from '@serenity-js/core';
+
+configure({
+    crew: [
+        '@serenity-js/console-reporter',
+        [ '@serenity-js/serenity-bdd', { specDirectory: './features' } ],
+        [ '@serenity-js/core:ArtifactArchiver', {
+            outputDirectory: './reports/serenity'
+        } ],
+    ],
+});
+```
+
+→ [Full Cucumber setup guide](/getting-started/cucumber/#step-2-configure)
+
+</TabItem>
+</Tabs>
+
+### Screenshots not appearing in reports
+
+**Symptoms:** HTML reports generate but contain no screenshots.
+
+**Common causes:**
+
+#### Photographer is not configured
+
+Add the [`Photographer`](/handbook/reporting/photographer) to your crew members:
+
+<Tabs>
+<TabItem value="playwright" label="Playwright Test" default>
+
+With Playwright Test, the `Photographer` must be configured in the `use.crew` array (worker-level fixtures), not in the reporter-level crew:
+
+```typescript title="playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    // ...
+    use: {
+        crew: [
+            [ '@serenity-js/web:Photographer', {
+                strategy: 'TakePhotosOfFailures',
+            } ],
+        ],
+    },
+});
+```
+
+</TabItem>
+<TabItem value="webdriverio" label="WebdriverIO">
+
+```typescript title="wdio.conf.ts"
+import { WebdriverIOConfig } from '@serenity-js/webdriverio';
+
+export const config: WebdriverIOConfig = {
+    framework: '@serenity-js/webdriverio',
+    serenity: {
+        crew: [
+            // ... other crew members ...
+            [ '@serenity-js/web:Photographer', {
+                strategy: 'TakePhotosOfFailures'
+            } ],
+        ],
+    },
+    // ...
+};
+```
+
+</TabItem>
+<TabItem value="cucumber" label="Cucumber">
+
+```typescript title="features/support/serenity.config.ts"
+import { configure } from '@serenity-js/core';
+
+configure({
+    crew: [
+        // ... other crew members ...
+        [ '@serenity-js/web:Photographer', {
+            strategy: 'TakePhotosOfFailures'
+        } ],
+    ],
+});
+```
+
+</TabItem>
+</Tabs>
+
+→ [Photographer API docs](/api/web/class/Photographer/)
+
+#### Using `TakePhotosOfFailures` but tests are passing
+
+The `TakePhotosOfFailures` strategy only captures screenshots when an assertion fails or an error occurs.
+If you want screenshots for every interaction (useful for living documentation), use `TakePhotosOfInteractions` instead.
+
+:::warning Performance impact
+`TakePhotosOfInteractions` captures a screenshot after every interaction, which slows down test execution.
+Use `TakePhotosOfFailures` for CI/CD pipelines and reserve `TakePhotosOfInteractions` for generating documentation.
+:::
+
+### Reports show a flat list instead of features and capabilities
+
+**Symptoms:** Serenity BDD reports don't group tests by feature or capability.
+
+With Playwright Test, Serenity/JS uses your **test file directory structure** to organise reports by feature and capability.
+If all your tests are in a single flat directory, the report will reflect that.
+
+**Solution:** Organise your test files into directories that reflect your business capabilities:
+
+```
+tests/
+├── authentication/
+│   ├── login.spec.ts
+│   └── logout.spec.ts
+├── checkout/
+│   ├── add-to-cart.spec.ts
+│   └── complete-purchase.spec.ts
+└── inventory/
+    └── browse-products.spec.ts
+```
+
+This structure produces a report grouped by "Authentication", "Checkout", and "Inventory".
+
+:::tip Configuring the spec directory
+When using the Serenity BDD Reporter, make sure the `specDirectory` option points to the root of your test files.
+This tells the reporter where to start deriving the feature/capability hierarchy from your directory structure.
+:::
+
+### Serenity BDD reports show missing tests
+
+**Symptoms:** Some tests don't appear in the Serenity BDD report even though they ran successfully.
+
+This typically happens when test names don't follow the [Serenity BDD naming conventions](/handbook/reporting/serenity-bdd-reporter/#serenity-bdd-best-practices). Serenity BDD matches test results to test files using naming conventions, so if the test name doesn't match the file it's defined in, the report won't include it.
+
+**Solution:** Follow the [Serenity BDD best practices](/handbook/reporting/serenity-bdd-reporter/#serenity-bdd-best-practices) for naming your test scenarios. Ensure each test name is consistent with its file location and feature/capability group.
+
+### Tests pass but reports show "compromised" or "broken" status
+
+**Symptoms:** Tests appear to pass in the terminal but Serenity BDD reports show them as "compromised" or "broken".
+
+This typically means an error occurred during test setup or teardown (e.g., in a `beforeEach` or `afterEach` hook) rather than in the test itself.
+Check your test hooks for errors that might be swallowed by the test runner but captured by Serenity/JS domain events.
+
+---
+
+## Test execution
+
+### Interactions or Tasks are not being executed
+
+**Symptoms:** You've defined an interaction or task but nothing happens when your test runs.
+
+Interactions and Tasks in Serenity/JS are *descriptions* of what to do — they don't execute on their own. You need to give them to an actor to perform:
+
+```typescript
+// ❌ This only creates the interaction object, it doesn't execute it
+Click.on(LoginPage.submitButton());
+
+// ✅ This makes the actor actually perform the interaction
+await actor.attemptsTo(
+    Click.on(LoginPage.submitButton()),
+);
+```
+
+The same applies to Tasks:
+
+```typescript
+// ❌ Creates the task but doesn't run it
+Authenticate.withCredentials('user', 'pass');
+
+// ✅ The actor performs the task
+await actor.attemptsTo(
+    Authenticate.withCredentials('user', 'pass'),
+);
+```
+
+### Tests hang or time out
+
+**Symptoms:** Tests start but never complete, eventually timing out.
+
+**Common causes:**
+
+- **Unresolved promises in Tasks** — ensure all async operations in your custom Tasks and Interactions use `await` or return the promise.
+- **Browser not closing** — if a test fails mid-execution, the browser context may not be cleaned up. Serenity/JS handles this automatically with Playwright Test, but custom setups may need explicit teardown.
+- **Network issues in CI** — if tests interact with external services, ensure your CI environment has network access. Consider using [`Wait`](/api/core/class/Wait/) with appropriate timeouts rather than relying on implicit waits.
+- **Missing dependencies in CI** — if your CI environment doesn't have Java, browsers, or other required tools, tests may hang or fail silently. Consider using the official [Serenity/JS Docker image](/handbook/integration/docker/) which comes pre-configured with Node.js, Java, and browsers.
+
+### Skipping tests conditionally during execution
+
+**Symptoms:** You want to skip a test based on runtime state (e.g., a feature flag) discovered after the actor starts performing activities, but calling `testInfo.skip()` inside `attemptsTo` reports the test as "broken" instead of "skipped".
+
+This is a Playwright Test limitation: `testInfo.skip()` throws a `TestSkipError`, and when thrown inside a Playwright Test step (which is how Serenity/JS reports activities), it's caught as an error rather than a skip signal.
+
+**Workaround:** Extract the condition check outside of `attemptsTo`, then call `testInfo.skip()` at the top level:
+
+```typescript
+it('requires feature flag', async ({ actor }, testInfo) => {
+    await actor.attemptsTo(
+        Navigate.to('/app'),
+        Authenticate.withCredentials('user', 'pass'),
+    );
+
+    // Check the condition outside attemptsTo
+    const flags = await actor.answer(FeatureFlags.current());
+    testInfo.skip(!flags.includes('new-checkout'), 'Feature flag not enabled');
+
+    // Continue with the rest of the test
+    await actor.attemptsTo(
+        Checkout.startNew(),
+    );
+});
+```
+
+---
+
+## REST API testing
+
+### Sharing authentication state between web and API interactions
+
+**Symptoms:** You log in via the browser but API calls made by the same actor return `401 Unauthorized`.
+
+This happens because the browser session cookie is not automatically shared with the REST API client.
+The [`CallAnApi`](/api/rest/class/CallAnApi/) ability uses Axios under the hood, which maintains its own HTTP session separate from the browser.
+
+**Solution:** After logging in via the browser, extract the session cookie and pass it to your API requests:
+
+```typescript
+import { notes, q } from '@serenity-js/core';
+import { Page } from '@serenity-js/web';
+import { Send, PostRequest } from '@serenity-js/rest';
+
+// After browser login, save the session cookie
+await actor.attemptsTo(
+    notes().set('sessionCookie', Page.current().cookie('_session').value()),
+);
+
+// Use it in API requests
+await actor.attemptsTo(
+    Send.a(
+        PostRequest.to('/api/data')
+            .with({ name: 'example' })
+            .using({
+                headers: { Cookie: q`_session=${notes().get('sessionCookie')};` }
+            })
+    ),
+);
+```
+
+Alternatively, use [`ExecuteScript`](/api/web/class/ExecuteScript/) to inject an API-obtained token into `localStorage` before navigating:
+
+```typescript
+import { ExecuteScript } from '@serenity-js/web';
+
+await actor.attemptsTo(
+    ExecuteScript.sync(function setToken(token) {
+        localStorage.setItem('authToken', token);
+    }).withArguments(notes().get('authToken')),
+);
+```
+
+### Calling multiple API endpoints
+
+**Symptoms:** You need to interact with more than one API base URL but [`CallAnApi`](/api/rest/class/CallAnApi/) seems limited to a single URL.
+
+The base URL configured in `CallAnApi.at(baseURL)` is a convenience default, not a hard limit. You can call any endpoint by providing a full URL in your request:
+
+```typescript
+import { Send, GetRequest } from '@serenity-js/rest';
+
+// Actor configured with a default base URL
+// CallAnApi.at('https://api.example.org/')
+
+// Relative paths use the base URL
+await actor.attemptsTo(
+    Send.a(GetRequest.to('/v1/users/2')),
+    // → https://api.example.org/v1/users/2
+);
+
+// Full URLs override the base URL entirely
+await actor.attemptsTo(
+    Send.a(GetRequest.to('https://other-service.example.org/health')),
+    // → https://other-service.example.org/health
+);
+```
+
+URL resolution rules:
+- Full URL (e.g., `https://...`) → overrides the base URL entirely
+- Path starting with `/` → replaces the path portion of the base URL
+- Relative path (no leading `/`) → appends to the base URL
+
+---
+
+## Playwright integration
+
+### Accessing Playwright-native APIs (downloads, dialogs, request interception)
+
+**Symptoms:** You need to handle file downloads, HTTP authentication, or request interception but can't find a Serenity/JS interaction for it.
+
+Serenity/JS doesn't wrap every Playwright API — and it doesn't need to. The default `actor` in `@serenity-js/playwright-test` is bound to the Playwright `page` fixture, so you can use Playwright APIs directly alongside Screenplay interactions.
+
+**File downloads:**
+
+```typescript
+it('downloads a report', async ({ actor, page }) => {
+    const downloadPromise = page.waitForEvent('download');
+
+    await actor.attemptsTo(
+        Click.on(ReportsPage.exportButton()),
+    );
+
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toContain('.csv');
+});
+```
+
+**HTTP authentication (digest/basic auth dialogs):**
+
+Configure `httpCredentials` in your Playwright config or per-test:
+
+```typescript
+import { describe, it, test } from '@serenity-js/playwright-test';
+
+describe('Authenticated area', () => {
+    test.use({
+        httpCredentials: {
+            username: process.env.AUTH_USER,
+            password: process.env.AUTH_PASS,
+        }
+    });
+
+    it('accesses the protected resource', async ({ actor }) => {
+        await actor.attemptsTo(
+            Navigate.to('/protected'),
+        );
+    });
+});
+```
+
+**Request interception:**
+
+```typescript
+it('injects an auth header', async ({ actor, page }) => {
+    await page.route('**/api/**', async (route, request) => {
+        await route.continue({
+            headers: { ...request.headers(), Authorization: 'Bearer token' }
+        });
+    });
+
+    await actor.attemptsTo(
+        Navigate.to('/dashboard'),
+    );
+});
+```
+
+---
+
+## Cucumber integration
+
+### Sharing data between step definitions
+
+**Symptoms:** You need to pass data from one Cucumber step to another (e.g., save a value in a "When" step and verify it in a "Then" step), but you're not sure how without global variables.
+
+In Serenity/JS, actors carry state via [`notes()`](/api/core/function/notes/). Since the actor persists across steps within a scenario, notes are the natural way to share data:
+
+```typescript
+import { actorInTheSpotlight, notes } from '@serenity-js/core';
+import { Send, GetRequest, LastResponse } from '@serenity-js/rest';
+import { Ensure, equals } from '@serenity-js/assertions';
+
+// In your "When" step
+When('{actor} requests the user profile', async (actor) => {
+    await actor.attemptsTo(
+        Send.a(GetRequest.to('/api/profile')),
+        notes().set('profileStatus', LastResponse.status()),
+    );
+});
+
+// In your "Then" step — same actor, same notes
+Then('{pronoun} should receive a successful response', async (actor) => {
+    await actor.attemptsTo(
+        Ensure.that(notes().get('profileStatus'), equals(200)),
+    );
+});
+```
+
+→ [Notes API docs](/api/core/function/notes/) | [Cucumber integration guide](/handbook/test-runners/cucumber/)
+
+---
+
+## Still stuck?
+
+- Search the [Serenity/JS Q&A Forum](https://github.com/orgs/serenity-js/discussions/categories/how-to) — your question may already be answered.
+- Ask a new question on the [Community Forum](https://github.com/orgs/serenity-js/discussions) — include your configuration, error messages, and Serenity/JS version.
+- Join the [Community Chat](https://matrix.to/#/#serenity-js:gitter.im) for real-time help.
+- [Report a bug](https://github.com/serenity-js/serenity-js/issues/new/choose) if you believe you've found an issue in the framework.

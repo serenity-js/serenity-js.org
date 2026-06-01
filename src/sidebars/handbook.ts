@@ -24,6 +24,7 @@ const sidebars: SidebarsConfig = {
             items: [
                 'installation',
                 'architecture',
+                'troubleshooting',
             ]
         },
         {
