@@ -9,7 +9,6 @@ export default {
         // { from: '/support.html', to: '' },
 
         { from: '/handbook/project-templates/', to: '/getting-started/project-templates/' },
-        { from: '/handbook/project-templates', to: '/getting-started/project-templates/' },
         { from: '/handbook/tutorials/upgrading-from-serenity-js-2/', to: '/releases/upgrading-from-serenity-js-2/' },
 
         { from: '/handbook/web-testing/your-first-web-scenario/', to: '/handbook/tutorials/your-first-web-scenario/' },
