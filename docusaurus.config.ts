@@ -148,7 +148,7 @@ const config: Config = {
         },
         announcementBar: {
             id: 'announcement-bar',
-            content: 'New! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project with incremental adoption 🚀',
+            content: 'New! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project 🚀',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },

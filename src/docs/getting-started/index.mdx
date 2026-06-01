@@ -2,7 +2,7 @@
 title: "Why Serenity/JS"
 sidebar_label: "Why Serenity/JS"
 sidebar_position: 1
-description: "See the same test scenario implemented three ways: vanilla test code, Serenity/JS in reporting-only mode, and full Screenplay Pattern. Understand what each abstraction layer adds and when it becomes valuable."
+description: "See the same test scenario at four levels of Serenity/JS adoption: vanilla Playwright, reporting-only, Screenplay hybrid, and full Screenplay Pattern. Understand what each level adds and when it becomes valuable."
 ---
 
 import Tabs from '@theme/Tabs';
@@ -10,32 +10,38 @@ import TabItem from '@theme/TabItem';
 
 # Why Serenity/JS
 
-Serenity/JS helps your team evolve from writing test scripts to designing a **test automation system** — with the architecture, reporting, and reusability that implies. It's a layer on top of Playwright, WebdriverIO, or Cucumber that adds structure while reducing complexity and maintenance costs.
+Serenity/JS helps your team evolve from writing test scripts to designing a **test automation system** — with the architecture, reporting, and reusability to scale your automation and adapt it as requirements change. The framework works as a layer on top of Playwright, WebdriverIO, or Cucumber, adding structure while reducing complexity and maintenance costs.
 
-This page shows the **same scenario** at three levels of architecture so you can see what each one gives you and decide where to start.
+To show you what that looks like in practice, this page walks through the **same scenario** at four levels of Serenity/JS adoption — from a flat test script to structured, reusable code with rich reporting.
 
-:::info Works with multiple tools
-The examples use [Playwright Test](/getting-started/playwright/), but Serenity/JS provides the same benefits with [WebdriverIO](/getting-started/webdriverio/). The Screenplay Pattern code is **identical** regardless of which tool drives the browser — that's the point of the architecture.
+:::tip Works with multiple tools
+The examples below use [Playwright Test](/getting-started/playwright/), but everything shown here applies equally to [WebdriverIO](/getting-started/webdriverio/), [Cucumber](/getting-started/cucumber/), and other [supported test runners](/handbook/test-runners/). Screenplay Pattern code is **identical** regardless of what test runner or browser driver you use — that's the point of the architecture.
 :::
 
 ---
 
 ## The problem with flat test scripts
 
-Most test suites start simple: a few specs, each one a sequence of clicks and assertions. This works fine at first. But as the suite grows, problems emerge:
+Most test suites start simple: a few specs, each one a sequence of clicks and assertions. That works — until the suite grows and the cracks show:
 
-- **Selectors duplicated everywhere** — a UI change means updating dozens of files.
-- **No reuse** — login logic is copy-pasted into every test that needs an authenticated user.
-- **Reports show only pass/fail** — when a test fails, you read through low-level clicks to figure out what it was even trying to do.
-- **Locked to one tool** — every line of test code is coupled to a specific browser driver API.
+- **Selectors duplicated everywhere** — a single UI change means updating dozens of files
+- **No reuse** — login logic is copy-pasted into every test that needs an authenticated user
+- **Reports show only pass/fail** — when something breaks, you're reading raw locators to figure out what the test was even verifying
+- **Locked to one tool** — every line of code is coupled to a specific browser driver API
 
-The solution is the same one that works for production software: **separate concerns into layers.**
+The fix is the same one that works for production software: **separation of concerns** — keep *what* you're testing apart from *how* you're testing it.
 
 ---
 
 ## Layered test architecture
 
 As described in [BDD in Action, Second Edition](https://www.manning.com/books/bdd-in-action-second-edition), a well-structured test automation system has three layers:
+
+- **Specification layer** — *what* the system should do. Test scenarios expressed in business language.
+- **Domain layer** — *how* actors accomplish goals. Composable Tasks that use business vocabulary, independent of any integration tool.
+- **Integration layer** — *where* the system is interacted with. Low-level interactions with web UIs, APIs, or mobile apps through tool-specific drivers.
+
+<figure>
 
 ```mermaid
 flowchart TD
@@ -58,11 +64,10 @@ flowchart TD
     end
 ```
 
-- **Specification layer** — *what* the system should do. Test scenarios expressed in business language.
-- **Domain layer** — *how* actors accomplish goals. Composable Tasks using business vocabulary, independent of any tool.
-- **Integration layer** — *where* the system is touched. Low-level interactions with web UIs, APIs, or mobile apps through tool-specific drivers.
+<figcaption>A layered test architecture separates business logic from integration details, making each layer independently maintainable.</figcaption>
+</figure>
 
-Each layer depends only on the layer below it. When something changes, only the affected layer needs updating:
+Each layer depends only on the layer below it, so when something in the system under test changes, only the affected layer needs updating. For example, a UI redesign means new selectors in the Integration layer — but your Domain Tasks and Specification scenarios stay untouched:
 
 | What changes | What you update | What stays the same |
 |---|---|---|
@@ -71,27 +76,27 @@ Each layer depends only on the layer below it. When something changes, only the 
 | Switch Playwright → WebdriverIO | Integration config | Domain + Specification |
 | Add API testing | Integration layer | Domain + Specification |
 
-**How Serenity/JS implements this:**
+In Serenity/JS, these layers map directly to framework concepts you'll use every day:
 
 | Layer | Serenity/JS concept | Example |
 |---|---|---|
-| Specification | Test scenarios (`describe`, `it`) | `it('should let a user checkout', ...)` |
-| Domain | [Tasks](/api/core/class/Task/) | `Checkout.completeWith(...)` |
-| Integration | [Interactions](/api/core/class/Interaction/) + [Lean Page Objects](/handbook/web-testing/page-objects-pattern/) | `Click.on(...)`, `PageElement.located(...)` |
+| Specification | Test scenarios (`describe`, `it`) | `it('should let a user complete checkout', ...)` |
+| Domain | [Actors](/api/core/class/Actor/) + [Tasks](/api/core/class/Task/) | `actor.attemptsTo(Checkout.completeWith(...))` |
+| Integration | [Abilities](/api/core/class/Ability/) + [Interactions](/api/core/class/Interaction/) + [Questions](/api/core/class/Question/) | `Click.on(...)`, `Text.of(...)`, `PageElement.located(...)` |
 
-→ Learn more: [Screenplay Pattern](/handbook/design/screenplay-pattern/) | [BDD in Action, Second Edition](https://www.manning.com/books/bdd-in-action-second-edition)
+→ Learn more: [Screenplay Pattern](/handbook/design/screenplay-pattern/) | [Serenity/JS Architecture](/handbook/architecture/) | [BDD in Action, Second Edition](https://www.manning.com/books/bdd-in-action-second-edition)
 
 ---
 
-## The same scenario, three ways
+## Levels of adoption
 
-:::info The scenario
-A user logs in to [Swag Labs](https://www.saucedemo.com/), adds a "Sauce Labs Backpack" to their cart, completes checkout, and verifies the order confirmation.
-:::
+The following scenario is implemented at four levels of Serenity/JS adoption — from vanilla Playwright through to the full Screenplay Pattern. Each level builds on the previous one, and you can stop wherever it makes sense for your project.
 
-### Level 1: Vanilla Playwright
+**The scenario:** A standard user logs in to [Swag Labs](https://www.saucedemo.com/), adds a "Sauce Labs Backpack" to their cart, completes checkout, and verifies the order confirmation.
 
-No Serenity/JS. All logic in one flat script.
+### Level 0: Vanilla Playwright
+
+This is the starting point most teams are familiar with — no Serenity/JS, all logic in one flat script.
 
 ```typescript title="tests/checkout.spec.ts"
 import { test, expect } from '@playwright/test';
@@ -118,45 +123,59 @@ test('should complete checkout successfully', async ({ page }) => {
 });
 ```
 
-**What you get:** A working test. Quick to write for a handful of scenarios.
+**What you get:** A working test. Quick to write when you have a handful of scenarios.
 
-**What's missing:** No reuse, no structured reporting, no abstraction. Every test that needs login will duplicate those selectors.
+**What breaks down at scale:** No reuse, no structured reporting, no abstraction. Every test that needs login duplicates those selectors. When one breaks, you're reading raw locators to figure out what it was even testing.
 
 ---
 
-### Level 2: Add Serenity/JS reporting
+### Level 1: Add Serenity/JS reporting
 
-Change one import. Your test code stays identical, but your test results are now organised by business capability and system feature — based on your directory structure — instead of a flat list of pass/fail results.
+The smallest possible improvement: add Serenity/JS reporters to your `playwright.config.ts`. Your test code stays completely unchanged, but the reports now organise results by capability and feature — derived from your file naming conventions and directory structure — rather than showing a flat list of pass/fail.
 
-```typescript title="tests/checkout.spec.ts"
-import { test, expect } from '@serenity-js/playwright-test';  // ← only change
+```diff title="playwright.config.ts"
+  import { defineConfig, devices } from '@playwright/test';
 
-test('should complete checkout successfully', async ({ page }) => {
-    await page.goto('https://www.saucedemo.com/');
-    await page.locator('[data-test="username"]').fill('standard_user');
-    await page.locator('[data-test="password"]').fill('secret_sauce');
-    await page.locator('[data-test="login-button"]').click();
-
-    await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
-
-    await page.locator('[data-test="shopping-cart-link"]').click();
-    await page.locator('[data-test="checkout"]').click();
-
-    await page.locator('[data-test="firstName"]').fill('Alice');
-    await page.locator('[data-test="lastName"]').fill('Smith');
-    await page.locator('[data-test="postalCode"]').fill('90210');
-    await page.locator('[data-test="continue"]').click();
-
-    await page.locator('[data-test="finish"]').click();
-    await expect(page.locator('[data-test="complete-header"]'))
-        .toHaveText('Thank you for your order!');
-});
+  export default defineConfig({
+      testDir: './tests',
+-     reporter: 'html',
++     reporter: [
++         [ 'html' ],   // Keep the default Playwright HTML reporter for low-level debugging
++         [ '@serenity-js/playwright-test', {
++             crew: [
++                 '@serenity-js/console-reporter',
++                 [ '@serenity-js/serenity-bdd', {
++                     specDirectory: './tests'
++                 } ],
++                 [ '@serenity-js/core:ArtifactArchiver', {
++                     outputDirectory: './reports/serenity'
++                 } ],
++             ]
++         }]
++     ],
+      // ... rest of your config stays the same
+  });
 ```
 
+Next, update your `package.json` scripts to generate the Serenity BDD HTML report after test execution:
+
+```diff title="package.json"
+ {
+   "scripts": {
++    "clean": "rimraf target",
++    "test": "failsafe clean test:execute [...] test:report",
++    "test:execute": "npx playwright test",
++    "test:report": "serenity-bdd run --features='./tests' --source='./reports/serenity' --destination='./reports/serenity'"
+   }
+ }
+```
+
+→ Learn more: [Using npm-failsafe](https://www.npmjs.com/package/npm-failsafe)
+
 **What you gain:**
-- Test results organised per feature and capability (based on your test directory structure) instead of a flat list
-- [Serenity BDD living documentation](/handbook/reporting/serenity-bdd-reporter/) that stakeholders can navigate by business area
-- **Zero changes to your test logic**
+- Test results grouped by feature and capability rather than a flat list
+- [Serenity BDD living documentation](/handbook/reporting/serenity-bdd-reporter/) that stakeholders can explore by feature and capability
+- **Zero changes to your test code** — only the config and scripts are updated
 
 <Figure
     caption='Example Serenity BDD report generated by Serenity/JS'
@@ -164,15 +183,54 @@ test('should complete checkout successfully', async ({ page }) => {
     externalLink={'https://serenity-js.github.io/serenity-js-cucumber-playwright-template/'}
 />
 
-**What requires Screenplay (Level 3):** In-depth activity breakdown showing each interaction with timing, and automated screenshots captured at each step.
-
 → [Set this up in 5 minutes](/getting-started/playwright/#step-1-install)
+
+---
+
+### Level 2: Screenplay + Playwright hybrid
+
+Here you start using Serenity/JS fixtures alongside your existing Playwright code. Swap the import to `@serenity-js/playwright-test` to access the `actor` fixture, then introduce Screenplay interactions where they add clarity — existing tests stay as they are.
+
+```typescript title="tests/checkout.spec.ts"
+import { test, expect } from '@serenity-js/playwright-test';  // ← swap the import
+import { Navigate } from '@serenity-js/web';
+
+test('should complete checkout successfully', async ({ actor, page }) => {
+    // Screenplay interaction — shows as a named step in reports
+    await actor.attemptsTo(
+        Navigate.to('https://www.saucedemo.com/'),
+    );
+
+    // Vanilla Playwright — still works, just won't appear as named steps
+    await page.locator('[data-test="username"]').fill('standard_user');
+    await page.locator('[data-test="password"]').fill('secret_sauce');
+    await page.locator('[data-test="login-button"]').click();
+
+    await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
+    await page.locator('[data-test="shopping-cart-link"]').click();
+    await page.locator('[data-test="checkout"]').click();
+
+    await page.locator('[data-test="firstName"]').fill('Alice');
+    await page.locator('[data-test="lastName"]').fill('Smith');
+    await page.locator('[data-test="postalCode"]').fill('90210');
+    await page.locator('[data-test="continue"]').click();
+    await page.locator('[data-test="finish"]').click();
+
+    await expect(page.locator('[data-test="complete-header"]'))
+        .toHaveText('Thank you for your order!');
+});
+```
+
+**What you gain over Level 1:**
+- Screenplay interactions appear as named steps in reports — with timing and screenshots
+- Access to `actor`, `actorCalled`, and other [Serenity/JS fixtures](/api/playwright-test/interface/SerenityFixtures/)
+- Incremental adoption — convert interactions one at a time without rewriting entire tests
 
 ---
 
 ### Level 3: Full Screenplay Pattern
 
-Tests describe *what the user does* in business language. Implementation details live in separate, reusable classes.
+At this level, tests describe *what the user does* in business language. Selectors, page interactions, and API calls live in separate, reusable classes that any test can compose. Compare the spec file below with the flat script from Level 0:
 
 <Tabs>
 <TabItem value="spec" label="swag-labs.spec.ts" default>
@@ -329,17 +387,17 @@ export class Checkout {
 </TabItem>
 </Tabs>
 
-**What you gain:**
+**What you gain over Levels 1–2:**
 - **Readable tests** — the scenario reads like a user story, not a browser script
 - **Reusable building blocks** — `Authenticate.withCredentials()` works in every test; change a selector once, fix it everywhere
-- **Rich reports** — hierarchical activity breakdown: "completes checkout" → "proceeds to checkout" → "clicks on checkout button"
-- **Masked credentials** — sensitive values appear as `[MASKED]` in reports
-- **Multi-actor support** — buyer + seller, admin + user scenarios become trivial
-- **Blended testing** — use APIs for fast test data setup, UI only where it matters
-- **Tool independence** — swap Playwright for WebdriverIO without touching test logic
+- **Rich activity breakdown** — reports show "completes checkout" → "proceeds to checkout" → "clicks on checkout button", with timing at each step
+- **Masked credentials** — sensitive values appear as `[MASKED]` in reports (see the `Authenticate.ts` tab above)
+- **Multi-actor support** — buyer + seller, admin + user scenarios become [trivial to implement](/handbook/test-runners/playwright-test/multi-actor-scenarios/)
+- **[Blended testing](/handbook/web-testing/blended-testing/)** — use APIs for fast test data setup, UI only where it matters
+- **Tool independence** — swap Playwright for WebdriverIO, or use both in the same project, without touching test logic
 
 :::tip Tasks are portable
-The Task code imports from `@serenity-js/web` and `@serenity-js/core` — not from Playwright or WebdriverIO. Switch tools (or use both) without rewriting your Domain layer. Only the [Ability](/api/core/class/Ability/) configuration changes.
+The Task code imports from [`@serenity-js/web`](/api/web/) and [`@serenity-js/core`](/api/core/) — not from Playwright or WebdriverIO. Switch tools (or use both) without rewriting your Domain layer. Only the [Ability](/api/core/class/Ability/) configuration changes.
 :::
 
 → [Try the Screenplay Pattern](/getting-started/playwright/#step-5-optional-write-your-first-screenplay-test) | [Full Playwright tutorial](/getting-started/playwright/) | [WebdriverIO tutorial](/getting-started/webdriverio/)
@@ -348,15 +406,17 @@ The Task code imports from `@serenity-js/web` and `@serenity-js/core` — not fr
 
 ## How to start
 
-**Start with reporting** — add Serenity/JS in reporting-only mode (Level 2). One import change, zero risk, five minutes. Your existing tests immediately produce detailed activity reports that show what went wrong and where.
+The most common adoption path:
 
-**Use Screenplay for new tests** — when you write your next scenario, use the actor model and composable Tasks. Old tests stay untouched; new tests get better structure from day one.
+**Level 1 — reporting.** Add Serenity/JS reporters to your config. No test code changes, immediate value from structured reports.
 
-**Migrate what matters** — identify the legacy scenarios that break often or are hard to understand, and convert them to Screenplay. Better reports, easier maintenance, less time debugging. For lower-value scenarios, either convert them gradually or delete them when your Screenplay tests already cover the same ground more effectively.
+**Level 2 — hybrid.** Swap the import and start using `actor` alongside `page`. Convert interactions one at a time where they add clarity.
 
-**Speed up slow suites with blended testing** — use API interactions for test data setup while testing through the UI only where it demonstrates value. The same Task can have a fast API-based implementation for preconditions and a thorough UI-based one for the scenario you're actually verifying.
+**Level 3 — new tests.** Write new scenarios with composable Tasks from the start. Migrate existing tests when they become painful to maintain.
 
-You're in control of how many scenarios follow the improved structure — Serenity/JS supports both architectures side by side in the same project. There's no big-bang rewrite.
+**Beyond Level 3 — [blended testing](/handbook/web-testing/blended-testing/).** Use API interactions for test data setup while testing through the UI only where it demonstrates value. The same Task can have a fast API-based implementation for preconditions and a thorough UI-based one for the scenario you're verifying.
+
+All levels coexist in the same project — you're in control of how far and how fast you go. There's no big-bang rewrite.
 
 ---
 
@@ -364,5 +424,6 @@ You're in control of how many scenarios follow the improved structure — Sereni
 
 - **[For Playwright users](/getting-started/playwright/)** — add Serenity/JS to your project in 5 minutes
 - **[For WebdriverIO users](/getting-started/webdriverio/)** — integrate with your existing setup
+- **[For Cucumber users](/getting-started/cucumber/)** — add reporting and Screenplay to your Gherkin scenarios
 - **[15-minute tutorial](/handbook/tutorials/your-first-web-scenario/)** — build your first Screenplay test
 - **[Project Templates](/getting-started/project-templates/)** — pre-configured starter projects

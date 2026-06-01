@@ -41,16 +41,37 @@ The progression most teams go through looks like this:
 3. **Extract Lean Page Objects** — organise page elements for maintainability.
 4. **Share code with web tests** — reuse the same Tasks across Electron and browser-based tests.
 
-### Step 0: Prerequisites
+### Step 0: Create a Playwright Test project
 
-:::info Prerequisites
-You'll need:
-- A recent [Node.js LTS](https://nodejs.org/en/download/) version (Serenity/JS supports Node <SupportedNodeVersions conjunction="and" />)
-- [Java 11+](https://adoptium.net/) for the Serenity BDD reports
-- An existing Electron app to test (with `electron` as a dependency)
+:::tip Already have a Playwright Test project?
+Skip this step and proceed with the remaining steps from your project directory.
+:::
+
+Create a new directory and scaffold a Playwright Test project inside it:
+
+```bash
+mkdir my-serenity-project
+cd my-serenity-project
+npm init --yes playwright@latest -- --quiet
+```
+
+This creates a TypeScript Playwright Test project with tests in the `tests/` directory, a `playwright.config.ts` config file, and example tests.
+
+:::note Want to customise the setup?
+Drop the `--quiet` flag to get interactive prompts where you can choose your preferred language, test directory, and browsers:
+```bash
+npm init playwright@latest
+```
 :::
 
 ### Step 1: Install
+
+:::info Prerequisites
+To use Serenity/JS, you'll need:
+- A recent [Node.js LTS](https://nodejs.org/en/download/) version (Serenity/JS supports Node <SupportedNodeVersions conjunction="and" />)
+- [Java 11+](https://adoptium.net/) for the Serenity BDD reports
+- An existing Electron app to test (with [`electron`](https://www.npmjs.com/package/electron) as a dependency)
+:::
 
 From your Electron project directory, install Serenity/JS and Playwright Test:
 
@@ -62,36 +83,43 @@ npm install --save-dev @serenity-js/core @serenity-js/assertions @serenity-js/pl
 
 ### Step 2: Configure
 
-Create a `playwright.config.ts` for your Electron tests:
+Update your `playwright.config.ts` to add the Serenity/JS reporter. You need to make three changes:
 
-```typescript title="playwright.config.ts"
-import { defineConfig } from '@playwright/test';
-import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
-
-export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
-    testDir: './spec',
-    reporter: [
-        [ 'line' ],
-        [ '@serenity-js/playwright-test', {
-            crew: [
-                '@serenity-js/console-reporter',
-                [ '@serenity-js/serenity-bdd', {
-                    specDirectory: './spec'
-                } ],
-                [ '@serenity-js/core:ArtifactArchiver', {
-                    outputDirectory: './reports/serenity'
-                } ],
-            ]
-        }]
-    ],
-});
-```
-
-Add the following scripts to your `package.json`:
+1. Add the `SerenityFixtures` and `SerenityWorkerFixtures` import
+2. Add type parameters to `defineConfig`
+3. Replace the `reporter` option with the Serenity/JS reporter configuration
 
 :::note Reading the diffs
 Lines marked with `+` should be added to your file; lines marked with `-` should be removed. Don't copy the `+`/`-` prefixes themselves.
 :::
+
+```diff title="playwright.config.ts"
+- import { defineConfig, devices } from '@playwright/test';
++ import { defineConfig, devices } from '@playwright/test';
++ import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+- export default defineConfig({
++ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+    // ... keep your existing settings ...
+-   reporter: 'html',
++   reporter: [
++       [ 'line' ],
++       [ '@serenity-js/playwright-test', {
++           crew: [
++               '@serenity-js/console-reporter',
++               [ '@serenity-js/serenity-bdd', {
++                   specDirectory: './spec'
++               } ],
++               [ '@serenity-js/core:ArtifactArchiver', {
++                   outputDirectory: './reports/serenity'
++               } ],
++           ]
++       }]
++   ],
+```
+
+Add the following scripts to your `package.json`:
 
 ```diff title="package.json"
  {
@@ -110,7 +138,7 @@ Lines marked with `+` should be added to your file; lines marked with `-` should
 
 Use [`extraAbilities`](/api/playwright-test/interface/SerenityFixtures/#extraAbilities) to tell Serenity/JS how to launch your Electron app. Each test gets a fresh instance:
 
-```typescript title="spec/my-app.spec.ts"
+```typescript title="spec/my-electron-app.spec.ts"
 import { Ensure, equals } from '@serenity-js/assertions'
 import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
 import { describe, it, test } from '@serenity-js/playwright-test'
@@ -162,7 +190,7 @@ npm test -- --grep="welcome screen"
 
 ## Organising page elements
 
-For maintainable Electron tests, extract your page elements into a [Lean Page Object](/handbook/web-testing/page-objects-pattern/):
+For maintainable Electron tests, extract your page elements into [Lean Page Objects](/handbook/web-testing/page-objects-pattern/):
 
 ```typescript title="spec/screenplay/MyApp.ts"
 import { PageElement, By } from '@serenity-js/web'
@@ -175,7 +203,7 @@ export const MyApp = {
 }
 ```
 
-Then use it in your tests:
+Then use them in your tests:
 
 ```typescript title="spec/my-app.spec.ts"
 import { Ensure, includes } from '@serenity-js/assertions'
@@ -255,5 +283,5 @@ Check the [Troubleshooting guide](/handbook/troubleshooting/) for solutions to c
 - **[Troubleshooting](/handbook/troubleshooting/)** — solutions to common issues
 
 :::note Testing web apps instead?
-If you're testing a browser-based application, see [Serenity/JS with Playwright](/getting-started/playwright/) for a simpler setup that doesn't require Electron configuration.
+If you're testing a browser-based application, see [Serenity/JS for Playwright Users](/getting-started/playwright/) for a simpler setup that doesn't require Electron configuration.
 :::
