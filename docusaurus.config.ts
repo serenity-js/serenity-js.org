@@ -71,12 +71,12 @@ const config: Config = {
             high-quality, business-focused test scenarios that interact with any interface of your system
             and produce comprehensive test reports that build trust between delivery teams and the business.
             `,
-        banner: {
+        // banner: {
             // text: 'Get started with Serenity/JS and Playwright Test',
             // link: '/handbook/test-runners/playwright-test',
-            text: 'S/JS 3.43: Testing Electron Apps',
-            link: '/blog/support-for-electron-apps/',
-        }
+            // text: 'S/JS 3.43: Testing Electron Apps',
+            // link: '/blog/support-for-electron-apps/',
+        // }
     },
 
     url: 'https://serenity-js.org',
@@ -148,7 +148,7 @@ const config: Config = {
         },
         announcementBar: {
             id: 'announcement-bar',
-            content: 'New! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project 🚀',
+            content: 'New guide! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project 🚀',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },
