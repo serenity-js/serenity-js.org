@@ -26,7 +26,7 @@ export default function Hero(): React.JSX.Element {
                             __html: translate({
                                 id: 'homepage.hero.title',
                                 message:
-                                    `Enable <b>collaborative<br /> test automation</b><br /> at <b>any scale</b>!`,
+                                    `<b>Test automation</b><br /> that <b>scales across</b><br /> your <b>teams</b>`,
                                 description:
                                     'Home page hero title, can contain simple html tags',
                             }),
@@ -34,27 +34,21 @@ export default function Hero(): React.JSX.Element {
                     />
                 </h1>
                 <p>
-                    <strong>Serenity/JS</strong> is an innovative <strong>test automation framework</strong> designed to
-                    help you
-                    create <strong>high-quality, business-focused test scenarios</strong> that interact with <strong>any
-                    interface of your system</strong> and
-                    produce <strong>comprehensive test reports</strong> that <strong>build trust</strong> between
-                    delivery teams and the business.
+                    <strong>Serenity/JS</strong> is a <strong>TypeScript-native</strong> framework that gives
+                    your <strong>Playwright Test</strong>, <strong>WebdriverIO</strong>,
+                    or <strong>Cucumber</strong> test suite the architecture it needs to
+                    scale — <strong>meaningful reports</strong> for every audience,
+                    and <strong>reusable test code</strong> to support your entire organisation.
+                </p>
+                <p className={ styles.heroMeta }>
+                    Apache-2.0 licensed · Commercial support available · Works with your existing tools and CI/CD infrastructure
                 </p>
                 <CallToAction>
                     <Link id="cta-start-automating" className="button button--primary"
-                          to="/handbook/tutorials/your-first-web-scenario">
+                          data-sa-link-event="cta_hero_start_automating"
+                          to="/getting-started/">
                         <Translate>Start automating 🚀</Translate>
                     </Link>
-                    <span className={ styles.indexCtasGitHubButtonWrapper }>
-                        <iframe
-                            className={ styles.indexCtasGitHubButton }
-                            src="https://ghbtns.com/github-btn.html?user=serenity-js&amp;repo=serenity-js&amp;type=star&amp;count=true&amp;size=large"
-                            width={ 160 }
-                            height={ 30 }
-                            title="GitHub Stars"
-                        />
-                    </span>
                 </CallToAction>
             </div>
         </div>

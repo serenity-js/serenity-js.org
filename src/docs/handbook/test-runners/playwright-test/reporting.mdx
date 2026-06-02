@@ -122,7 +122,7 @@ To generate Serenity BDD HTML reports and living documentation, your test suite 
 1. Use [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/) and [`ArtifactArchiver`](/api/core/class/ArtifactArchiver/) as per the [configuration instructions](/handbook/test-runners/playwright-test/configuration/#integrating-serenityjs-reporting).
 2. Invoke the `serenity-bdd run` command when the test run has finished to generate the Serenity BDD report.
 
-All [Serenity/JS Project Templates](/handbook/project-templates/) follow the same recommended pattern to generate Serenity BDD reports.
+All [Serenity/JS Project Templates](/getting-started/project-templates/) follow the same recommended pattern to generate Serenity BDD reports.
 This approach relies on:
 - NPM scripts to invoke the command-line tools, such as Playwright Test or the Serenity BDD CLI.
 - [`npm-failsafe`](https://www.npmjs.com/package/npm-failsafe) to execute a sequence of NPM scripts.
@@ -160,8 +160,8 @@ To learn more about the `SerenityBDDReporter`, see:
 
 A common advanced usage pattern for systems with multiple test suites is to execute each test suite separately on CI across multiple [pipeline stages](/handbook/integration/),
 while running them sequentially in a local environment. In both cases, a single Serenity BDD report is generated at the end.
-This pattern is particularly useful for systems with multiple [Playwright Test projects](https://playwright.dev/docs/test-projects) or those that use both the [Playwright Component Test runner](/handbook/project-templates/#web-component-testing) and
-the [Playwright Test runner](/handbook/project-templates/#playwright).
+This pattern is particularly useful for systems with multiple [Playwright Test projects](https://playwright.dev/docs/test-projects) or those that use both the [Playwright Component Test runner](/getting-started/project-templates/#web-component-testing) and
+the [Playwright Test runner](/getting-started/project-templates/#playwright).
 
 <figure>
 ```mermaid

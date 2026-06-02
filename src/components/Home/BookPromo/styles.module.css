@@ -1,0 +1,56 @@
+.wrapper {
+    padding: 4rem 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 2rem;
+    border-radius: 12px;
+    background: var(--ifm-card-background-color);
+    box-shadow: var(--ifm-global-shadow-lw);
+}
+
+.bookCover img {
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.bookCover img:hover {
+    transform: scale(1.03);
+}
+
+.bookDetails {
+    flex: 1;
+}
+
+.title {
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+}
+
+.description {
+    color: var(--ifm-color-content-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.authors {
+    font-style: italic;
+    color: var(--ifm-color-content-secondary);
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        text-align: center;
+    }
+}

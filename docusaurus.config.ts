@@ -71,12 +71,12 @@ const config: Config = {
             high-quality, business-focused test scenarios that interact with any interface of your system
             and produce comprehensive test reports that build trust between delivery teams and the business.
             `,
-        banner: {
+        // banner: {
             // text: 'Get started with Serenity/JS and Playwright Test',
             // link: '/handbook/test-runners/playwright-test',
-            text: 'S/JS 3.43: Testing Electron Apps',
-            link: '/blog/support-for-electron-apps/',
-        }
+            // text: 'S/JS 3.43: Testing Electron Apps',
+            // link: '/blog/support-for-electron-apps/',
+        // }
     },
 
     url: 'https://serenity-js.org',
@@ -112,7 +112,7 @@ const config: Config = {
                         const sidebarItems = await defaultSidebarItemsGenerator(args);
                         // DEBUG sidebar items
                         // console.log({ sidebarItems })
-                        return sidebarItems.filter(item => ! item.id?.endsWith('index'));
+                        return sidebarItems.filter(item => ! item?.id?.endsWith('index'));
                     },
                 },
                 blog: {
@@ -120,7 +120,7 @@ const config: Config = {
                     editUrl,
                     path: './src/blog',
                     showReadingTime: true,
-                    blogSidebarTitle: 'Serenity/JS News',
+                    blogSidebarTitle: 'Serenity/JS Blog',
                     blogSidebarCount: 'ALL',
                     onUntruncatedBlogPosts: 'ignore',
                 },
@@ -148,7 +148,7 @@ const config: Config = {
         },
         announcementBar: {
             id: 'announcement-bar',
-            content: 'Save 40% on our book - <a target="_blank" rel="noopener noreferrer" href="https://www.manning.com/books/bdd-in-action-second-edition">"BDD in Action, Second Edition"</a> 📚',
+            content: 'New guide! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project 🚀',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },
@@ -163,16 +163,25 @@ const config: Config = {
                 className: 'serenity-js-logo',
             },
             items: [
+                {
+                    label: 'Get Started',
+                    position: 'left',
+                    type: 'dropdown',
+                    items: [
+                        { label: 'Why Serenity/JS?', to: '/getting-started/' },
+                        { label: 'Serenity/JS for Playwright Users', to: '/getting-started/playwright/' },
+                        { label: 'Serenity/JS for WebdriverIO Users', to: '/getting-started/webdriverio/' },
+                        { label: 'Serenity/JS for Cucumber Users', to: '/getting-started/cucumber/' },
+                        { label: 'Serenity/JS for Electron Users', to: '/getting-started/electron/' },
+                        { label: 'Tutorials', to: '/handbook/tutorials' },
+                        { label: 'Project Templates', to: '/getting-started/project-templates' },
+                    ],
+                },
                 { label: 'Handbook', type: 'doc', docId: 'index', position: 'left' },
                 { label: 'API', to: '/api/', position: 'left' },
-                { to: '/blog', label: 'News', position: 'left' },
+                { to: '/blog', label: 'Blog', position: 'left' },
                 { label: `Releases`, to: 'releases', position: 'left' },
                 { to: '/community', label: 'Community', position: 'left' },
-                {
-                    to: 'https://github.com/sponsors/serenity-js',
-                    label: 'Sponsor',
-                    position: 'left',
-                },
                 {
                     href: 'https://www.youtube.com/@serenity-js',
                     'aria-label': 'Serenity/JS YouTube channel',
@@ -193,10 +202,21 @@ const config: Config = {
             copyright: `Made with 💛 in London, UK. Copyright © 2016-${ new Date().getFullYear() } <a href="https://janmolak.com">Jan Molak</a>, smartcode ltd.`,
             links: [
                 {
+                    title: 'Get Started',
+                    items: [
+                        { label: 'Why Serenity/JS?', to: '/getting-started/' },
+                        { label: 'Serenity/JS with Playwright', to: '/getting-started/playwright/' },
+                        { label: 'Serenity/JS with WebdriverIO', to: '/getting-started/webdriverio/' },
+                        { label: 'Serenity/JS with Cucumber', to: '/getting-started/cucumber/' },
+                        { label: 'Serenity/JS with Electron', to: '/getting-started/electron/' },
+                        { label: 'Tutorials', to: '/handbook/tutorials' },
+                        { label: 'Project Templates', to: '/getting-started/project-templates' },
+                    ],
+                },
+                {
                     title: 'Handbook',
                     items: [
-                        { label: 'Why Serenity/JS', to: '/handbook/' },
-                        { label: 'Tutorials', to: '/handbook/tutorials' },
+                        { label: 'Introduction', to: '/handbook/' },
                         { label: 'Core Design Patterns', to: '/handbook/design' },
                         { label: 'Web Testing', to: '/handbook/web-testing' },
                         { label: 'API Testing', to: '/handbook/api-testing' },
@@ -243,7 +263,7 @@ const config: Config = {
                         { label: 'API Docs', to: '/api/' },
                         {
                             label: 'Project Templates',
-                            to: 'https://github.com/serenity-js/?q=template&type=all&language=&sort='
+                            to: '/getting-started/project-templates/',
                         },
                         { label: 'Serenity/JS GitHub', href: 'https://github.com/serenity-js', },
                         { label: 'Report an issue', href: '/community/contributing/reporting-issues/', },
@@ -435,6 +455,17 @@ const config: Config = {
                         ],
                     },
                 }
+            },
+        ],
+        [
+            'content-docs',
+            {
+                id: 'getting-started',
+                editUrl,
+                path: './src/docs/getting-started',
+                routeBasePath: 'getting-started',
+                sidebarPath: './src/sidebars/getting-started.ts',
+                ...remarkOptions,
             },
         ],
         [

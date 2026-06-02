@@ -15,7 +15,7 @@ and ensure a stable environment for running your Serenity/JS test scenarios.
 
 ## Before you start
 
-Set up a working Serenity/JS test suite using one of the official [Serenity/JS Project Templates](/handbook/project-templates/),
+Set up a working Serenity/JS test suite using one of the official [Serenity/JS Project Templates](/getting-started/project-templates/),
 or add Serenity/JS to your existing project by following the [Serenity/JS installation guide](/handbook/installation/).
 
 If you're new to Serenity/JS, [follow the tutorial](/handbook/tutorials/your-first-web-scenario) to learn more about the framework.
@@ -49,7 +49,7 @@ In this guide, we use `test` and `publish` as that's a great starting point and 
 In the example below, you see the `test` stage with a job called `serenity` that:
 - Uses the official [Serenity/JS Playwright Docker image](/handbook/integration/docker/#serenityjs-playwright-image)
 - Installs the project dependencies using `npm ci`, which is the recommended way to install Node.js modules in CI environments
-- Runs the test suite using `npm test` - all [Serenity/JS Project Templates](/handbook/project-templates/) are pre-configured to run tests and generate reports via this standard script,
+- Runs the test suite using `npm test` - all [Serenity/JS Project Templates](/getting-started/project-templates/) are pre-configured to run tests and generate reports via this standard script,
   and you can adjust it to your needs if necessary
 - Preserves any artifacts under `target`, including the Serenity BDD reports, so that they can be reused in subsequent stages of the pipeline
 

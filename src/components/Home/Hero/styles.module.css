@@ -48,16 +48,14 @@
     margin: 20px 36px;
 }
 
-.indexCtasGitHubButtonWrapper {
-    display: flex;
-}
-
-.indexCtasGitHubButton {
-    overflow: hidden;
-}
-
 .indexCtaTryNowButton:hover {
     color: var(--ifm-color-primary);
+}
+
+.heroMeta {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: -0.5rem;
 }
 
 @media only screen and (max-width: 768px) {
@@ -87,9 +85,5 @@
 
     .indexCtas a {
         margin: 20px 36px;
-    }
-
-    .indexCtasGitHubButton {
-        display: none;
     }
 }

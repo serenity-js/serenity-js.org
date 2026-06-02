@@ -1,0 +1,287 @@
+---
+title: "Serenity/JS for Electron Users"
+sidebar_label: "For Electron Users"
+sidebar_position: 5
+description: "Test your Electron desktop applications with Serenity/JS — using the same Screenplay Pattern APIs as web testing, with structured reporting and reusable test components."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Serenity/JS for Electron Users
+
+Building an Electron app? Serenity/JS lets you test it using the same Screenplay Pattern APIs you'd use for web testing — [`Click`](/api/web/class/Click/), [`Enter`](/api/web/class/Enter/), [`Ensure`](/api/assertions/class/Ensure/), and more.
+
+Under the hood, Serenity/JS leverages [Playwright's Electron support](https://playwright.dev/docs/electron) to connect to your app's renderer process. You get expressive tests, reusable interactions, and rich reporting — for desktop applications.
+
+---
+
+## Why add Serenity/JS?
+
+Serenity/JS works on top of Playwright Test — your existing test infrastructure stays the same. You don't need Electron-specific testing APIs.
+
+Here's how Serenity/JS helps you test Electron apps effectively:
+
+| Challenge | How Serenity/JS helps |
+|---|---|
+| **No standard testing approach for Electron** | Serenity/JS provides a consistent API that works for both web and desktop apps |
+| **Tests coupled to implementation details** | The [Screenplay Pattern](/handbook/design/screenplay-pattern/) gives you composable Tasks that separate *what* from *how* |
+| **Hard to tell what a test did** | [Structured reports](/handbook/reporting/) show every interaction with timing and screenshots |
+| **Test code can't be reused across web and desktop** | Same interactions work for browser testing and Electron — share Tasks across projects |
+| **App lifecycle management is complex** | Serenity/JS handles launching and closing your app automatically |
+
+---
+
+## Get started in 5 minutes
+
+The progression most teams go through looks like this:
+
+1. **Set up Playwright Test with Serenity/JS** (Steps 0–2) — configure the test runner and reporters.
+2. **Write your first Electron test** (Step 3) — use `extraAbilities` to launch your app and interact with it.
+3. **Extract Lean Page Objects** — organise page elements for maintainability.
+4. **Share code with web tests** — reuse the same Tasks across Electron and browser-based tests.
+
+### Step 0: Create a Playwright Test project
+
+:::tip Already have a Playwright Test project?
+Skip this step and proceed with the remaining steps from your project directory.
+:::
+
+Create a new directory and scaffold a Playwright Test project inside it:
+
+```bash
+mkdir my-serenity-project
+cd my-serenity-project
+npm init --yes playwright@latest -- --quiet
+```
+
+This creates a TypeScript Playwright Test project with tests in the `tests/` directory, a `playwright.config.ts` config file, and example tests.
+
+:::note Want to customise the setup?
+Drop the `--quiet` flag to get interactive prompts where you can choose your preferred language, test directory, and browsers:
+```bash
+npm init playwright@latest
+```
+:::
+
+### Step 1: Install
+
+:::info Prerequisites
+To use Serenity/JS, you'll need:
+- A recent [Node.js LTS](https://nodejs.org/en/download/) version (Serenity/JS supports Node <SupportedNodeVersions conjunction="and" />)
+- [Java 11+](https://adoptium.net/) for the Serenity BDD reports
+- An existing Electron app to test (with [`electron`](https://www.npmjs.com/package/electron) as a dependency)
+:::
+
+From your Electron project directory, install Serenity/JS and Playwright Test:
+
+```sh npm2yarn
+npm install --save-dev @serenity-js/core @serenity-js/assertions @serenity-js/playwright @serenity-js/playwright-test @serenity-js/web @serenity-js/console-reporter @serenity-js/serenity-bdd @playwright/test rimraf npm-failsafe
+```
+
+→ Learn more: [Full installation guide](/handbook/test-runners/playwright-test/installation/) | [Why Serenity/JS?](/getting-started/)
+
+### Step 2: Configure
+
+Update your `playwright.config.ts` to add the Serenity/JS reporter. You need to make three changes:
+
+1. Add the `SerenityFixtures` and `SerenityWorkerFixtures` import
+2. Add type parameters to `defineConfig`
+3. Replace the `reporter` option with the Serenity/JS reporter configuration
+
+:::note Reading the diffs
+Lines marked with `+` should be added to your file; lines marked with `-` should be removed. Don't copy the `+`/`-` prefixes themselves.
+:::
+
+```diff title="playwright.config.ts"
+- import { defineConfig, devices } from '@playwright/test';
++ import { defineConfig, devices } from '@playwright/test';
++ import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+- export default defineConfig({
++ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+    // ... keep your existing settings ...
+-   reporter: 'html',
++   reporter: [
++       [ 'line' ],
++       [ '@serenity-js/playwright-test', {
++           crew: [
++               '@serenity-js/console-reporter',
++               [ '@serenity-js/serenity-bdd', {
++                   specDirectory: './spec'
++               } ],
++               [ '@serenity-js/core:ArtifactArchiver', {
++                   outputDirectory: './reports/serenity'
++               } ],
++           ]
++       }]
++   ],
+```
+
+Add the following scripts to your `package.json`:
+
+```diff title="package.json"
+ {
+   "scripts": {
++    "clean": "rimraf target",
++    "test": "failsafe clean test:execute [...] test:report",
++    "test:execute": "npx playwright test",
++    "test:report": "serenity-bdd run --features='./spec' --source='./reports/serenity' --destination='./reports/serenity'"
+   }
+ }
+```
+
+→ Learn more: [Configuration options](/handbook/test-runners/playwright-test/configuration/) | [Serenity BDD reporter setup](/handbook/reporting/serenity-bdd-reporter/) | [Using npm-failsafe](https://www.npmjs.com/package/npm-failsafe)
+
+### Step 3: Write your first Electron test
+
+Use [`extraAbilities`](/api/playwright-test/interface/SerenityFixtures/#extraAbilities) to tell Serenity/JS how to launch your Electron app. Each test gets a fresh instance:
+
+```typescript title="spec/my-electron-app.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions'
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
+import { describe, it, test } from '@serenity-js/playwright-test'
+import { Text, PageElement, By } from '@serenity-js/web'
+import path from 'path'
+
+const electronAppPath = path.resolve(__dirname, '..')
+
+describe('My Electron App', () => {
+
+    test.use({
+        extraAbilities: [
+            BrowseTheWebWithPlaywright.launchingElectronApp({
+                args: [ path.join(electronAppPath, 'lib', 'main.js') ],
+                cwd: electronAppPath,
+            })
+        ],
+    })
+
+    it('displays the welcome screen', async ({ actor }) => {
+        await actor.attemptsTo(
+            Ensure.that(
+                Text.of(PageElement.located(By.css('h1'))),
+                equals('Welcome'),
+            ),
+        )
+    })
+})
+```
+
+### Step 4: Run
+
+```bash
+npm test
+```
+
+Your Electron app launches, the test runs, and you get a Serenity BDD report in `reports/serenity/`. Open `reports/serenity/index.html` in your browser to view it.
+
+:::tip Running a single test
+The `[...]` wildcard in the `test` script is provided by [npm-failsafe](https://www.npmjs.com/package/npm-failsafe) and passes any arguments you provide directly to Playwright Test. For example:
+```bash
+npm test -- --grep="welcome screen"
+```
+:::
+
+→ Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
+
+---
+
+## Organising page elements
+
+For maintainable Electron tests, extract your page elements into [Lean Page Objects](/handbook/web-testing/page-objects-pattern/):
+
+```typescript title="spec/screenplay/MyApp.ts"
+import { PageElement, By } from '@serenity-js/web'
+
+export const MyApp = {
+    title: PageElement.located(By.css('h1')).describedAs('the app title'),
+    textInput: PageElement.located(By.id('text-input')).describedAs('the text input'),
+    submitButton: PageElement.located(By.id('submit-button')).describedAs('the submit button'),
+    result: PageElement.located(By.id('result')).describedAs('the result message'),
+}
+```
+
+Then use them in your tests:
+
+```typescript title="spec/my-app.spec.ts"
+import { Ensure, includes } from '@serenity-js/assertions'
+import { describe, it } from '@serenity-js/playwright-test'
+import { Click, Enter, Text } from '@serenity-js/web'
+
+import { MyApp } from './screenplay/MyApp'
+
+describe('My Electron App', () => {
+
+    it('allows the user to submit a form', async ({ actor }) => {
+        await actor.attemptsTo(
+            Enter.theValue('Alice').into(MyApp.textInput),
+            Click.on(MyApp.submitButton),
+            Ensure.that(Text.of(MyApp.result), includes('Hello, Alice!')),
+        )
+    })
+})
+```
+
+---
+
+## Worker-scoped apps for faster suites
+
+If launching the app per test is too slow, share a single instance across all tests in a worker using [`extraWorkerAbilities`](/api/playwright-test/interface/SerenityWorkerFixtures/#extraWorkerAbilities):
+
+```typescript
+test.use({
+    extraWorkerAbilities: [
+        async ({}, use) => {
+            await use((actorName: string) => [
+                BrowseTheWebWithPlaywright.launchingElectronApp({
+                    args: [ path.join(electronAppPath, 'lib', 'main.js') ],
+                    cwd: electronAppPath,
+                })
+            ])
+        }, { scope: 'worker' }],
+})
+```
+
+The app persists for the lifetime of the worker — useful for testing multi-step workflows where state carries over between tests.
+
+→ Learn more: [Testing Electron apps — full guide](/handbook/test-runners/playwright-test/electron-testing/)
+
+---
+
+## FAQ
+
+### Does it work with any Electron app?
+
+Yes. Serenity/JS connects to the renderer process via Playwright, so any Electron app with a web-based UI can be tested.
+
+### Can I share test code between my Electron app and web app?
+
+Yes. Since Serenity/JS interactions (`Click`, `Enter`, `Text`, etc.) work identically for both browser and Electron testing, your Tasks and Lean Page Objects are reusable across both.
+
+### Do I need to install browsers?
+
+No. Electron apps use their own Chromium instance. You don't need to install separate browsers for Electron testing.
+
+### Do I need Java?
+
+Yes, for the Serenity BDD HTML reports (Java 11+). If you'd rather stay Java-free, use the [console reporter](/handbook/reporting/console-reporter/) alone or Playwright's built-in HTML report.
+
+:::tip Something not working?
+Check the [Troubleshooting guide](/handbook/troubleshooting/) for solutions to common issues with reports, screenshots, and configuration.
+:::
+
+---
+
+## Next steps
+
+- **[Why Serenity/JS?](/getting-started/)** — same test at three levels of abstraction
+- **[Testing Electron apps — full guide](/handbook/test-runners/playwright-test/electron-testing/)** — detailed configuration and advanced patterns
+- **[Lean Page Objects](/handbook/web-testing/page-objects-pattern/)** — organise page elements for maintainability
+- **[Project templates](/getting-started/project-templates/)** — pre-configured starter projects
+- **[Troubleshooting](/handbook/troubleshooting/)** — solutions to common issues
+
+:::note Testing web apps instead?
+If you're testing a browser-based application, see [Serenity/JS for Playwright Users](/getting-started/playwright/) for a simpler setup that doesn't require Electron configuration.
+:::

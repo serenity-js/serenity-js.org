@@ -26,8 +26,8 @@ export const LeaderRecommendations: RecommendationItem[] = [
             `Kudos to Jan and the contributors for all this fantastic work! The world needs more devs and entrepreneurs like you 😄`,
         ],
         learnMore: {
-            path: '/handbook/test-runners/cucumber/',
-            text: 'Learn about using Cucumber.js with Serenity/JS'
+            path: '/getting-started/cucumber/',
+            text: 'Get started with Cucumber and Serenity/JS'
         }
     },
     {
@@ -38,12 +38,12 @@ export const LeaderRecommendations: RecommendationItem[] = [
         },
         lines: [
             `Serenity/JS has a genuinely inspiring mission: to make test automation collaborative, enjoyable, and accessible for everyone, from business to technical audiences.`,
-            `The project's dedication to quality, user experience, and innovation shines through in every aspect of the framework, helping you create maintainable and scalable tst suites while adhering to open standards and leveraging reliable open-source tools.`,
+            `The project's dedication to quality, user experience, and innovation shines through in every aspect of the framework, helping you create maintainable and scalable test suites while adhering to open standards and leveraging reliable open-source tools.`,
             `WebdriverIO is proud to be a part of the Serenity/JS ecosystem, and I'm excited to see what the future holds for this fantastic project!`,
         ],
         learnMore: {
-            path: '/handbook/test-runners/webdriverio/',
-            text: 'Learn about using WebdriverIO with Serenity/JS'
+            path: '/getting-started/webdriverio/',
+            text: 'Get started with WebdriverIO and Serenity/JS'
         }
     },
 ]

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 6
 title: Project Templates
 ---
 
@@ -17,7 +17,7 @@ Each template includes:
 - Automated reporting to GitHub Pages
 
 :::info Short on time?
-[Go to the official tutorials](/handbook/tutorials/) to see Serenity/JS in action  — no local setup needed!
+[Go to the official tutorials](/handbook/tutorials/) to see Serenity/JS in action — no local setup needed!
 :::
 
 ## Getting Started with Project Templates
@@ -40,19 +40,22 @@ To launch a Codespace, you only need a free [GitHub account](https://github.com/
 
 ## Web Testing
 
-Serenity/JS offers [unified web testing APIs](/handbook/web-testing/) that work consistently across different automation tools.
-You can choose the integration that best fits your project and switch later if needed.
+### Playwright
+
+[Playwright](https://playwright.dev/) is a modern web testing tool supporting Chromium, WebKit, and Firefox, with a dedicated test runner (Playwright Test) and strong IDE integration.
+
+Use Serenity/JS with Playwright to test web applications, web components, and enable cross-browser engine testing.
+
+| Project Template                                                                                                    | Features                                                                                                                                                                                                                                                                                                     | Get Started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Serenity/JS with Playwright Test](https://github.com/serenity-js/serenity-js-playwright-test-template)             | Serenity/JS with **Playwright** and **Playwright Test** runner, universal web testing template, **recommended for most projects**<br /><br />Playwright Test; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome, Firefox, and Webkit browser engines; Playwright Test reports; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-playwright-test-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-playwright-test-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-test-template/serenity) <br /> [View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-test-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-test-template&ref=main)         |
+| [Serenity/JS with Cucumber and Playwright](https://github.com/serenity-js/serenity-js-cucumber-playwright-template) | Serenity/JS with **Playwright** and **Cucumber.js** test runner, great for BDD projects that rely on Cucumber to define executable specifications<br /><br />Cucumber, Playwright, TypeScript, GitHub Codespace, GitHub Actions, Local Chrome browser engine, Serenity BDD reports                           | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-cucumber-playwright-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-cucumber-playwright-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-cucumber-playwright-template/) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-cucumber-playwright-template&ref=main) |
 
 ### WebdriverIO
 
-[WebdriverIO](https://webdriver.io/) is a progressive automation framework built to automate modern **web** and **mobile** applications.
+[WebdriverIO](https://webdriver.io/) is a progressive automation framework for web and mobile applications, supporting local browsers, Selenium Grid, and cloud providers.
 
-You can use Serenity/JS with WebdriverIO to:
-- automate testing of **web applications** written in React, Vue, Angular, Svelte, or other frontend frameworks
-- automate testing of **hybrid** or **native mobile** applications running in an emulator/simulator, or on a real device
-- enable **cross-browser testing**, **legacy browser testing**, and testing using an in-house or vendor-provided **Selenium Grid**
-
-To use Serenity/JS with WebdriverIO, start with one of the below templates:
+Use Serenity/JS with WebdriverIO to test web applications, hybrid/native mobile apps, or enable cross-browser and legacy browser testing.
 
 | Project Template                                                                                                         | Features                                                                                                           | Get Started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |--------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -60,34 +63,13 @@ To use Serenity/JS with WebdriverIO, start with one of the below templates:
 | [Serenity/JS with Jasmine and WebdriverIO](https://github.com/serenity-js/serenity-js-jasmine-webdriverio-template)      | Jasmine; WebdriverIO; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome browser; Serenity BDD reports     | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-jasmine-webdriverio-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-jasmine-webdriverio-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-jasmine-webdriverio-template/) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-jasmine-webdriverio-template&ref=main)     |
 | [Serenity/JS with Mocha and WebdriverIO](https://github.com/serenity-js/serenity-js-mocha-webdriverio-template)          | Mocha; WebdriverIO; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome browser; Serenity BDD reports       | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-mocha-webdriverio-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-mocha-webdriverio-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-mocha-webdriverio-template/) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-mocha-webdriverio-template&ref=main)             |
 
-### Playwright
+### Protractor (end of life) {#protractor}
 
-[Playwright](https://playwright.dev/) is a modern web integration tool for testing **websites**, **web applications**, and **web components**.
-
-Playwright supports the latest rendering engines including Chromium, WebKit, and Firefox,
-offers an excellent dedicated test runner - Playwright Test, and boasts an outstanding tooling support
-from both [VisualStudio Code](https://playwright.dev/docs/getting-started-vscode)
-and [JetBrains AQUA](https://www.jetbrains.com/aqua/).
-
-You can use Serenity/JS with Playwright to:
-- automate testing of **web applications** written in Angular, React, Solid, Svelte, Vue, or other frontend frameworks
-- automate testing of **web components** written in React, Svelte, Vue and Solid
-- enable **cross-browser engine testing**
-
-| Project Template                                                                                                    | Features                                                                                                                                                                                                                                                                                                     | Get Started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [Serenity/JS with Playwright Test](https://github.com/serenity-js/serenity-js-playwright-test-template)             | Serenity/JS with **Playwright** and **Playwright Test** runner, universal web testing template, **recommended for most projects**<br /><br />Playwright Test; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome, Firefox, and Webkit browser engines; Playwright Test reports; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-playwright-test-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-playwright-test-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-test-template/serenity) <br /> [View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-test-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-test-template&ref=main)         |
-| [Serenity/JS with Cucumber and Playwright](https://github.com/serenity-js/serenity-js-cucumber-playwright-template) | Serenity/JS with **Playwright** and **Cucumber.js** test runner, great for BDD projects that rely on Cucumber to define executable specifications<br /><br />Cucumber, Playwright, TypeScript, GitHub Codespace, GitHub Actions, Local Chrome browser engine, Serenity BDD reports                           | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-cucumber-playwright-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-cucumber-playwright-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-cucumber-playwright-template/) <br /> [View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-test-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-cucumber-playwright-template&ref=main) |
-
-### Protractor
-
-[Protractor](http://angular.github.io/protractor) is an end-to-end web testing framework for [Angular](http://angular.io/) and [AngularJS](http://angularjs.org) applications.
+[Protractor](http://angular.github.io/protractor) was an end-to-end testing framework for Angular applications.
 
 :::warning
-As Protractor has [reached its end of life](https://www.protractortest.org/#/project-status),
-Serenity/JS + Protractor project templates should be used mainly as a reference implementation
-to [migrate existing Protractor projects to Serenity/JS](/handbook/test-runners/protractor/),
-and from there to a modern web testing framework like Playwright or WebdriverIO.
+Protractor has [reached its end of life](https://www.protractortest.org/#/project-status).
+These templates serve as a reference for [migrating existing Protractor projects](/handbook/test-runners/protractor/) to Playwright or WebdriverIO via Serenity/JS.
 :::
 
 | Project Template                                                                                                    | Features                                                                                                          | Get Started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -98,46 +80,24 @@ and from there to a modern web testing framework like Playwright or WebdriverIO.
 
 ## Web Component Testing
 
-Serenity/JS integrates with [Playwright Component Test](https://playwright.dev/docs/test-components) runner,
-allowing to test React, Svelte, Vue and Solid components.
-
-To use Serenity/JS with Playwright Component Test runner, start with one of the below templates:
+Serenity/JS integrates with [Playwright Component Test](https://playwright.dev/docs/test-components) runner for testing React, Svelte, Vue, Lit, and Web Components in isolation.
 
 | Project Template                                                                                                                       | Features                                                                                                                                                                     | Get Started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 |----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [Serenity/JS with Playwright Component Test runner for React](https://github.com/serenity-js/serenity-js-playwright-ct-react-template) | Playwright Component Testing; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome, Firefox, and Webkit browser engines; Playwright Test reports; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-playwright-ct-react-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-playwright-ct-react-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-react-template/serenity/) <br />[View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-react-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-ct-react-template&ref=main)                                                                        |
-| [Serenity/JS with Playwright Component Test runner for Lit and Web Components](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template) | Playwright Component Testing; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome, Firefox, and Webkit browser engines; Playwright Test reports; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-web-components-template/serenity/) <br />[View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-web-components-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-ct-web-components-template&ref=main) |
+| [Serenity/JS with Playwright CT for React](https://github.com/serenity-js/serenity-js-playwright-ct-react-template) | Playwright Component Testing; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome, Firefox, and Webkit browser engines; Playwright Test reports; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-playwright-ct-react-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-playwright-ct-react-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-react-template/serenity/) <br />[View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-react-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-ct-react-template&ref=main)                                                                        |
+| [Serenity/JS with Playwright CT for Lit/Web Components](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template) | Playwright Component Testing; TypeScript; GitHub Codespace; GitHub Actions; Local Chrome, Firefox, and Webkit browser engines; Playwright Test reports; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-web-components-template/serenity/) <br />[View&nbsp;Playwright&nbsp;Test&nbsp;Reports](https://serenity-js.github.io/serenity-js-playwright-ct-web-components-template/playwright) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-playwright-ct-web-components-template&ref=main) |
 
 ## REST/HTTP API Testing
 
-Serenity/JS dedicated [REST API testing module](/api/rest),
-allows you to interact with REST and HTTP-based web services either as part of web or API test scenarios.
-
-To use Serenity/JS to interact with REST and HTTP-based web services, start with one of the below templates:
+Serenity/JS provides a dedicated [REST API testing module](/api/rest/) for interacting with REST and HTTP-based services, either standalone or as part of [blended test scenarios](/handbook/web-testing/blended-testing/).
 
 | Project Template                                                                          | Features                                                                                                | Get Started                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [Serenity/JS with Cucumber](https://github.com/serenity-js/serenity-js-cucumber-template) | REST API testing setup; Cucumber.js; TypeScript; GitHub Codespace; GitHub Actions; Serenity BDD reports | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-cucumber-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-cucumber-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-cucumber-template/) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-cucumber-template&ref=main) |
 | [Serenity/JS with Mocha](https://github.com/serenity-js/serenity-js-mocha-template)       | REST API testing setup; Mocha; TypeScript; GitHub Codespace; GitHub Actions; Serenity BDD reports       | [Generate&nbsp;new&nbsp;project](https://github.com/serenity-js/serenity-js-mocha-template/generate) <br /> [View&nbsp;Code](https://github.com/serenity-js/serenity-js-mocha-template) <br /> [View&nbsp;Serenity&nbsp;BDD&nbsp;Reports](https://serenity-js.github.io/serenity-js-mocha-template/) <br /> [Start&nbsp;GitHub&nbsp;Codespace](https://github.com/codespaces/new?repo=serenity-js/serenity-js-mocha-template&ref=main)             |
 
-## Join the Serenity/JS Community!
+---
 
-If Serenity/JS supports your work, [give it a ⭐ star on GitHub](https://github.com/serenity-js/serenity-js) and tell your friends about the framework!
-
-[![GitHub Stars](https://img.shields.io/github/stars/serenity-js/serenity-js?style=for-the-badge)](https://github.com/serenity-js/serenity-js)
-
-Serenity/JS is more than just a framework - it's an active community of testers, developers, and quality advocates who share your passion for excellence.
-Want to get involved? Here’s how:
-
-- [**Serenity/JS GitHub**](https://github.com/serenity-js): Dive into the source code, contribute to the project, and collaborate with other developers.
-- [**Community Chat**](https://matrix.to/#/#serenity-js:gitter.im): Connect with professionals who share your interests, exchange ideas, and learn from each other.
-- [**Q&A Forum**](https://github.com/orgs/serenity-js/discussions/categories/how-to): Ask questions, find answers, and help others navigate Serenity/JS.
-- **Stay up to date**: Follow **@serenity-js** on [LinkedIn](https://www.linkedin.com/company/serenity-js) and [YouTube](https://www.youtube.com/@serenity-js) for the latest tutorials and updates.
-
-[![LinkedIn Follow](https://img.shields.io/badge/Follow%20Serenity%2FJS%20-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/serenity-js)
-[![YouTube Follow](https://img.shields.io/badge/Watch%20@serenity--js-E62117?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@serenity-js)
-[![GitHub Sponsors](https://img.shields.io/badge/Support%20@serenity%2FJS-703EC8?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/serenity-js)
-
-:::info Need another template?
-Share your idea in the comments! 👇
+:::tip Something not working?
+Check the [Troubleshooting guide](/handbook/troubleshooting/) for solutions to common setup issues, or ask on the [Community Forum](https://github.com/orgs/serenity-js/discussions).
 :::

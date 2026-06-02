@@ -1,0 +1,486 @@
+---
+title: "Serenity/JS for Playwright Users"
+sidebar_label: "For Playwright Users"
+sidebar_position: 2
+description: "Add Serenity/JS to your Playwright Test project for structured reporting, reusable test components, and multi-actor support — without replacing anything you already have."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Serenity/JS for Playwright Users
+
+Already using Playwright Test? Good — Serenity/JS is built to work **on top of it**, not instead of it.
+
+You keep Playwright's speed, auto-waiting, tracing, and parallel execution. Serenity/JS adds the structure and reporting that matter once your test suite outgrows a handful of specs.
+
+---
+
+## Why add Serenity/JS?
+
+Serenity/JS works on top of Playwright Test — your existing test code, auto-waiting, parallel execution, Trace Viewer, UI Mode, and CI/CD pipeline all stay exactly as they are. You don't need to rewrite anything.
+
+Here's how Serenity/JS helps you address common Playwright Test challenges:
+
+| Challenge | How Serenity/JS helps |
+|---|---|
+| **Duplicated selectors and test logic** | The [Screenplay Pattern](/handbook/design/screenplay-pattern/) gives you composable, reusable Tasks that separate *what* from *how* |
+| **Hard to tell what a test did** | [Structured reports](/handbook/reporting/) show every action, with timing and screenshots |
+| **Multi-user workflows are hard to implement** | [Multi-actor support](/handbook/test-runners/playwright-test/multi-actor-scenarios/) is built in |
+| **Stakeholders can't read test reports** | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/) generate living documentation for both technical and business audiences |
+| **Logic duplicated across API and UI tests** | Screenplay Tasks [work across interfaces](/handbook/web-testing/blended-testing/) |
+| **Slow UI-only test suites** | [Blended testing](/handbook/web-testing/blended-testing/) — use APIs for setup, UI only where it matters |
+| **Locked into one tool** | Screenplay Tasks are portable — switch integration tools and test runners without rewriting test logic |
+
+---
+
+## Get started in 5 minutes
+
+You don't have to adopt everything at once. The progression most teams go through looks like this:
+
+1. **Add reporting** (Steps 1–4) — configure reporters, change one import. Existing tests get better reports immediately.
+2. **Use Screenplay for new tests** (Step 5) — use the actor model for new scenarios. Old tests stay untouched.
+3. **Extract shared Tasks** — refactor common workflows into reusable building blocks.
+4. **Multi-actor and cross-interface** — add multi-user workflows or mixed UI + API interactions.
+
+### Step 0: Create a Playwright Test project
+
+:::tip Already have a Playwright Test project?
+Skip this step and proceed with the remaining steps from your project directory.
+:::
+
+Create a new directory and scaffold a Playwright Test project inside it:
+
+```bash
+mkdir my-serenity-project
+cd my-serenity-project
+npm init --yes playwright@latest -- --quiet
+```
+
+This creates a TypeScript Playwright Test project with tests in the `tests/` directory, a `playwright.config.ts` config file, and example tests.
+
+:::note Want to customise the setup?
+Drop the `--quiet` flag to get interactive prompts where you can choose your preferred language, test directory, and browsers:
+```bash
+npm init playwright@latest
+```
+:::
+
+### Step 1: Install
+
+:::info Prerequisites
+To use Serenity/JS, you'll need a recent [Node.js LTS](https://nodejs.org/en/download/) version — Serenity/JS supports Node <SupportedNodeVersions conjunction="and" />, as well as [Java 11+](https://adoptium.net/) for the Serenity BDD reports.
+:::
+
+```sh npm2yarn
+npm install --save-dev @serenity-js/core @serenity-js/console-reporter @serenity-js/playwright @serenity-js/playwright-test @serenity-js/rest @serenity-js/web @serenity-js/serenity-bdd rimraf npm-failsafe
+```
+
+→ Learn more: [Full installation guide](/handbook/test-runners/playwright-test/installation/) | [Why Serenity/JS?](/getting-started/)
+
+### Step 2: Configure
+
+Update your `playwright.config.ts` to add the Serenity/JS reporter. You need to make three changes:
+
+1. Add the `SerenityFixtures` and `SerenityWorkerFixtures` import
+2. Add type parameters to `defineConfig`
+3. Replace the `reporter` option with the Serenity/JS reporter configuration
+
+:::note Reading the diffs
+Lines marked with `+` should be added to your file; lines marked with `-` should be removed. Don't copy the `+`/`-` prefixes themselves.
+:::
+
+```diff title="playwright.config.ts"
+- import { defineConfig, devices } from '@playwright/test';
++ import { defineConfig, devices } from '@playwright/test';
++ import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+- export default defineConfig({
++ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './tests',
+    // ... keep your existing settings ...
+-   reporter: 'html',
++   reporter: [
++       [ 'line' ],
++       [ '@serenity-js/playwright-test', {
++           crew: [
++               '@serenity-js/console-reporter',
++               [ '@serenity-js/serenity-bdd', {
++                   specDirectory: './tests'
++               } ],
++               [ '@serenity-js/core:ArtifactArchiver', {
++                   outputDirectory: './reports/serenity'
++               } ],
++           ]
++       }]
++   ],
+```
+
+Next, add the following scripts to your `package.json`:
+
+```diff title="package.json"
+ {
+   "scripts": {
++    "clean": "rimraf target",
++    "test": "failsafe clean test:execute [...] test:report",
++    "test:execute": "npx playwright test",
++    "test:report": "serenity-bdd run --features='./tests' --source='./reports/serenity' --destination='./reports/serenity'"
+   }
+ }
+```
+
+→ Learn more: [Configuration options](/handbook/test-runners/playwright-test/configuration/) | [Serenity BDD reporter setup](/handbook/reporting/serenity-bdd-reporter/) | [Using npm-failsafe](https://www.npmjs.com/package/npm-failsafe)
+
+### Step 3: Change one import
+
+In your test files:
+
+```diff
+- import { test, expect } from '@playwright/test';
++ import { test, expect } from '@serenity-js/playwright-test';
+```
+
+→ Learn more: [Writing tests with Serenity/JS](/handbook/test-runners/playwright-test/writing-tests/) | [Multi-actor scenarios](/handbook/test-runners/playwright-test/multi-actor-scenarios/)
+
+### Step 4: Run
+
+```bash
+npm test
+```
+
+That's it. Your existing tests run as before, but now produce a rich HTML report in `reports/serenity/`. Open `reports/serenity/index.html` in your browser to view it.
+
+:::tip Running a single test
+The `[...]` wildcard in the `test` script is provided by [npm-failsafe](https://www.npmjs.com/package/npm-failsafe) and passes any arguments you provide directly to Playwright Test. For example, to run a single spec file:
+```bash
+npm test -- --spec=tests/website.spec.ts
+```
+Or to run tests matching a specific name:
+```bash
+npm test -- --grep="descriptive title"
+```
+:::
+
+→ Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
+
+<Figure
+    caption='Example Serenity BDD report generated by Serenity/JS'
+    img={require('@site/static/images/reporting/serenity-bdd-reporter.png')}
+    externalLink={'https://serenity-js.github.io/serenity-js-playwright-test-template/serenity/'}
+/>
+
+### Step 5 (optional): Write your first Screenplay test
+
+Steps 1–4 give you better reporting with zero changes to your test logic. When you're ready to see what the Screenplay Pattern looks like in practice, add a new test file:
+
+```typescript title="tests/website.spec.ts"
+import { describe, it } from '@serenity-js/playwright-test';
+import { Ensure, includes } from '@serenity-js/assertions';
+import { Navigate, Page } from '@serenity-js/web';
+
+describe('Website', () => {
+
+    it('should have a descriptive title', async ({ actor }) => {
+        await actor.attemptsTo(
+            Navigate.to('https://serenity-js.org/'),
+            Ensure.that(
+                Page.current().title().describedAs('current page title'), 
+                includes('Serenity/JS')
+            ),
+        );
+    });
+});
+```
+
+Run `npm test` again. In the Serenity BDD report you'll now see each interaction ([`Navigate.to`](/api/web/class/Navigate), [`Ensure.that`](/api/assertions/class/Ensure)) listed as a separate step with timing — giving you a clear activity breakdown without any extra configuration.
+
+This test does the same thing as the generated `example.spec.ts`, but uses the `actor` fixture and Screenplay interactions instead of `page` directly. The key differences:
+
+- **[`actor`](/api/playwright-test/interface/SerenityFixtures/#actor)** replaces `page` as the entry point — the actor *has* a page, but can also interact with REST APIs, multiple browser contexts, etc.
+- **[`Navigate.to()`](/api/web/class/Navigate)** and **[`Ensure.that()`](/api/assertions/class/Ensure)** are composable interactions that show up as named steps in your reports.
+- **[`describe`](/api/playwright-test/function/describe/) and [`it`](/api/playwright-test/function/it/)** come from `@serenity-js/playwright-test` — they work like Playwright's `test()` but give you richer reporting structure.
+
+→ Learn more: [Screenplay Pattern](/handbook/design/screenplay-pattern/) | [Your first web scenario](/handbook/tutorials/your-first-web-scenario/)
+
+For a more advanced example showing composable Tasks, the Lean Page Objects pattern, and masked credentials, see the [Complete example](#complete-example) below.
+
+:::tip Want more detail?
+See the [full installation guide](/handbook/test-runners/playwright-test/installation/) for advanced options, or the [architecture overview](/handbook/architecture/) to understand how the pieces fit together.
+:::
+
+---
+
+## Reference projects
+
+### Complete example
+
+A self-contained project you can copy in full. It includes:
+- `tests/website.spec.ts` — a simple Screenplay test using [`Navigate`](/api/web/class/Navigate) and [`Ensure`](/api/assertions/class/Ensure) (same pattern as Step 5)
+- `tests/swag-labs.spec.ts` — a more advanced test interacting with the [Swag Labs](https://www.saucedemo.com/) demo website, using composable [`Task`](/api/core/class/Task) definitions and the [Lean Page Objects pattern](/handbook/web-testing/page-objects-pattern/)
+
+Run `npm install` then `npm test` — the Serenity BDD HTML report lands in `reports/serenity/index.html`.
+
+<Tabs>
+<TabItem value="package" label="package.json" default>
+
+<DynamicPackageJson
+    name="my-serenity-js-project"
+    scripts={{
+        "clean": "rimraf target",
+        "test": "failsafe clean test:execute [...] test:report",
+        "test:execute": "npx playwright test",
+        "test:report": "serenity-bdd run --features='./tests' --source='./reports/serenity' --destination='./reports/serenity'"
+    }}
+    devDependencies={[
+        "@serenity-js/assertions",
+        "@serenity-js/console-reporter",                                   
+        "@serenity-js/core",
+        "@serenity-js/playwright",
+        "@serenity-js/playwright-test",
+        "@serenity-js/serenity-bdd",
+        "@serenity-js/web",
+        "@playwright/test",
+        [ "npm-failsafe", "^1.4.0" ],
+        [ "rimraf", "^6.0.0" ],
+        [ "typescript", "^5.7.0" ],
+    ]}
+/>
+
+</TabItem>
+<TabItem value="config" label="playwright.config.ts">
+
+```typescript title="playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    reporter: [
+        [ 'line' ],
+        [ '@serenity-js/playwright-test', {
+            crew: [
+                '@serenity-js/console-reporter',
+                [ '@serenity-js/serenity-bdd', { 
+                    specDirectory: './tests' 
+                } ],
+                [ '@serenity-js/core:ArtifactArchiver', { 
+                    outputDirectory: './reports/serenity' 
+                } ],
+            ]
+        }]
+    ],
+});
+```
+
+</TabItem>
+<TabItem value="simple-test" label="tests/website.spec.ts">
+
+```typescript title="tests/website.spec.ts"
+import { describe, it } from '@serenity-js/playwright-test';
+import { Ensure, includes } from '@serenity-js/assertions';
+import { Navigate, Page } from '@serenity-js/web';
+
+describe('Website', () => {
+
+    it('should have a descriptive title', async ({ actor }) => {
+        await actor.attemptsTo(
+            Navigate.to('https://serenity-js.org/'),
+            Ensure.that(
+                Page.current().title().describedAs('current page title'), 
+                includes('Serenity/JS')
+            ),
+        );
+    });
+});
+```
+
+</TabItem>
+<TabItem value="advanced-test" label="tests/swag-labs.spec.ts">
+
+```typescript title="tests/swag-labs.spec.ts"
+import { describe, it } from '@serenity-js/playwright-test';
+import { Ensure, equals } from '@serenity-js/assertions';
+import { Masked, Task } from '@serenity-js/core';
+import { Navigate, Click, Enter, Text, PageElement, By } from '@serenity-js/web';
+
+describe('Swag Labs', () => {
+
+    it('should let a standard user complete checkout', async ({ actor }) => {
+        await actor.attemptsTo(
+            Navigate.to('https://www.saucedemo.com/'),
+            Authenticate.withCredentials('standard_user', 'secret_sauce'),
+            Inventory.productCalled('Sauce Labs Backpack').addToCart(),
+            Checkout.completeWith({
+                firstName: 'Alice',
+                lastName: 'Smith',
+                postalCode: '90210',
+            }),
+            Ensure.that(Checkout.confirmationHeading(), equals('Thank you for your order!')),
+        );
+    });
+});
+
+// --- Screenplay Tasks ---
+
+class Authenticate {
+    private static usernameField =
+        PageElement.located(By.css('[data-test="username"]')).describedAs('username field');
+
+    private static passwordField =
+        PageElement.located(By.css('[data-test="password"]')).describedAs('password field');
+
+    private static loginButton =
+        PageElement.located(By.css('[data-test="login-button"]')).describedAs('login button');
+
+    static withCredentials = (username: string, password: string) =>
+        Task.where(`#actor logs in as ${ username }`,
+            Enter.theValue(username).into(Authenticate.usernameField),
+            Enter.theValue(Masked.valueOf(password)).into(Authenticate.passwordField),
+            Click.on(Authenticate.loginButton),
+        );
+}
+
+class ProductCard {
+    constructor(private name: string) {}
+
+    private card = PageElement.located(By.css(
+        `[data-test="inventory-item"]:has([data-test="inventory-item-name"]:text("${ this.name }"))`
+    )).describedAs(`product card for "${ this.name }"`);
+
+    private inventoryItemPrice =
+        PageElement.located(By.css('[data-test="inventory-item-price"]'))
+            .of(this.card).describedAs(`price of "${ this.name }"`);
+
+    private addToCartButton =
+        PageElement.located(By.css('[data-test^="add-to-cart"]'))
+            .of(this.card).describedAs(`"Add to cart" button for "${ this.name }"`);
+
+    price = () =>
+        Text.of(this.inventoryItemPrice);
+
+    addToCart = () =>
+        Task.where(`#actor adds "${ this.name }" to the cart`,
+            Click.on(this.addToCartButton),
+        );
+}
+
+class Inventory {
+    static productCalled = (name: string) => new ProductCard(name);
+}
+
+class Cart {
+    private static cartLink =
+        PageElement.located(By.css('[data-test="shopping-cart-link"]')).describedAs('shopping cart link');
+
+    private static checkoutButton =
+        PageElement.located(By.css('[data-test="checkout"]')).describedAs('checkout button');
+
+    static open = () =>
+        Task.where('#actor opens the shopping cart',
+            Click.on(Cart.cartLink),
+        );
+
+    static checkout = () =>
+        Task.where('#actor proceeds to checkout',
+            Cart.open(),
+            Click.on(Cart.checkoutButton),
+        );
+}
+
+class Checkout {
+    private static firstNameField =
+        PageElement.located(By.css('[data-test="firstName"]')).describedAs('first name');
+
+    private static lastNameField =
+        PageElement.located(By.css('[data-test="lastName"]')).describedAs('last name');
+
+    private static postalCodeField =
+        PageElement.located(By.css('[data-test="postalCode"]')).describedAs('postal code');
+
+    private static continueButton =
+        PageElement.located(By.css('[data-test="continue"]')).describedAs('continue button');
+
+    private static finishButton =
+        PageElement.located(By.css('[data-test="finish"]')).describedAs('finish button');
+
+    private static confirmationHeader =
+        PageElement.located(By.css('[data-test="complete-header"]')).describedAs('confirmation heading');
+
+    static completeWith = (info: { firstName: string; lastName: string; postalCode: string }) =>
+        Task.where(`#actor completes checkout`,
+            Cart.checkout(),
+            Enter.theValue(info.firstName).into(Checkout.firstNameField),
+            Enter.theValue(info.lastName).into(Checkout.lastNameField),
+            Enter.theValue(info.postalCode).into(Checkout.postalCodeField),
+            Click.on(Checkout.continueButton),
+            Click.on(Checkout.finishButton),
+        );
+
+    static confirmationHeading = () =>
+        Text.of(Checkout.confirmationHeader);
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Project templates
+
+If you'd rather start from a fully configured project than add Serenity/JS to an existing one, use one of these GitHub template repositories. Each comes with CI configuration, example tests, and live reports you can preview.
+
+**End-to-end testing:**
+
+| Stack | Live Report |
+|---|---|
+| [Playwright Test](https://github.com/serenity-js/serenity-js-playwright-test-template) | [Serenity BDD](https://serenity-js.github.io/serenity-js-playwright-test-template/serenity/) · [Playwright](https://serenity-js.github.io/serenity-js-playwright-test-template/playwright/) |
+| [Cucumber + Playwright](https://github.com/serenity-js/serenity-js-cucumber-playwright-template) | [Serenity BDD](https://serenity-js.github.io/serenity-js-cucumber-playwright-template/) |
+
+**Component testing:**
+
+| Stack | Live Report |
+|---|---|
+| [Playwright CT + React](https://github.com/serenity-js/serenity-js-playwright-ct-react-template) | [Serenity BDD](https://serenity-js.github.io/serenity-js-playwright-ct-react-template/serenity/) · [Playwright](https://serenity-js.github.io/serenity-js-playwright-ct-react-template/playwright) |
+| [Playwright CT + Lit/Web Components](https://github.com/serenity-js/serenity-js-playwright-ct-web-components-template) | [Serenity BDD](https://serenity-js.github.io/serenity-js-playwright-ct-web-components-template/serenity/) · [Playwright](https://serenity-js.github.io/serenity-js-playwright-ct-web-components-template/playwright) |
+
+→ [All project templates](/getting-started/project-templates/)
+
+---
+
+## FAQ
+
+### Does it slow down my tests?
+
+No. Serenity/JS adds negligible overhead. Tests still run on Playwright's engine with the same parallelism and auto-waiting.
+
+### Do I have to rewrite all my tests?
+
+No. You can mix Screenplay and non-Screenplay tests in the same project. Start with reporting-only and introduce Screenplay gradually.
+
+### Does it work with UI Mode?
+
+Yes. Serenity/JS [integrates with Playwright UI Mode](/blog/support-for-playwright-ui-mode/) and augments the Trace Viewer with Screenplay activity information.
+
+### What about built-in fixtures?
+
+Serenity/JS extends Playwright Test fixtures — it doesn't replace them. You still have `page`, `context`, `browser`, and all your custom fixtures. Serenity/JS adds `actor`, `actorCalled`, and other [Screenplay fixtures](/api/playwright-test/interface/SerenityFixtures/).
+
+### Do I need Java?
+
+Yes, for the Serenity BDD HTML reports (Java 11+). If you'd rather stay Java-free, use the [console reporter](/handbook/reporting/console-reporter/) alone or Playwright's built-in HTML report.
+
+:::tip Something not working?
+Check the [Troubleshooting guide](/handbook/troubleshooting/) for solutions to common issues with reports, screenshots, and configuration.
+:::
+
+---
+
+## Next steps
+
+- **[Why Serenity/JS?](/getting-started/)** — same test at three levels of abstraction
+- **[15-minute tutorial](/handbook/tutorials/your-first-web-scenario/)** — build your first Screenplay test
+- **[Installation guide](/handbook/test-runners/playwright-test/installation/)** — detailed setup instructions
+- **[Project templates](/getting-started/project-templates/)** — all available starter projects
+- **[Troubleshooting](/handbook/troubleshooting/)** — solutions to common issues
+
+:::note Using WebdriverIO instead?
+Serenity/JS works just as well with WebdriverIO. The Task code is identical — only the config differs. See [Serenity/JS with WebdriverIO](/getting-started/webdriverio/).
+:::
