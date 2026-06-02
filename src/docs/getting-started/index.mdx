@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 
 Serenity/JS helps your team evolve from writing test scripts to designing a **test automation system** — with the architecture, reporting, and reusability to scale your automation and adapt it as requirements change. The framework works as a layer on top of Playwright, WebdriverIO, or Cucumber, adding structure while reducing complexity and maintenance costs.
 
-To show you what that looks like in practice, this page walks through the **same scenario** at four levels of Serenity/JS adoption — from a flat test script to structured, reusable code with rich reporting.
+To show you what that looks like in practice, this guide walks through the **same scenario** at four levels of Serenity/JS adoption — from a flat test script to structured, reusable code with rich reporting.
 
 :::tip Works with multiple tools
 The examples below use [Playwright Test](/getting-started/playwright/), but everything shown here applies equally to [WebdriverIO](/getting-started/webdriverio/), [Cucumber](/getting-started/cucumber/), and other [supported test runners](/handbook/test-runners/). Screenplay Pattern code is **identical** regardless of what test runner or browser driver you use — that's the point of the architecture.
@@ -26,7 +26,7 @@ Most test suites start simple: a few specs, each one a sequence of clicks and as
 
 - **Selectors duplicated everywhere** — a single UI change means updating dozens of files
 - **No reuse** — login logic is copy-pasted into every test that needs an authenticated user
-- **Reports show only pass/fail** — when something breaks, you're reading raw locators to figure out what the test was even verifying
+- **Reports show only pass/fail** — when something breaks, you're forced to read raw selectors to figure out what the test was trying to do
 - **Locked to one tool** — every line of code is coupled to a specific browser driver API
 
 The fix is the same one that works for production software: **separation of concerns** — keep *what* you're testing apart from *how* you're testing it.
@@ -90,9 +90,14 @@ In Serenity/JS, these layers map directly to framework concepts you'll use every
 
 ## Levels of adoption
 
-The following scenario is implemented at four levels of Serenity/JS adoption — from vanilla Playwright through to the full Screenplay Pattern. Each level builds on the previous one, and you can stop wherever it makes sense for your project.
+The following scenario is implemented at four levels of Serenity/JS adoption — from vanilla Playwright and no Serenity/JS, through to the full Serenity/JS Screenplay Pattern implementation. Each level builds on the previous one, and you can stop wherever it makes sense for your project.
 
-**The scenario:** A standard user logs in to [Swag Labs](https://www.saucedemo.com/), adds a "Sauce Labs Backpack" to their cart, completes checkout, and verifies the order confirmation.
+**The scenario:** A "standard user" logs in to [Swag Labs](https://www.saucedemo.com/), adds a "Sauce Labs Backpack" to their cart, completes checkout, and verifies the order confirmation.
+
+:::tip About Swag Labs
+[Swag Labs](https://www.saucedemo.com/) is a demo e-commerce website created by [Sauce Labs](https://saucelabs.com/) specifically for practicing test automation.
+It's a fictive online store where you can browse products, add items to a cart, and complete checkout flows.
+:::
 
 ### Level 0: Vanilla Playwright
 
@@ -125,13 +130,16 @@ test('should complete checkout successfully', async ({ page }) => {
 
 **What you get:** A working test. Quick to write when you have a handful of scenarios.
 
-**What breaks down at scale:** No reuse, no structured reporting, no abstraction. Every test that needs login duplicates those selectors. When one breaks, you're reading raw locators to figure out what it was even testing.
+**What breaks down at scale:**
+- **Selector duplication** — when `[data-test="login-button"]` becomes `[data-test="sign-in"]`, you grep the codebase and update every file that references it. With 200 tests and 30 that need login, that's 30 edits for one rename.
+- **Opaque failures** — reports show "failed at locator `[data-test="login-button"]`". To understand *what* the test was verifying, you have to mentally parse the whole script.
+- **No reuse** — login, "add to cart", checkout — each sequence is copy-pasted into every test that needs it.
 
 ---
 
 ### Level 1: Add Serenity/JS reporting
 
-The smallest possible improvement: add Serenity/JS reporters to your `playwright.config.ts`. Your test code stays completely unchanged, but the reports now organise results by capability and feature — derived from your file naming conventions and directory structure — rather than showing a flat list of pass/fail.
+The smallest possible improvement: add Serenity/JS reporters to your `playwright.config.ts`. Your test code stays completely unchanged, but the reports now organise results by capability and feature — [derived from your file naming conventions and directory structure](/handbook/reporting/serenity-bdd-reporter/#serenity-bdd-best-practices) — rather than showing a flat list of pass/fail.
 
 ```diff title="playwright.config.ts"
   import { defineConfig, devices } from '@playwright/test';
@@ -170,12 +178,17 @@ Next, update your `package.json` scripts to generate the Serenity BDD HTML repor
  }
 ```
 
-→ Learn more: [Using npm-failsafe](https://www.npmjs.com/package/npm-failsafe)
+→ Learn more: [Using npm-failsafe](https://www.npmjs.com/package/npm-failsafe) | [Configuring the test runner](/handbook/reporting/serenity-bdd-reporter/#configuring-the-test-runner)
 
 **What you gain:**
 - Test results grouped by feature and capability rather than a flat list
 - [Serenity BDD living documentation](/handbook/reporting/serenity-bdd-reporter/) that stakeholders can explore by feature and capability
 - **Zero changes to your test code** — only the config and scripts are updated
+
+**What still breaks down at scale:**
+- **Selectors still duplicated** — a UI refactor still means a multi-file find-and-replace
+- **No code reuse** — login logic is still copy-pasted into every test that needs an authenticated user
+- **Diagnosis gap** — reports tell you *which* test failed, but the test code itself still can't tell you *why* at a glance
 
 <Figure
     caption='Example Serenity BDD report generated by Serenity/JS'
@@ -225,6 +238,11 @@ test('should complete checkout successfully', async ({ actor, page }) => {
 - Screenplay interactions appear as named steps in reports — with timing and screenshots
 - Access to `actor`, `actorCalled`, and other [Serenity/JS fixtures](/api/playwright-test/interface/SerenityFixtures/)
 - Incremental adoption — convert interactions one at a time without rewriting entire tests
+
+**What still breaks down at scale:**
+- **Sequences still inlined** — two tests that both need "add item to cart" each spell out the same clicks and selectors
+- **No single source of truth** — selectors live in test files rather than in a shared location, so a rename still fans out
+- **Limited composability** — named steps improve reports, but cross-test reuse requires the next step: factoring common workflows into composable Tasks
 
 ---
 

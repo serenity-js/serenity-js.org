@@ -24,7 +24,7 @@ Here's how Serenity/JS helps you address common Cucumber challenges:
 
 | Challenge | How Serenity/JS helps |
 |---|---|
-| **Step definitions coupled to selectors** | The [Screenplay Pattern](/handbook/design/screenplay-pattern/) gives you composable Tasks that separate what from how |
+| **Step definitions coupled to selectors** | The [Screenplay Pattern](/handbook/design/screenplay-pattern/) gives you composable Tasks that separate *what* from *how* |
 | **Reports show only pass/fail** | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/) generate living documentation organised by feature and capability |
 | **Multi-user workflows are awkward** | [Multi-actor support](/handbook/design/screenplay-pattern/) is built in — `actorCalled('Alice')` and `actorCalled('Bob')` in the same scenario |
 | **Step definitions are hard to reuse** | Screenplay Tasks are composable and portable — reuse them across step definitions, scenarios, and projects |
@@ -466,7 +466,7 @@ If you'd rather start from a fully configured project than add Serenity/JS to an
 
 ### Does it slow down my tests?
 
-No. Serenity/JS adds negligible overhead. Your scenarios still run on Cucumber's engine with the same parallelism.
+No. Serenity/JS adds negligible overhead.
 
 ### Do I have to rewrite all my step definitions?
 
