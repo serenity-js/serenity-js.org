@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Levels of Serenity/JS adoption</title>
+  <desc id="desc">A diagram showing four levels of adopting Serenity/JS: Level 0 is Vanilla Playwright with no changes; Level 1 adds structured reporting without changing test code; Level 2 is a Screenplay plus Playwright hybrid where you migrate one test at a time; Level 3 is the full Screenplay Pattern with composable Tasks, multi-actor scenarios, and living documentation.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <!-- Clip paths to constrain the left bar within rounded corners -->
+    <clipPath id="clip0"><rect x="40" y="105" width="720" height="76" rx="10"/></clipPath>
+    <clipPath id="clip1"><rect x="40" y="195" width="720" height="76" rx="10"/></clipPath>
+    <clipPath id="clip2"><rect x="40" y="285" width="720" height="76" rx="10"/></clipPath>
+    <clipPath id="clip3"><rect x="40" y="375" width="720" height="76" rx="10"/></clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="480" fill="url(#bg)" rx="12"/>
+
+  <!-- Serenity/JS logo icon (top-right) -->
+  <g transform="translate(728, 18) scale(0.18)" opacity="0.85">
+    <!-- Yellow circle -->
+    <g transform="matrix(0,-1,-1,0,121.732,90.3277)">
+      <path d="M-31.404,-31.404C-48.749,-31.404 -62.808,-17.344 -62.808,-0C-62.808,17.344 -48.749,31.404 -31.404,31.404C-14.06,31.404 -0,17.344 -0,-0C-0,-17.344 -14.06,-31.404 -31.404,-31.404" fill="rgb(253,211,10)"/>
+    </g>
+    <!-- Arrows -->
+    <g transform="matrix(1,0,0,1,231.034,174.238)">
+      <path d="M0,-105.012L-67.217,-37.795L-20.276,-37.795C-27.321,4.986 -64.557,37.726 -109.302,37.726C-140.698,37.726 -168.388,21.599 -184.557,-2.797L-206.843,19.49C-184.762,49.356 -149.296,68.726 -109.302,68.726C-42.347,68.726 11.93,14.449 11.93,-52.506C11.93,-71.316 7.646,-89.125 0,-105.012M-198.328,-67.216C-191.283,-109.998 -154.047,-142.738 -109.302,-142.738C-77.906,-142.738 -50.216,-126.611 -34.047,-102.215L-11.761,-124.501C-33.842,-154.368 -69.308,-173.738 -109.302,-173.738C-176.257,-173.738 -230.534,-119.46 -230.534,-52.506C-230.534,-33.695 -226.25,-15.886 -218.604,0L-151.387,-67.216L-198.328,-67.216Z" fill="white"/>
+    </g>
+  </g>
+
+  <!-- Title -->
+  <text x="400" y="50" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="600">Levels of Serenity/JS adoption</text>
+  <text x="400" y="78" text-anchor="middle" fill="#94a3b8" font-size="14">Start where you are. Go deeper when the need arises.</text>
+
+  <!-- Level 0 -->
+  <rect x="40" y="105" width="720" height="76" rx="10" fill="#1e2a3a" stroke="#6b7280" stroke-width="2"/>
+  <rect x="40" y="105" width="6" height="76" fill="#6b7280" clip-path="url(#clip0)"/>
+  <text x="72" y="134" fill="#e2e8f0" font-size="12" font-weight="700" letter-spacing="0.5">LEVEL 0</text>
+  <text x="72" y="157" fill="#ffffff" font-size="17" font-weight="600">Your Existing Tests</text>
+  <text x="72" y="174" fill="#94a3b8" font-size="13">Playwright, WebdriverIO, Cucumber, Mocha, or Jasmine. No Serenity/JS yet.</text>
+
+  <!-- Level 1 -->
+  <rect x="40" y="195" width="720" height="76" rx="10" fill="#1e2a3a" stroke="#2d6a4f" stroke-width="2"/>
+  <rect x="40" y="195" width="6" height="76" fill="#2d6a4f" clip-path="url(#clip1)"/>
+  <text x="72" y="224" fill="#6ee7b7" font-size="12" font-weight="700" letter-spacing="0.5">LEVEL 1</text>
+  <text x="72" y="247" fill="#ffffff" font-size="17" font-weight="600">Add Serenity/JS Reporting</text>
+  <text x="72" y="264" fill="#94a3b8" font-size="13">Structured reports grouped by feature and capability. Zero changes to test code.</text>
+
+  <!-- Level 2 -->
+  <rect x="40" y="285" width="720" height="76" rx="10" fill="#1e2a3a" stroke="#1d72aa" stroke-width="2"/>
+  <rect x="40" y="285" width="6" height="76" fill="#1d72aa" clip-path="url(#clip2)"/>
+  <text x="72" y="314" fill="#7dd3fc" font-size="12" font-weight="700" letter-spacing="0.5">LEVEL 2</text>
+  <text x="72" y="337" fill="#ffffff" font-size="17" font-weight="600">Screenplay Hybrid</text>
+  <text x="72" y="354" fill="#94a3b8" font-size="13">Mix Screenplay interactions with your existing tests. Migrate one scenario at a time.</text>
+
+  <!-- Level 3 -->
+  <rect x="40" y="375" width="720" height="76" rx="10" fill="#1e2a3a" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="40" y="375" width="6" height="76" fill="#7c3aed" clip-path="url(#clip3)"/>
+  <text x="72" y="404" fill="#c4b5fd" font-size="12" font-weight="700" letter-spacing="0.5">LEVEL 3</text>
+  <text x="72" y="427" fill="#ffffff" font-size="17" font-weight="600">Full Screenplay Pattern</text>
+  <text x="72" y="444" fill="#94a3b8" font-size="13">Composable Tasks, multi-actor scenarios, living documentation, tool independence.</text>
+</svg>
