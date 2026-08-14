@@ -387,6 +387,12 @@ const config: Config = {
                         entry: { index: 'src/index.ts' },
                     },
                     {
+                        path: './node_modules/@serenity-js/html-reporter',
+                        entry: {
+                            index: { label: 'index', path: 'src/index.ts' },
+                        },
+                    },
+                    {
                         path: './node_modules/@serenity-js/serenity-bdd',
                         entry: { index: 'src/index.ts' },
                     },

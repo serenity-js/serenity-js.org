@@ -148,6 +148,7 @@ during a test scenario and translate it into test reports and living documentati
         `,
         items: [
             '@serenity-js/console-reporter',
+            '@serenity-js/html-reporter',
             '@serenity-js/serenity-bdd',
         ],
     },
