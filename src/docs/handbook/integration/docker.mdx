@@ -29,7 +29,7 @@ The Serenity/JS Playwright Docker image provides a complete testing environment 
 Image versions follow Playwright's versioning convention to ensure compatibility.
 
 <DynamicCodeBlock lang="bash" title="Install from the command line" >
-{`docker pull ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble`}
+{`docker pull ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute`}
 </DynamicCodeBlock>
 
 **📦 [View all versions](https://github.com/serenity-js/serenity-js-docker/pkgs/container/playwright)**
@@ -49,7 +49,7 @@ Image versions follow Playwright's versioning convention to ensure compatibility
 - OpenJDK Java Runtime Environment
 
 **Operating System:**
-- Ubuntu 24.04 LTS (Noble Numbat)
+- Ubuntu 25.04 (Resolute)
 - Git
 - cURL
 - OpenSSH Client
@@ -68,7 +68,7 @@ Start by using an official Serenity/JS image as your base. This preserves the fu
 drivers, system dependencies, and Serenity/JS reporting—while giving you space to tailor the environment.
 
 <DynamicCodeBlock lang="docker" title="Dockerfile">
-{`FROM ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble
+{`FROM ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
 
 # Add your customisations here
 `}
@@ -83,7 +83,7 @@ Extending the base image ensures both the OS and Node.js trust your internal CA.
 #### Example: Embedding and Trusting Corporate CA Certificates
 
 <DynamicCodeBlock lang="docker" title="Dockerfile">
-{`FROM ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble
+{`FROM ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
 
   # Switch to root to install system-level dependencies
   USER root
