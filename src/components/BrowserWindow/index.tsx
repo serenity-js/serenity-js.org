@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { type ReactNode } from 'react';
+import React, {JSX, type ReactNode} from 'react';
 import clsx from 'clsx';
 
 import styles from './styles.module.css';
@@ -17,7 +17,7 @@ interface BrowserWindowProps {
     url: string;
 }
 
-export default function BrowserWindow({ children, minHeight, backgroundColor = 'none', url = 'http://localhost:3000' }: BrowserWindowProps): JSX.Element {
+export default function BrowserWindow({ children, minHeight, backgroundColor = 'none', url = 'https://serenity-js.org' }: BrowserWindowProps): JSX.Element {
     return (
         <div className={ styles.browserWindow } style={ { minHeight } }>
             <div className={ styles.browserWindowHeader }>
