@@ -13,7 +13,8 @@ This page covers the most common issues you might encounter when setting up or r
 
 ### Using a supported Node.js version
 
-Serenity/JS is tested with the latest versions of Node.js <SupportedNodeVersions conjunction="and" />. Use a recent [Long-Term Support (LTS)](https://github.com/nodejs/Release) version for optimal stability. While non-LTS versions may work, they are not officially supported.
+Serenity/JS is tested with the latest [LTS Active and LTS Maintenance](https://nodejs.org/en/about/previous-releases) versions of Node.js, and requires at least <strong><SupportedNodeVersions conjunction="or" /></strong>.
+While non-LTS versions of Node.js may work, they are not officially supported and you should avoid using them in production environments.
 
 Check your version with:
 
@@ -55,7 +56,7 @@ npm ls | grep @serenity-js
 Update all Serenity/JS packages together:
 
 ```shell
-npm update @serenity-js/core @serenity-js/web @serenity-js/playwright @serenity-js/playwright-test @serenity-js/assertions @serenity-js/serenity-bdd @serenity-js/console-reporter
+npm update @serenity-js/core @serenity-js/web @serenity-js/playwright @serenity-js/playwright-test @serenity-js/assertions @serenity-js/html-reporter @serenity-js/serenity-bdd @serenity-js/console-reporter
 ```
 
 Check the [Releases](/releases/) page for the current compatibility matrix, and follow the [Updating Serenity/JS](/releases/updating-serenity-js/) guide for step-by-step instructions.
@@ -85,6 +86,11 @@ If you have multiple Java versions installed, make sure `JAVA_HOME` points to th
 ```shell
 echo $JAVA_HOME
 ```
+
+:::tip Don't need Java?
+If Java setup is causing friction, consider the [`@serenity-js/html-reporter`](/handbook/reporting/html-reporter/) — it produces rich HTML reports with trend analysis and flaky test detection, without requiring Java.
+See the [migration guide](/handbook/reporting/html-reporter/#migrating-from-serenity-bdd-reporter).
+:::
 
 #### ArtifactArchiver is not configured
 

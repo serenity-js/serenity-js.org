@@ -390,6 +390,7 @@ const config: Config = {
                         path: './node_modules/@serenity-js/html-reporter',
                         entry: {
                             index: { label: 'index', path: 'src/index.ts' },
+                            serenity: { label: 'Serenity', path: 'src/serenity.ts' },
                         },
                     },
                     {
@@ -430,6 +431,7 @@ const config: Config = {
                 debug: true,
                 typedocOptions: {
                     excludeExternals: false,
+                    excludePackage: true,
 
                     // typedoc-plugin-ignore-inherited-static-methods
                     // logIgnoredInheritedStaticMethods: true,
