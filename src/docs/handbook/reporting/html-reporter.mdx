@@ -91,7 +91,7 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
             crew: [
                 ['@serenity-js/html-reporter', {
                     outputDirectory: './reports/serenity-js',
-                    specDirectory: './spec',
+                    specDirectory: './spec',   // same as testDir
                 }],
             ]
         }]
@@ -114,35 +114,70 @@ export const config: WebdriverIOConfig = {
         crew: [
             ['@serenity-js/html-reporter', {
                 outputDirectory: './reports/serenity-js',
-                specDirectory: './spec',
+                specDirectory: './test/specs',   // root of your specs directory
             }],
         ]
     },
+
+    specs: ['./test/specs/**/*.spec.ts'],
 };
 ```
 
 Learn more about using [Serenity/JS with WebdriverIO](/handbook/test-runners/webdriverio/).
 
-### Cucumber, Mocha, and Jasmine
+### Cucumber
 
-When using Cucumber, Mocha, or Jasmine directly (without WebdriverIO), configure crew members programmatically:
-
-```ts title="support/serenity.config.ts"
+```ts title="features/support/serenity.config.ts"
 import { configure } from '@serenity-js/core';
 
 configure({
     crew: [
         ['@serenity-js/html-reporter', {
             outputDirectory: './reports/serenity-js',
-            specDirectory: './spec',
+            specDirectory: './features',   // root of your .feature files
         }],
     ],
 });
 ```
 
-For Cucumber, call this in a `BeforeAll` hook. For Mocha and Jasmine, require the file via your test runner's configuration.
+Call this in a [`BeforeAll`](https://github.com/cucumber/cucumber-js/blob/main/docs/support_files/hooks.md#beforeall--afterall) hook.
+Learn more about using [Serenity/JS with Cucumber](/handbook/test-runners/cucumber/).
 
-Learn more about using Serenity/JS with [Cucumber](/handbook/test-runners/cucumber/), [Mocha](/handbook/test-runners/mocha/), or [Jasmine](/handbook/test-runners/jasmine/).
+### Mocha
+
+```ts title="spec/support/serenity.config.ts"
+import { configure } from '@serenity-js/core';
+
+configure({
+    crew: [
+        ['@serenity-js/html-reporter', {
+            outputDirectory: './reports/serenity-js',
+            specDirectory: './spec',   // root of your .spec.ts files
+        }],
+    ],
+});
+```
+
+Require this file via your [`.mocharc.yml`](https://mochajs.org/#configuring-mocha-nodejs) configuration.
+Learn more about using [Serenity/JS with Mocha](/handbook/test-runners/mocha/).
+
+### Jasmine
+
+```ts title="spec/helpers/serenity.config.ts"
+import { configure } from '@serenity-js/core';
+
+configure({
+    crew: [
+        ['@serenity-js/html-reporter', {
+            outputDirectory: './reports/serenity-js',
+            specDirectory: './spec',   // root of your spec files
+        }],
+    ],
+});
+```
+
+Configure Jasmine to load this file via the [`helpers`](https://jasmine.github.io/setup/nodejs.html) option in `spec/support/jasmine.json`.
+Learn more about using [Serenity/JS with Jasmine](/handbook/test-runners/jasmine/).
 
 ### Configuration options
 
