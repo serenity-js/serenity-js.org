@@ -205,6 +205,26 @@ Directories become capabilities, and `README.md` files within them render as liv
 If omitted, the Capabilities view is disabled.
 :::
 
+## Viewing the report
+
+After your tests complete, the report is available in your configured `outputDirectory` (default: `./reports/serenity-js`).
+
+**Open directly:** Double-click `reports/serenity-js/index.html` in your file manager — it works from `file://` URLs with no server needed.
+
+**Serve locally:** Use the built-in server to view the report and share it with others on your network:
+
+```sh
+npx @serenity-js/html-reporter serve --open
+```
+
+The `serve` command defaults to `./reports/serenity-js`. Use `--dir` to specify a different location.
+
+**Add to `.gitignore`:** The report output should not be committed to source control:
+
+```gitignore
+reports/serenity-js
+```
+
 ## The requirements hierarchy
 
 The HTML Reporter uses your test directory structure to build a **requirements hierarchy** — a tree of capabilities that maps directly to your filesystem layout. This powers the Capabilities view, giving stakeholders a navigable overview of what your system does and how well each area is tested.
@@ -605,6 +625,8 @@ No `clean` step, no `failsafe` wrapper, no `test:report` step. The report appear
 
 **Step 5: Update .gitignore**
 
+Replace the old output path with the new one:
+
 ```diff
 - target/site/serenity
 + reports/serenity-js
@@ -612,13 +634,7 @@ No `clean` step, no `failsafe` wrapper, no `test:report` step. The report appear
 
 **Step 6: View the report**
 
-Open the generated `index.html` directly in your browser, or use the built-in server:
-
-```sh
-npx @serenity-js/html-reporter serve --open
-```
-
-The `serve` command defaults to `./reports/serenity-js` — if your `outputDirectory` matches the default, you don't need to specify `--dir`.
+See [Viewing the report](#viewing-the-report) — open `index.html` directly or use `npx @serenity-js/html-reporter serve --open`.
 
 ### What about screenshots?
 
