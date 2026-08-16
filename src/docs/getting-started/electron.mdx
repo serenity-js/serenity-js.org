@@ -14,6 +14,8 @@ Building an Electron app? Serenity/JS lets you test it using the same Screenplay
 
 Under the hood, Serenity/JS leverages [Playwright's Electron support](https://playwright.dev/docs/electron) to connect to your app's renderer process. You get expressive tests, reusable interactions, and rich reporting — for desktop applications.
 
+→ New to Serenity/JS? Start with [Why Serenity/JS](/getting-started/) to see the full picture.
+
 ---
 
 ## Why add Serenity/JS?
@@ -69,14 +71,13 @@ npm init playwright@latest
 :::info Prerequisites
 To use Serenity/JS, you'll need:
 - A recent [Node.js LTS](https://nodejs.org/en/download/) version (Serenity/JS supports Node <SupportedNodeVersions conjunction="and" />)
-- [Java 11+](https://adoptium.net/) for the Serenity BDD reports
 - An existing Electron app to test (with [`electron`](https://www.npmjs.com/package/electron) as a dependency)
 :::
 
 From your Electron project directory, install Serenity/JS and Playwright Test:
 
 ```sh npm2yarn
-npm install --save-dev @serenity-js/core @serenity-js/assertions @serenity-js/playwright @serenity-js/playwright-test @serenity-js/web @serenity-js/console-reporter @serenity-js/serenity-bdd @playwright/test rimraf npm-failsafe
+npm install --save-dev @serenity-js/core @serenity-js/assertions @serenity-js/playwright @serenity-js/playwright-test @serenity-js/web @serenity-js/console-reporter @serenity-js/html-reporter @playwright/test
 ```
 
 → Learn more: [Full installation guide](/handbook/test-runners/playwright-test/installation/) | [Why Serenity/JS?](/getting-started/)
@@ -108,31 +109,25 @@ Lines marked with `+` should be added to your file; lines marked with `-` should
 +       [ '@serenity-js/playwright-test', {
 +           crew: [
 +               '@serenity-js/console-reporter',
-+               [ '@serenity-js/serenity-bdd', {
++               [ '@serenity-js/html-reporter', {
 +                   specDirectory: './spec'
-+               } ],
-+               [ '@serenity-js/core:ArtifactArchiver', {
-+                   outputDirectory: './reports/serenity'
 +               } ],
 +           ]
 +       }]
 +   ],
 ```
 
-Add the following scripts to your `package.json`:
+Add the following script to your `package.json`:
 
 ```diff title="package.json"
  {
    "scripts": {
-+    "clean": "rimraf target",
-+    "test": "failsafe clean test:execute [...] test:report",
-+    "test:execute": "npx playwright test",
-+    "test:report": "serenity-bdd run --features='./spec' --source='./reports/serenity' --destination='./reports/serenity'"
++    "test": "npx playwright test"
    }
  }
 ```
 
-→ Learn more: [Configuration options](/handbook/test-runners/playwright-test/configuration/) | [Serenity BDD reporter setup](/handbook/reporting/serenity-bdd-reporter/) | [Using npm-failsafe](https://www.npmjs.com/package/npm-failsafe)
+→ Learn more: [Configuration options](/handbook/test-runners/playwright-test/configuration/) | [HTML Reporter setup](/handbook/reporting/html-reporter/)
 
 ### Step 3: Write your first Electron test
 
@@ -175,16 +170,16 @@ describe('My Electron App', () => {
 npm test
 ```
 
-Your Electron app launches, the test runs, and you get a Serenity BDD report in `reports/serenity/`. Open `reports/serenity/index.html` in your browser to view it.
+Your Electron app launches, the test runs, and you get a rich HTML report automatically. Open `reports/serenity-js/index.html` in your browser to view it.
 
 :::tip Running a single test
-The `[...]` wildcard in the `test` script is provided by [npm-failsafe](https://www.npmjs.com/package/npm-failsafe) and passes any arguments you provide directly to Playwright Test. For example:
+Pass any arguments directly to Playwright Test. For example:
 ```bash
-npm test -- --grep="welcome screen"
+npx playwright test --grep="welcome screen"
 ```
 :::
 
-→ Learn more: [Reporting overview](/handbook/reporting/) | [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter/)
+→ Learn more: [Reporting overview](/handbook/reporting/) | [HTML Reporter](/handbook/reporting/html-reporter/)
 
 ---
 
@@ -266,7 +261,7 @@ No. Electron apps use their own Chromium instance. You don't need to install sep
 
 ### Do I need Java?
 
-Yes, for the Serenity BDD HTML reports (Java 11+). If you'd rather stay Java-free, use the [console reporter](/handbook/reporting/console-reporter/) alone or Playwright's built-in HTML report.
+Not if you use the [Serenity/JS HTML Reporter](/handbook/reporting/html-reporter/) — it produces rich reports with trend tracking and flaky test detection using pure Node.js. Java is only needed for the [Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/).
 
 :::tip Something not working?
 Check the [Troubleshooting guide](/handbook/troubleshooting/) for solutions to common issues with reports, screenshots, and configuration.
