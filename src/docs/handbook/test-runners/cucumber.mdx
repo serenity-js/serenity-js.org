@@ -10,7 +10,7 @@ and a test runner capable of executing test scenarios
 written in [plain language](https://cucumber.io/docs/guides/overview/).
 
 **In this article, you will learn:**
-- How to use [Serenity/JS reporting services](/handbook/reporting/), including the [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter), even if your test scenarios don't follow the Screenplay Pattern yet
+- How to use [Serenity/JS reporting services](/handbook/reporting/), including the [HTML Reporter](/handbook/reporting/html-reporter/) and [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter), even if your test scenarios don't follow the Screenplay Pattern yet
 - How to implement Cucumber [step definitions](https://cucumber.io/docs/cucumber/step-definitions/?lang=javascript) using reusable [Serenity/JS Screenplay Pattern](/handbook/design/screenplay-pattern) APIs
 
 ## Examples and Project Templates
@@ -25,7 +25,8 @@ If you'd like to dive straight into the code,
 To use [Serenity/JS reporting services](/handbook/reporting/) in a Cucumber project, you need to:
 - attach the [`@serenity-js/cucumber`](/api/cucumber) test runner adapter to Cucumber
 - [configure Serenity/JS](/api/core/function/configure) to use the reporting services you want to use,
-such as the [`ConsoleReporter`](/handbook/reporting/console-reporter)
+such as the [`ConsoleReporter`](/handbook/reporting/console-reporter),
+[`HtmlReporter`](/handbook/reporting/html-reporter),
 or [`SerenityBDDReporter`](/handbook/reporting/serenity-bdd-reporter)
 
 :::tip Serenity/JS test runner adapters
@@ -105,8 +106,7 @@ BeforeAll(() => {
     configure({
         crew: [
             '@serenity-js/console-reporter',
-            '@serenity-js/serenity-bdd',
-            [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+            ['@serenity-js/html-reporter', { specDirectory: './features' }],
             // ... any other reporting services
         ],
     })
@@ -123,8 +123,7 @@ BeforeAll(() => {
     configure({
         crew: [
             '@serenity-js/console-reporter',
-            '@serenity-js/serenity-bdd',
-            [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+            ['@serenity-js/html-reporter', { specDirectory: './features' }],
             // ... any other reporting services
         ],
     })
@@ -218,8 +217,7 @@ BeforeAll(async () => {
         ),
         crew: [
             '@serenity-js/console-reporter',
-            '@serenity-js/serenity-bdd',
-            [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+            ['@serenity-js/html-reporter', { specDirectory: './features' }],
             // ... any other reporting services
         ],
     })

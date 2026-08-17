@@ -4,56 +4,74 @@ sidebar_position: 7
 
 # Reporting
 
-Serenity/JS provides comprehensive reporting capabilities and integrates with both the [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter/) and the native Playwright Test reporting tools.
-The framework supports:
-- **Playwright Test HTML Reports** - Enhanced with Screenplay Pattern activity details and automatic screenshots.
-- **Playwright Test UI Mode** - Real-time test execution with Screenplay Pattern integration.
-- **Playwright Trace Viewer** - Detailed test execution traces, including Screenplay Pattern activities.
-- **Serenity BDD Reports** - Rich, business-focused living documentation of your system.
+Serenity/JS offers two reporting options for Playwright Test projects, and integrates with native Playwright reporting tools:
 
-Serenity/JS supports both classic Playwright Test scenarios and those that follow the [Screenplay Pattern](/handbook/design/screenplay-pattern/),
-allowing you to migrate to Screenplay gradually if you wish, or mix and match the two implementations within the same codebase.
+- **[Serenity/JS HTML Reporter](/handbook/reporting/html-reporter/)** — self-contained report with trend history, flaky test detection, error clustering, and an interactive dashboard. No Java required.
+- **[Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/)** — multi-page HTML reports with narrative documentation. Requires Java.
+- **Playwright Test HTML Reports** — enhanced with Screenplay Pattern activity details and automatic screenshots.
+- **Playwright Test UI Mode** — real-time test execution with Screenplay Pattern integration.
+- **Playwright Trace Viewer** — detailed execution traces, including Screenplay Pattern activities.
 
-:::tip Reference Implementation
-Explore the [Serenity/JS + Playwright Test project template](https://github.com/serenity-js/serenity-js-playwright-test-template) to see these reports in action:
-- [Serenity BDD report](https://serenity-js.github.io/serenity-js-playwright-test-template/serenity/)
-- [Playwright Test report](https://serenity-js.github.io/serenity-js-playwright-test-template/playwright/)
-:::
+All reporters work with both classic Playwright Test scenarios and those that follow the [Screenplay Pattern](/handbook/design/screenplay-pattern/).
+
+---
+
+## Serenity/JS HTML Reporter
+
+The [HTML Reporter](/handbook/reporting/html-reporter/) is the recommended reporting option for most teams. It produces a self-contained report automatically at the end of each test run — no separate generation step, no Java, no additional dependencies.
+
+```ts title="playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+
+    reporter: [
+        ['line'],
+        ['@serenity-js/playwright-test', {
+            crew: [
+                '@serenity-js/console-reporter',
+                ['@serenity-js/html-reporter', {
+                    specDirectory: './spec',   // same as testDir — enables the Capabilities view
+                }],
+            ]
+        }],
+
+        // Optional: keep the built-in Playwright HTML reporter for low-level debugging
+        ['html', { open: 'never' }],
+    ],
+});
+```
+
+After running `npx playwright test`, open `reports/serenity-js/index.html` in your browser, or serve it locally:
+
+```sh
+npx @serenity-js/html-reporter serve --open
+```
+
+<Figure
+    caption='Serenity/JS HTML Report — Dashboard with trend chart and KPI cards'
+    img={require('@site/static/images/reporting/html-reporter-dashboard.png')}
+    externalLink={'https://serenity-js.github.io/serenity-js/'}
+/>
+
+→ Learn more: [HTML Reporter guide](/handbook/reporting/html-reporter/) | [CI integration](/handbook/reporting/html-reporter/#ci-integration)
+
+---
 
 ## Playwright HTML reports
 
 Serenity/JS **automatically enhances** the built-in [Playwright HTML reports](https://playwright.dev/docs/test-reporters#html-reporter)
-with information gathered from your [Screenplay Pattern](/handbook/design/screenplay-pattern) activities.
+with information gathered from your test activities. When you use the [Screenplay Pattern APIs](/handbook/test-runners/playwright-test/writing-tests/#using-the-screenplay-pattern-apis), the reports show additional detail — named steps, activity trees, and timing breakdowns.
 
-To enable integration with the Playwright HTML reporter, you need to:
-1. Use the [Screenplay Pattern APIs](/handbook/test-runners/playwright-test/writing-tests/#using-the-screenplay-pattern-apis) in your Playwright Test scenarios.
-2. Configure the [Playwright HTML reporter](https://playwright.dev/docs/test-reporters#html-reporter) in your `playwright.config.ts` file.
+To enable it, add the Playwright HTML reporter alongside the Serenity/JS reporter:
 
 ```ts title="playwright.config.ts"
-import { defineConfig, devices } from '@playwright/test'
-import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
-
-export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
-    reporter: [
-        // Enable Serenity/JS reporting services
-        [ '@serenity-js/playwright-test', {
-            crew: [
-                '@serenity-js/console-reporter',
-                [ '@serenity-js/serenity-bdd', {
-                  specDirectory: './spec'
-                } ],
-                [ '@serenity-js/core:ArtifactArchiver', {
-                  outputDirectory: './target/site/serenity'
-                } ],
-            ]
-        }],
-
-        // Enable Playwright Test HTML reporter
-        [ 'html', { open: 'never' } ],
-    ],
-
-    // Other Playwright Test configuration options
-})
+reporter: [
+    ['@serenity-js/playwright-test', { /* ... */ }],
+    ['html', { open: 'never' }],
+],
 ```
 
 <Figure
@@ -86,7 +104,7 @@ To use this feature, you need to:
 2. Enable tracing in your `playwright.config.ts` file.
 
 ```ts title="playwright.config.ts"
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig } from '@playwright/test'
 import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
 export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
@@ -102,15 +120,14 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
     img={require('@site/static/images/test-runners/playwright-test/serenity-js-playwright-test-trace-viewer.png')}
 />
 
-## Serenity BDD Reports
+---
 
-[Serenity reports and living documentation](/handbook/reporting/serenity-bdd-reporter) are a powerful feature enabled by Serenity BDD.
-They aim not only to **report test results**, but also to document **how features are tested**, and **what your application does**.
+## Serenity BDD Reporter
+
+If your team already uses Serenity BDD or prefers its multi-page report format, you can use the [Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/) instead of (or alongside) the HTML Reporter.
 
 Serenity BDD reports are generated by the [Serenity BDD CLI](https://github.com/serenity-bdd/serenity-core/tree/main/serenity-cli),
 a Java program that ships with the [`@serenity-js/serenity-bdd`](/api/serenity-bdd/) module.
-These reports are based on the `json` reports produced by the [Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/),
-as well as screenshots captured by the [Photographer](/handbook/reporting/photographer/).
 
 <Figure
     caption='Example Serenity BDD report'
@@ -118,27 +135,26 @@ as well as screenshots captured by the [Photographer](/handbook/reporting/photog
     img={require('@site/static/images/reporting/serenity-bdd-reporter.png')}
 />
 
-To generate Serenity BDD HTML reports and living documentation, your test suite must:
-1. Use [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/) and [`ArtifactArchiver`](/api/core/class/ArtifactArchiver/) as per the [configuration instructions](/handbook/test-runners/playwright-test/configuration/#integrating-serenityjs-reporting).
-2. Invoke the `serenity-bdd run` command when the test run has finished to generate the Serenity BDD report.
+To generate Serenity BDD reports, configure your crew as follows:
 
-All [Serenity/JS Project Templates](/getting-started/project-templates/) follow the same recommended pattern to generate Serenity BDD reports.
-This approach relies on:
-- NPM scripts to invoke the command-line tools, such as Playwright Test or the Serenity BDD CLI.
-- [`npm-failsafe`](https://www.npmjs.com/package/npm-failsafe) to execute a sequence of NPM scripts.
-- [`rimraf`](https://www.npmjs.com/package/rimraf) to remove any test reports left over from the previous run.
+```ts title="playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
 
-You can install these additional recommended modules as follows:
-
-```sh npm2yarn
-npm install --save-dev npm-failsafe rimraf
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    reporter: [
+        ['@serenity-js/playwright-test', {
+            crew: [
+                '@serenity-js/console-reporter',
+                ['@serenity-js/serenity-bdd', { specDirectory: './spec' }],
+                ['@serenity-js/core:ArtifactArchiver', { outputDirectory: './target/site/serenity' }],
+            ]
+        }],
+    ],
+});
 ```
 
-Next, add the following convenience scripts to your `package.json` file:
-- `clean` - removes any test reports left over from the previous test run.
-- `test` - uses `npm-failsafe` to execute multiple NPM scripts and generate test reports.
-- `test:execute` - an example alias for `playwright test`. You can extend it to include any necessary command-line arguments.
-- `test:report` - an alias for `serenity-bdd run`. You can configure it with alternative `json` report locations (`--source`) and HTML report destinations (`--destination`). Run `npx serenity-bdd run --help` to see the available options.
+Then add the following scripts to your `package.json`:
 
 ```json title="package.json"
 {
@@ -146,59 +162,31 @@ Next, add the following convenience scripts to your `package.json` file:
     "clean": "rimraf target",
     "test": "failsafe clean test:execute test:report",
     "test:execute": "playwright test",
-    "test:report": "serenity-bdd run --source ./target/site/serenity --destination ./target/site/serenity",
+    "test:report": "serenity-bdd run --source ./target/site/serenity --destination ./target/site/serenity"
   }
 }
 ```
 
-To learn more about the `SerenityBDDReporter`, see:
-- [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/) API documentation and configuration examples.
-- [Serenity/JS + Playwright Test project template](https://github.com/serenity-js/serenity-js-playwright-test-template) on GitHub
-- [Serenity/JS examples](https://github.com/serenity-js/serenity-js/tree/main/examples) on GitHub
+This requires additional dependencies:
 
-### Chaining NPM scripts
-
-A common advanced usage pattern for systems with multiple test suites is to execute each test suite separately on CI across multiple [pipeline stages](/handbook/integration/),
-while running them sequentially in a local environment. In both cases, a single Serenity BDD report is generated at the end.
-This pattern is particularly useful for systems with multiple [Playwright Test projects](https://playwright.dev/docs/test-projects) or those that use both the [Playwright Component Test runner](/getting-started/project-templates/#web-component-testing) and
-the [Playwright Test runner](/getting-started/project-templates/#playwright).
-
-<figure>
-```mermaid
-graph LR
-    A["test:ct"] --> B
-    B["build"] --> C
-    C["test:e2e"] --> D["test:report"]
-```
-<figcaption>Example CI pipeline running tests and build steps across multiple pipeline stages</figcaption>
-</figure>
-
-To implement this pattern, define an NPM script for each project and the report generation step, then use `npm-failsafe` to chain the NPM scripts for local execution.
-
-
-```json title="package.json"
-{
-  "scripts": {
-    "build": "esbuild src/app.tsx ...",
-    "test": "failsafe test:clean test:ct build test:e2e test:report",
-    "test:clean": "rimraf target",
-    "test:ct": "playwright test-ct --config playwright-ct.config.ts",
-    "test:e2e": "playwright test --config playwright.config.ts",
-    "test:report": "serenity-bdd run --source ./target/site/serenity --destination ./target/site/serenity",
-  }
-}
+```sh npm2yarn
+npm install --save-dev @serenity-js/serenity-bdd npm-failsafe rimraf
 ```
 
-:::tip Parameterized NPM scripts
-`npm-failsafe` enables additional advanced usage and configuration patterns, such as passing runtime
-parameters to your NPM scripts. See the [`npm-failsafe` documentation](https://github.com/jan-molak/npm-failsafe?tab=readme-ov-file#configuration) for examples.
+→ Learn more: [Serenity BDD Reporter guide](/handbook/reporting/serenity-bdd-reporter/) | [Migrating to the HTML Reporter](/handbook/reporting/html-reporter/#migrating-from-serenity-bdd-reporter)
+
+:::tip Use both reporters together
+You can run both the HTML Reporter and Serenity BDD Reporter simultaneously — they collect data independently and write to different directories. See [Running both reporters together](/handbook/reporting/html-reporter/#running-both-reporters-together).
 :::
+
+---
 
 ## What you learnt
 
-- Serenity/JS automatically enhances Playwright HTML reports, UI Mode, and Trace Viewer with Screenplay Pattern details.
-- Serenity BDD reports provide business-focused living documentation generated from JSON artifacts.
-- Use `npm-failsafe` to chain test execution and report generation scripts reliably.
+- The **Serenity/JS HTML Reporter** is the simplest way to get rich reports — no Java, no extra scripts, automatic generation.
+- Serenity/JS automatically enhances **Playwright HTML reports, UI Mode, and Trace Viewer** with Screenplay Pattern details.
+- **Serenity BDD reports** are available for teams that need Java-based living documentation.
+- Both Serenity/JS reporters work alongside native Playwright reporting tools.
 
 ## Next step
 
