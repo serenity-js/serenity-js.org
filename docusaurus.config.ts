@@ -431,7 +431,6 @@ const config: Config = {
                 debug: true,
                 typedocOptions: {
                     excludeExternals: false,
-                    excludePackage: true,
 
                     // typedoc-plugin-ignore-inherited-static-methods
                     // logIgnoredInheritedStaticMethods: true,
