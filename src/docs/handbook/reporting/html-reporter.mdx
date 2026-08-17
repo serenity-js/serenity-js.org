@@ -616,6 +616,12 @@ Remove `@serenity-js/serenity-bdd` and `@serenity-js/core:ArtifactArchiver` from
 If you use [`Photographer`](/handbook/reporting/photographer/) for screenshots, keep it — it captures the images that the HTML Reporter embeds in the report. What you can remove is `ArtifactArchiver`, since the HTML Reporter handles artifact storage internally.
 :::
 
+If your project has a `serenity.properties` file, you can delete it too — it's no longer needed.
+
+:::tip Remove serenity.properties
+If your project has a `serenity.properties` file (used by Serenity BDD for configuration like `serenity.project.name`), you can delete it. Use the HTML Reporter's [`projectName`](/api/html-reporter/interface/HtmlReporterConfig/) configuration option instead.
+:::
+
 **Step 4: Simplify package.json scripts**
 
 The HTML Reporter generates the report automatically when the test run finishes. There is no separate generation step:
@@ -625,14 +631,17 @@ The HTML Reporter generates the report automatically when the test run finishes.
    "scripts": {
 -    "clean": "rimraf target",
 -    "test": "failsafe clean test:execute test:report",
--    "test:execute": "npx playwright test",
+-    "test:execute": "<your-test-runner-command>",
 -    "test:report": "serenity-bdd run --features='./tests' --source='./target/site/serenity' --destination='./target/site/serenity'"
-+    "test": "npx playwright test"
++    "test": "<your-test-runner-command>",
++    "test:report": "npx @serenity-js/html-reporter serve --dir ./reports/serenity-js --open"
    }
  }
 ```
 
-No `clean` step, no `failsafe` wrapper, no `test:report` step. The report appears in your configured `outputDirectory` as soon as the tests complete.
+Replace `<your-test-runner-command>` with the command for your test runner — for example `npx playwright test`, `protractor ./protractor.conf.js`, `npx wdio run wdio.conf.ts`, or `npx cucumber-js`.
+
+The `test:report` script serves the generated report locally and opens it in your browser — similar to `npx playwright show-report`.
 
 **Step 5: Update .gitignore**
 
@@ -643,9 +652,24 @@ Replace the old output path with the new one:
 + reports/serenity-js
 ```
 
-**Step 6: View the report**
+**Step 6: Update CI workflow**
+
+If your CI pipeline has a separate report generation step or uses Java for `serenity-bdd run`, you can simplify it:
+
+- Remove any Java setup step (no longer needed)
+- Remove the `serenity-bdd run` / `test:report` step — the report generates automatically during `npm test`
+- Update artifact upload paths from `target/site/serenity` to your configured `outputDirectory` (default: `./reports/serenity-js`)
+- If you deploy to GitHub Pages, update the deploy folder path to match
+
+For the full CI integration guide, see [GitHub Actions](/handbook/integration/github-actions/) or [GitLab CI](/handbook/integration/gitlab-ci/).
+
+**Step 7: View the report**
 
 See [Viewing the report](#viewing-the-report) — open `index.html` directly or use `npx @serenity-js/html-reporter serve --open`.
+
+:::tip Preserving trend history in CI
+The HTML Reporter can preserve execution history across CI builds, enabling trend charts and flaky test detection. See the [GitHub Actions guide](/handbook/integration/github-actions/#publishing-to-github-pages) for a workflow that restores previous report data before each build.
+:::
 
 ### What about screenshots?
 
