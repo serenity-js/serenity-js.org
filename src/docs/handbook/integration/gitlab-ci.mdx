@@ -6,12 +6,13 @@ export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwr
 
 # GitLab CI
 
-Serenity/JS offers excellent support for [GitLab CI](https://docs.gitlab.com/topics/build_your_application/):
-you can run your acceptance tests in CI, generate rich Serenity BDD reports,
-and publish both living documentation and JUnit-style test results.
+Serenity/JS integrates with [GitLab CI](https://docs.gitlab.com/topics/build_your_application/) to run your acceptance tests
+and publish interactive HTML reports with trend history, flaky test detection, and error clustering.
 
-In this guide, you'll learn how to configure your GitLab CI pipeline to use the official [Serenity/JS Docker image](/handbook/integration/docker/)
-and ensure a stable environment for running your Serenity/JS test scenarios.
+In this guide, you'll learn how to configure GitLab CI pipelines that:
+- Run Serenity/JS test scenarios using the official [Serenity/JS Docker image](/handbook/integration/docker/)
+- Publish the [HTML Reporter](/handbook/reporting/html-reporter/) output to GitLab Pages
+- Preserve execution history across builds for trend analysis
 
 ## Before you start
 
@@ -22,122 +23,364 @@ If you're new to Serenity/JS, [follow the tutorial](/handbook/tutorials/your-fir
 
 ## Running Serenity/JS on GitLab CI
 
-GitLab CI executes pipelines inside [Docker containers](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html).
+GitLab CI executes pipelines inside [Docker containers](https://docs.gitlab.com/ci/docker/using_docker_images/).
 
-To ensure stability of your execution environment, use a container with:
-- The latest Long-Term Support (LTS) version of [Node.js](https://github.com/nodejs/Release)
-- A recent Java Runtime Environment (JRE)
-- Your desired web browsers and other dependencies, as per the [Serenity/JS installation guide](/handbook/installation/)
+To ensure a stable, reproducible testing environment, use the official
+[Serenity/JS Docker image](/handbook/integration/docker/) as your job image. It comes pre-configured with:
+- The latest Long-Term Support (LTS) version of Node.js
+- All Playwright browser engines, plus stable Chrome and Edge
+- OpenJDK Java Runtime Environment (for teams also using [Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/))
 
-The easiest way to do that is to:
-- Use the official [Serenity/JS Docker image](/handbook/integration/docker/) directly, as it comes pre-configured with all the required dependencies
-- Create a [custom Docker container](/handbook/integration/docker/#extending-serenityjs-docker-images) based on the official Serenity/JS Docker image to suit your needs
+The easiest way to get started is to:
+- Use the official [Serenity/JS Docker image](/handbook/integration/docker/) directly
+- Create a [custom Docker container](/handbook/integration/docker/#extending-serenityjs-docker-images) based on the official image to suit your needs
 
-## Configuring GitLab CI pipelines
-
-GitLab CI pipelines are configured using a file called [`.gitlab-ci.yml`](https://docs.gitlab.com/ci/yaml/), located at the root of your repository.
-
-A typical Serenity/JS GitLab CI pipeline consists of at least two stages:
-- `test` - responsible for running your Serenity/JS test scenarios and collecting their artifacts
-- `publish` - responsible for publishing artifacts, such as the Serenity reports, to GitLab Pages or other destinations
-
-:::tip Pipeline naming conventions
-Neither GitLab CI nor Serenity/JS force you to use any particular naming convention or structure for your pipelines.
-In this guide, we use `test` and `publish` as that's a great starting point and a convention often followed by teams using Serenity/JS.
+:::tip Why use a container image?
+Running tests inside a pre-configured container eliminates environment drift between local development and CI.
+Browser versions, system dependencies, and font rendering all stay consistent — reducing flaky failures
+caused by infrastructure differences rather than product bugs.
 :::
 
-In the example below, you see the `test` stage with a job called `serenity` that:
-- Uses the official [Serenity/JS Playwright Docker image](/handbook/integration/docker/#serenityjs-playwright-image)
-- Installs the project dependencies using `npm ci`, which is the recommended way to install Node.js modules in CI environments
-- Runs the test suite using `npm test` - all [Serenity/JS Project Templates](/getting-started/project-templates/) are pre-configured to run tests and generate reports via this standard script,
-  and you can adjust it to your needs if necessary
-- Preserves any artifacts under `target`, including the Serenity BDD reports, so that they can be reused in subsequent stages of the pipeline
+## Single-module project
 
-The `publish` stage has a job called `create-pages` that:
-- Declares a dependency on the `serenity` job to access its artifacts
-- Uses the [`pages`](https://docs.gitlab.com/ci/yaml/#pages) keyword to specify the location of the report
-- Uses the [`rules`](https://docs.gitlab.com/ci/yaml/#rules) keyword to publish the reports only when the pipeline runs on the default branch. This helps to avoid overwriting the main branch report when working on feature branches
+A single-module project has one test suite that runs in a single CI job. This is the most common setup for small to medium projects.
+
+The [`HtmlReporter`](/handbook/reporting/html-reporter/) crew member handles both data collection and report generation automatically — no separate aggregation step is needed.
+
+### Basic pipeline
+
+A typical Serenity/JS GitLab CI pipeline consists of at least two stages:
+- `test` — runs your test scenarios and preserves the report output
+- `pages` — publishes the report to GitLab Pages
 
 <DynamicCodeBlock title=".gitlab-ci.yml" lang="yaml">
 {`stages:
   - test
-  - publish
+  - pages
 
   serenity:
     stage: test
-
-    # Use the official Serenity/JS Docker image
-    image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-noble
+    image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
 
     script:
-    - npm ci
-    - npm test
+      - npm ci
+      - npm test
 
-    # Preserve test artifacts, even when the job fails
     artifacts:
       when: always
       paths:
-        - target
+        - reports/serenity-js
 
-  create-pages:
-    stage: publish
-    pages:
-      publish: target/site/serenity
-
+  pages:
+    stage: pages
     dependencies:
       - serenity
-
     script:
-      - echo "Publishing Serenity reports"
-
-    # Publish reports to GitLab Pages only on the default branch
+      - mkdir -p public
+      - cp -r reports/serenity-js/* public/
+    artifacts:
+      paths:
+        - public
     rules:
       - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-  # other configuration
 `}
 </DynamicCodeBlock>
 
-If your team uses merge requests in your workflow, you might want to use [GitLab Parallel Deployments](https://docs.gitlab.com/user/project/pages/parallel_deployments/)
-to publish an instance of Serenity reports per merge request.
+:::tip Always preserve artifacts
+Use `artifacts: when: always` so the report is available even when tests fail —
+that's exactly when you need it most.
+:::
+
+:::tip Pipeline naming conventions
+Neither GitLab CI nor Serenity/JS force you to use any particular naming convention for your pipelines.
+In this guide, we use `test` and `pages` as that's a great starting point and a convention often followed by teams using Serenity/JS.
+:::
+
+### Preserving trend history
+
+To enable trend analysis across builds, use GitLab CI's [`cache`](https://docs.gitlab.com/ci/caching/) to persist the `test-runs/` directory. The cache writes only on the default branch, so feature branches can read historical data but don't pollute it:
+
+<DynamicCodeBlock title=".gitlab-ci.yml" lang="yaml">
+{`stages:
+  - test
+  - pages
+
+  serenity:
+    stage: test
+    image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    rules:
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+        variables:
+          CACHE_POLICY: pull-push
+      - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+        variables:
+          CACHE_POLICY: pull
+
+    cache:
+      key: serenity-report-history
+      paths:
+        - reports/serenity-js/test-runs/
+      policy: $CACHE_POLICY
+
+    script:
+      - npm ci
+      - npm test
+
+    artifacts:
+      when: always
+      paths:
+        - reports/serenity-js
+
+  pages:
+    stage: pages
+    dependencies:
+      - serenity
+    script:
+      - mkdir -p public
+      - cp -r reports/serenity-js/* public/
+    artifacts:
+      paths:
+        - public
+    rules:
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+`}
+</DynamicCodeBlock>
+
+On the default branch, the cache restores previous `test-runs/` data, the HTML Reporter aggregates all runs, and the `pages` job publishes the result. Old runs are pruned based on [`maxHistory`](/handbook/reporting/html-reporter/#configuration-options).
+
+On feature branches, tests still run and the report is available as a downloadable artifact (with read-only access to main's history) — but the cache isn't updated and Pages aren't overwritten.
+
+## Multi-module project
+
+A multi-module project runs tests across multiple parallel jobs — for example, testing separate applications,
+browser variants, or sharded test suites. Each job produces its own test data, and a final job aggregates
+everything into one report.
+
+### Example: admin-ui and customer-ui
+
+Consider a monorepo with two UI modules, each with its own test suite:
+
+```
+my-project/
+├── modules/
+│   ├── admin-ui/
+│   │   ├── spec/
+│   │   └── playwright.config.ts
+│   └── customer-ui/
+│       ├── spec/
+│       └── playwright.config.ts
+└── package.json
+```
+
+### Step 1: Configure each module to archive data only
+
+In each module's `playwright.config.ts`, use `TestRunArchiver` instead of the full `HtmlReporter`:
+
+```ts title="modules/admin-ui/playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+
+    reporter: [
+        ['line'],
+        ['@serenity-js/playwright-test', {
+            crew: [
+                ['@serenity-js/html-reporter:TestRunArchiver', {
+                    outputDirectory: './reports/serenity-js',
+                    specDirectory: './spec',
+                }],
+            ]
+        }]
+    ],
+});
+```
+
+### Step 2: Run tests in parallel and aggregate
+
+Use GitLab CI's [`parallel:matrix`](https://docs.gitlab.com/ci/yaml/#parallelmatrix) to run modules in parallel,
+then aggregate in a final job:
+
+<DynamicCodeBlock title=".gitlab-ci.yml" lang="yaml">
+{`stages:
+  - test
+  - report
+  - pages
+
+  test:
+    stage: test
+    image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+    parallel:
+      matrix:
+        - MODULE: [ admin-ui, customer-ui ]
+
+    script:
+      - npm ci
+      - cd modules/$MODULE && npx playwright test
+
+    artifacts:
+      when: always
+      paths:
+        - modules/$MODULE/reports/serenity-js/test-runs/
+
+  aggregate:
+    stage: report
+    image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+    dependencies:
+      - test
+
+    script:
+      - npm ci
+      - |
+        npx @serenity-js/html-reporter aggregate \\
+          --input "modules/*/reports/serenity-js/test-runs/*" \\
+          --output ./reports/serenity-js \\
+          --title "My Project" \\
+          --max-history 10
+
+    artifacts:
+      when: always
+      paths:
+        - reports/serenity-js
+
+  pages:
+    stage: pages
+    dependencies:
+      - aggregate
+    script:
+      - mkdir -p public
+      - cp -r reports/serenity-js/* public/
+    artifacts:
+      paths:
+        - public
+    rules:
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+`}
+</DynamicCodeBlock>
+
+**What happens:**
+
+1. The `test` job runs both modules in parallel via `parallel:matrix`. Each produces a `test-runs/` directory as an artifact.
+2. The `aggregate` job downloads all test artifacts, restores the previous GitLab Pages report for trend history, then combines everything into a single report.
+3. The `pages` job deploys the combined report to GitLab Pages (on the default branch only).
+
+:::tip Parallel deployments
+If your team uses merge requests, you can use [GitLab Parallel Deployments](https://docs.gitlab.com/user/project/pages/parallel_deployments/)
+to publish a separate report instance per merge request.
+:::
+
+## Controlling report history
+
+The [`maxHistory`](/handbook/reporting/html-reporter/#configuration-options) option limits how many test runs are retained.
+Without it, the report grows indefinitely.
+
+```typescript
+['@serenity-js/html-reporter', {
+    outputDirectory: './reports/serenity-js',
+    maxHistory: 20,  // keep the last 20 runs
+}]
+```
+
+For the CLI `aggregate` command:
+
+```sh
+npx @serenity-js/html-reporter aggregate \
+  --input "..." \
+  --output ./reports/serenity-js \
+  --max-history 20
+```
+
+:::tip Choosing a maxHistory value
+A good starting value is the number of builds you'd realistically compare when investigating a regression.
+For most teams, 10–20 runs provides useful trend data without bloating the cache or deployment.
+:::
 
 ## Generating JUnit reports
 
-GitLab CI recognises test execution reports that conform to the [JUnit XML standard](https://llg.cubic.org/docs/junit/).
-Serenity/JS integrates with all the **native reporters** offered by the supported [test runners](/handbook/test-runners/),
-including the ones producing JUnit reports, such as:
-- [Cucumber.js JUnit formatter](https://github.com/cucumber/cucumber-js/blob/main/docs/formatters.md#junit)
-- [Jasmine JUnit reporter](https://www.npmjs.com/package/jasmine-reporters)
-- [Mocha JUnit reporter](https://www.npmjs.com/package/mocha-junit-reporter)
+GitLab CI natively recognises test reports that conform to the [JUnit XML standard](https://llg.cubic.org/docs/junit/)
+and [surfaces test results in Merge Requests](https://docs.gitlab.com/ci/testing/unit_test_reports/).
+
+Serenity/JS integrates with the **native reporters** offered by all supported [test runners](/handbook/test-runners/),
+including those producing JUnit reports:
 - [Playwright Test JUnit reporter](https://playwright.dev/docs/test-reporters#junit-reporter)
-- [WebdriverIO](https://webdriver.io/docs/junit-reporter/)
+- [Cucumber.js JUnit formatter](https://github.com/cucumber/cucumber-js/blob/main/docs/formatters.md#junit)
+- [Mocha JUnit reporter](https://www.npmjs.com/package/mocha-junit-reporter)
+- [Jasmine JUnit reporter](https://www.npmjs.com/package/jasmine-reporters)
+- [WebdriverIO JUnit reporter](https://webdriver.io/docs/junit-reporter/)
 
-To make GitLab CI recognise a JUnit-standard report produced by your Serenity/JS test suite and [surface test results in your Merge Requests](https://docs.gitlab.com/ee/ci/testing/unit_test_reports.html), you should:
-- Use a native JUnit reporter appropriate for your test runner
-- Configure [`artifacts:reports:junit`](https://docs.gitlab.com/ee/ci/testing/unit_test_reports.html)  to tell GitLab where to find the report.
-
-For example, if you have configured your JUnit reporter to produce a report at `target/junit-results.xml`, you can configure your GitLab CI job as follows:
+To make GitLab surface test results, configure [`artifacts:reports:junit`](https://docs.gitlab.com/ci/testing/unit_test_reports/)
+to point to the JUnit XML output:
 
 ```yaml title=".gitlab-ci.yml"
-stages:
-  - test
-
 serenity:
   stage: test
   # ...
   artifacts:
     when: always
     paths:
-      - target
+      - reports/serenity-js
     # highlight-start
     reports:
-      junit: target/junit-results.xml
+      junit: reports/junit-results.xml
     # highlight-end
-
-# other configuration
 ```
 
 :::tip Pro Tip
-Note that in the above example I use [`artifacts:when: always`](https://docs.gitlab.com/ee/ci/yaml/#artifactswhen).
-This instructs GitLab to upload and analyse the test report even when the test run fails, which is exactly when you need your test reports the most 😊
+Use `artifacts: when: always` so GitLab uploads and analyses the JUnit report even when tests fail —
+which is exactly when you need it most 😊
 :::
+
+## Using Serenity BDD Reporter
+
+If your team already uses [Serenity BDD](/handbook/reporting/serenity-bdd-reporter/) or prefers its multi-page report format,
+your pipeline needs a separate `serenity-bdd run` step after tests complete to generate the HTML report.
+
+The official [Serenity/JS Docker image](/handbook/integration/docker/) includes OpenJDK,
+so no additional Java setup is required.
+
+<DynamicCodeBlock title=".gitlab-ci.yml" lang="yaml">
+{`stages:
+  - test
+  - pages
+
+  serenity:
+    stage: test
+    image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    script:
+      - npm ci
+      - npm test
+      # package.json: "test": "failsafe clean test:execute test:report"
+      # where test:report runs: serenity-bdd run
+
+    artifacts:
+      when: always
+      paths:
+        - target/site/serenity
+
+  pages:
+    stage: pages
+    dependencies:
+      - serenity
+    script:
+      - mkdir -p public
+      - cp -r target/site/serenity/* public/
+    artifacts:
+      paths:
+        - public
+    rules:
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+`}
+</DynamicCodeBlock>
+
+→ Learn more: [Serenity BDD Reporter guide](/handbook/reporting/serenity-bdd-reporter/) | [Migrating to the HTML Reporter](/handbook/reporting/html-reporter/#migrating-from-serenity-bdd-reporter)
+
+## Learn more
+
+- [HTML Reporter](/handbook/reporting/html-reporter/) — configuration, CI integration patterns, migration from Serenity BDD
+- [Serenity/JS Docker images](/handbook/integration/docker/) — pre-configured container images for CI
+- [Serenity/JS Project Templates](/getting-started/project-templates/) — pre-configured starters with CI workflows
+- [GitLab CI/CD documentation](https://docs.gitlab.com/ci/) — pipeline syntax and configuration reference
+- [GitLab Pages documentation](https://docs.gitlab.com/user/project/pages/) — publishing static sites from your repository

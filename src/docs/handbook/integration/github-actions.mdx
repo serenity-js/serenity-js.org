@@ -1,9 +1,393 @@
+---
+title: GitHub Actions
+---
+
+export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwright-core" format="exact" />;
+
 # GitHub Actions
 
-Serenity/JS integrates with [industry-standard test runners](/handbook/test-runners/), so that your test scenarios can be executed
-using your regular build tools, <abbr title="Continuous Integration and Delivery">CI/CD</abbr> pipelines, and <abbr title="Integrated Development Environments">IDEs</abbr>.
+Serenity/JS integrates with [GitHub Actions](https://github.com/features/actions) to run your acceptance tests in CI
+and publish interactive HTML reports with trend history, flaky test detection, and error clustering.
 
-In this article, I'll show you how to configure [GitHub Actions CI](https://github.com/features/actions),
-to run automated acceptance tests built using Serenity/JS, and publish test execution reports and living documentation.
+In this guide, you'll learn how to configure GitHub Actions workflows that:
+- Run Serenity/JS test scenarios using the official [Serenity/JS Docker image](/handbook/integration/docker/)
+- Publish the [HTML Reporter](/handbook/reporting/html-reporter/) output to GitHub Pages
+- Preserve execution history across builds for trend analysis
 
-<ArticleComingSoon />
+## Before you start
+
+Set up a working Serenity/JS test suite using one of the official [Serenity/JS Project Templates](/getting-started/project-templates/),
+or add Serenity/JS to your existing project by following the [Serenity/JS installation guide](/handbook/installation/).
+
+If you're new to Serenity/JS, [follow the tutorial](/handbook/tutorials/your-first-web-scenario) to learn more about the framework.
+
+## Running Serenity/JS on GitHub Actions
+
+GitHub Actions workflows run on [virtual machines](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+or inside [containers](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idcontainer).
+
+To ensure a stable, reproducible testing environment, use the official
+[Serenity/JS Docker image](/handbook/integration/docker/) as a job container. It comes pre-configured with:
+- The latest Long-Term Support (LTS) version of Node.js
+- All Playwright browser engines, plus stable Chrome and Edge
+- OpenJDK Java Runtime Environment (for teams also using [Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/))
+
+:::tip Why use a container?
+Running tests inside a container eliminates environment drift between local development and CI.
+Browser versions, system dependencies, and font rendering all stay consistent — reducing flaky failures
+caused by infrastructure differences rather than product bugs.
+:::
+
+## Single-module project
+
+A single-module project has one test suite that runs in a single CI job. This is the most common setup for small to medium projects.
+
+The [`HtmlReporter`](/handbook/reporting/html-reporter/) crew member handles both data collection and report generation automatically — no separate aggregation step is needed.
+
+### Basic workflow
+
+This workflow runs your tests and uploads the report as a build artifact:
+
+<DynamicCodeBlock title=".github/workflows/test.yml" lang="yaml">
+{`name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: serenity-report
+          path: reports/serenity-js/
+          retention-days: 14
+`}
+</DynamicCodeBlock>
+
+:::tip Always upload the report
+Use `if: always()` on the upload step so the report is available even when tests fail —
+that's exactly when you need it most.
+:::
+
+### Publishing to GitHub Pages
+
+To publish the report to GitHub Pages with trend history preserved across builds, add a deployment job
+that restores the previous report before generating the new one:
+
+<DynamicCodeBlock title=".github/workflows/test.yml" lang="yaml">
+{`name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore previous report (preserves trend history)
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: reports/serenity-js
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm test
+
+      - name: Deploy report to GitHub Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: reports/serenity-js
+          clean: true
+`}
+</DynamicCodeBlock>
+
+**How trend history works:**
+
+1. Before running tests, the workflow checks out the `gh-pages` branch into `reports/serenity-js/`. This restores the `test-runs/` directory containing data from previous builds.
+2. When tests run, the `HtmlReporter` writes new data to `reports/serenity-js/test-runs/<runId>/` and aggregates all available runs into the final report.
+3. After tests complete, the entire `reports/serenity-js/` directory — including the new run — is deployed back to `gh-pages`.
+
+Each build accumulates history. Use the [`maxHistory`](/handbook/reporting/html-reporter/#configuration-options) option to control how many runs are retained.
+
+:::note GitHub Pages setup
+Ensure GitHub Pages is enabled for your repository (Settings → Pages → Source: "Deploy from a branch", branch: `gh-pages`).
+The first run will create the `gh-pages` branch automatically.
+:::
+
+## Multi-module project
+
+A multi-module project runs tests across multiple parallel jobs — for example, testing separate applications,
+browser variants, or sharded test suites. Each job produces its own test data, and a final job aggregates
+everything into one report.
+
+### Example: admin-ui and customer-ui
+
+Consider a monorepo with two UI modules, each with its own test suite:
+
+```
+my-project/
+├── modules/
+│   ├── admin-ui/
+│   │   ├── spec/
+│   │   └── playwright.config.ts
+│   └── customer-ui/
+│       ├── spec/
+│       └── playwright.config.ts
+└── package.json
+```
+
+### Step 1: Configure each module to archive data only
+
+In each module's `playwright.config.ts`, use `TestRunArchiver` instead of the full `HtmlReporter`.
+This collects test data without generating the final report:
+
+```ts title="modules/admin-ui/playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+
+    reporter: [
+        ['line'],
+        ['@serenity-js/playwright-test', {
+            crew: [
+                ['@serenity-js/html-reporter:TestRunArchiver', {
+                    outputDirectory: './reports/serenity-js',
+                    specDirectory: './spec',
+                }],
+            ]
+        }]
+    ],
+});
+```
+
+### Step 2: Run tests in parallel jobs
+
+Each job uploads its `test-runs/` data as a build artifact:
+
+<DynamicCodeBlock title=".github/workflows/test.yml" lang="yaml">
+{`name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    strategy:
+      matrix:
+        module: [ admin-ui, customer-ui ]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        working-directory: modules/\${{ matrix.module }}
+        run: npx playwright test
+
+      - name: Upload test run data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-run-data-\${{ matrix.module }}
+          path: modules/\${{ matrix.module }}/reports/serenity-js/test-runs/
+          retention-days: 3
+
+  report:
+    name: Aggregate report
+    needs: [ test ]
+    if: always()
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore previous report (preserves trend history)
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: reports/serenity-js
+        continue-on-error: true
+
+      - name: Download test run data from all modules
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-run-data-*
+          path: test-run-data/
+
+      - name: Aggregate report
+        run: |
+          npx @serenity-js/html-reporter aggregate \\
+            --input "test-run-data/**/test-runs/*,reports/serenity-js/test-runs/*" \\
+            --output ./reports/serenity-js \\
+            --title "My Project" \\
+            --max-history 10
+
+      - name: Deploy report to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: reports/serenity-js
+          clean: true
+`}
+</DynamicCodeBlock>
+
+**What happens:**
+
+1. The `test` job matrix runs both modules in parallel. Each uploads its `test-runs/` directory as a separate artifact.
+2. The `report` job downloads all artifacts, restores the previous `gh-pages` report for trend history, then runs `aggregate` to combine everything into a single report.
+3. The combined report is deployed to GitHub Pages (on `main` only).
+
+:::tip fail-fast: false
+Set `fail-fast: false` on the test matrix so all modules run to completion even if one fails.
+This ensures the aggregated report contains results from all modules, not just the ones that happened to finish first.
+:::
+
+### Adapting for other multi-job patterns
+
+The same approach works for:
+- **Sharded Playwright tests** — replace the `module` matrix with Playwright's `--shard` flag
+- **Multi-browser testing** — matrix on browser names, each producing its own test run data
+- **Monorepo CI** — each package in a workspace uploads independently
+
+The key pattern is always the same: archive data in parallel → aggregate in a final step.
+
+## Controlling report history
+
+The [`maxHistory`](/handbook/reporting/html-reporter/#configuration-options) option limits how many test runs are retained.
+Without it, the report grows indefinitely.
+
+```typescript
+['@serenity-js/html-reporter', {
+    outputDirectory: './reports/serenity-js',
+    maxHistory: 20,  // keep the last 20 runs
+}]
+```
+
+For the CLI `aggregate` command:
+
+```sh
+npx @serenity-js/html-reporter aggregate \
+  --input "..." \
+  --output ./reports/serenity-js \
+  --max-history 20
+```
+
+:::tip Choosing a maxHistory value
+A good starting value is the number of builds you'd realistically compare when investigating a regression.
+For most teams, 10–20 runs provides useful trend data without bloating the GitHub Pages deployment.
+:::
+
+## Using Serenity BDD Reporter
+
+If your team already uses [Serenity BDD](/handbook/reporting/serenity-bdd-reporter/) or prefers its multi-page report format,
+your workflow needs Java and a separate report generation step (`serenity-bdd run`) after tests complete.
+
+The official [Serenity/JS Docker image](/handbook/integration/docker/) includes OpenJDK,
+so no additional Java setup is required when running inside the container.
+
+<DynamicCodeBlock title=".github/workflows/test.yml" lang="yaml">
+{`jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests and generate report
+        run: npm test
+        # package.json scripts:
+        #   "test": "failsafe clean test:execute test:report"
+        #   "test:execute": "npx playwright test"
+        #   "test:report": "serenity-bdd run"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: serenity-report
+          path: target/site/serenity/
+`}
+</DynamicCodeBlock>
+
+The key differences from the HTML Reporter workflow:
+- `npm test` invokes `npm-failsafe` to chain test execution and report generation
+- `serenity-bdd run` requires Java (provided by the Docker image)
+- The report output goes to `target/site/serenity/` rather than `reports/serenity-js/`
+
+→ Learn more: [Serenity BDD Reporter guide](/handbook/reporting/serenity-bdd-reporter/) | [Migrating to the HTML Reporter](/handbook/reporting/html-reporter/#migrating-from-serenity-bdd-reporter)
+
+## Learn more
+
+- [HTML Reporter](/handbook/reporting/html-reporter/) — configuration, CI integration patterns, migration from Serenity BDD
+- [Serenity/JS Docker images](/handbook/integration/docker/) — pre-configured container images for CI
+- [Serenity/JS Project Templates](/getting-started/project-templates/) — pre-configured starters with GitHub Actions workflows
+- [GitHub Pages documentation](https://docs.github.com/en/pages) — enabling and configuring GitHub Pages for your repository
