@@ -19,16 +19,15 @@ import { defineConfig, devices } from '@playwright/test'
 import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test'
 
 export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+
     reporter: [
         // Serenity/JS reporting services
         [ '@serenity-js/playwright-test', {
             crew: [
                 '@serenity-js/console-reporter',
-                [ '@serenity-js/serenity-bdd', {
+                [ '@serenity-js/html-reporter', {
                   specDirectory: './spec'
-                } ],
-                [ '@serenity-js/core:ArtifactArchiver', {
-                  outputDirectory: './target/site/serenity'
                 } ],
             ]
         }],
@@ -43,14 +42,16 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
 
 This configuration enables the [`@serenity-js/playwright-test`](/api/playwright-test/) test runner adapter, which in turn configures the ["stage crew"](/handbook/architecture/#serenityjs-reporting-services) of Serenity/JS reporting services:
 - [Console reporter](/handbook/reporting/console-reporter/) - Displays test results in the terminal.
-- [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter/) - Produces `json` reports to be ingested by the Serenity BDD CLI and produce the living documentation.
-- [Artifact Archiver](/handbook/reporting/artifact-archiver/) - Stores the `json` reports and screenshots captured by the Photographer to disk.
+- [HTML Reporter](/handbook/reporting/html-reporter/) - Produces a self-contained HTML report with trend history, flaky test detection, and an interactive dashboard.
 
 Note that the above configuration assumes the following directory structure of your project:
-- `./spec` - stores your test scenarios and is the top-most directory of your [requirements hierarchy](/handbook/reporting/serenity-bdd-reporter/#the-requirements-hierarchy).
-- `./target/site/serenity` - stores any test report artifacts, like the `.json` files and screenshots.
+- `./spec` - stores your test scenarios and is the top-most directory of your [requirements hierarchy](/handbook/reporting/html-reporter/#the-requirements-hierarchy).
 
-If you'd like to use different locations for your tests or the test reports, adjust the `specDirectory` and `outputDirectory` settings accordingly.
+If you'd like to use a different location for your tests, adjust the `specDirectory` setting accordingly.
+
+:::tip Using Serenity BDD Reporter instead?
+If you prefer Serenity BDD's multi-page report format, see the [Serenity BDD Reporter configuration](/handbook/reporting/serenity-bdd-reporter/#configuring-playwright-test).
+:::
 
 ## Enabling automatic screenshots
 

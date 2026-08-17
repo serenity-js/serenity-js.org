@@ -9,7 +9,7 @@ such as [automatic retry of failed tests](/api/mocha-adapter/interface/MochaConf
 If your project already uses Mocha to run its unit tests, you can use the same runner for your acceptance tests too.
 
 **In this article, you will learn:**
-- how to use [Serenity/JS reporting services](/handbook/reporting/), including the [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter), even if your test scenarios don't follow the Screenplay Pattern yet
+- how to use [Serenity/JS reporting services](/handbook/reporting/), including the [HTML Reporter](/handbook/reporting/html-reporter/) and [Serenity BDD reporter](/handbook/reporting/serenity-bdd-reporter), even if your test scenarios don't follow the Screenplay Pattern yet
 - how to implement Mocha test scenarios using reusable [Serenity/JS Screenplay Pattern](/handbook/design/screenplay-pattern) APIs
 
 ## Examples and Project Templates
@@ -23,7 +23,8 @@ If you'd like to dive straight into the code, [Serenity/JS GitHub repository](ht
 To use [Serenity/JS reporting services](/handbook/reporting/) in a Mocha project, you need to:
 - attach the [`@serenity-js/mocha`](/api/mocha) test runner adapter to Mocha
 - [configure Serenity/JS](/api/core/function/configure) to use the reporting services you want to use,
-such as the [`ConsoleReporter`](/handbook/reporting/console-reporter)
+such as the [`ConsoleReporter`](/handbook/reporting/console-reporter),
+[`HtmlReporter`](/handbook/reporting/html-reporter),
 or [`SerenityBDDReporter`](/handbook/reporting/serenity-bdd-reporter)
 
 :::tip Serenity/JS test runner adapters
@@ -104,8 +105,7 @@ beforeAll(async () => {
     configure({
         crew: [
             '@serenity-js/console-reporter',
-            '@serenity-js/serenity-bdd',
-            [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+            ['@serenity-js/html-reporter', { specDirectory: './spec' }],
             // ... any other reporting services
         ],
     })
@@ -120,8 +120,7 @@ beforeAll(async () => {
     configure({
         crew: [
             '@serenity-js/console-reporter',
-            '@serenity-js/serenity-bdd',
-            [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+            ['@serenity-js/html-reporter', { specDirectory: './spec' }],
             // ... any other reporting services
         ],
     })
@@ -240,8 +239,7 @@ beforeAll(async () => {
         ),
         crew: [
             '@serenity-js/console-reporter',
-            '@serenity-js/serenity-bdd',
-            [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+            ['@serenity-js/html-reporter', { specDirectory: './spec' }],
             // ... any other reporting services
         ],
     })
