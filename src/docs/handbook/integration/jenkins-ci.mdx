@@ -1,9 +1,425 @@
+---
+title: Jenkins CI
+---
+
+export const PlaywrightVersion = () => <SupportedIntegrationVersion name="playwright-core" format="exact" />;
+
 # Jenkins CI
 
-Serenity/JS integrates with [industry-standard test runners](/handbook/test-runners/), so that your test scenarios can be executed
-using your regular build tools, <abbr title="Continuous Integration and Delivery">CI/CD</abbr> pipelines, and <abbr title="Integrated Development Environments">IDEs</abbr>.
+Serenity/JS integrates with [Jenkins](https://www.jenkins.io/) to run your acceptance tests
+and publish interactive HTML reports with trend history, flaky test detection, and error clustering.
 
-In this article, I'll show you how to configure [Jenkins CI](https://www.jenkins.io/),
-to run automated acceptance tests built using Serenity/JS, and publish test execution reports and living documentation.
+In this guide, you'll learn how to configure Jenkins pipelines that:
+- Run Serenity/JS test scenarios using the official [Serenity/JS Docker image](/handbook/integration/docker/)
+- Publish the [HTML Reporter](/handbook/reporting/html-reporter/) output using the [HTML Publisher plugin](https://plugins.jenkins.io/htmlpublisher/)
+- Preserve execution history across builds for trend analysis
 
-<ArticleComingSoon />
+## Before you start
+
+Set up a working Serenity/JS test suite using one of the official [Serenity/JS Project Templates](/getting-started/project-templates/),
+or add Serenity/JS to your existing project by following the [Serenity/JS installation guide](/handbook/installation/).
+
+If you're new to Serenity/JS, [follow the tutorial](/handbook/tutorials/your-first-web-scenario) to learn more about the framework.
+
+## Running Serenity/JS on Jenkins
+
+Jenkins pipelines can run inside [Docker containers](https://www.jenkins.io/doc/book/pipeline/docker/) using the `agent { docker }` directive.
+
+To ensure a stable, reproducible testing environment, use the official
+[Serenity/JS Docker image](/handbook/integration/docker/) as your build agent. It comes pre-configured with:
+- The latest Long-Term Support (LTS) version of Node.js
+- All Playwright browser engines, plus stable Chrome and Edge
+- OpenJDK Java Runtime Environment (for teams also using [Serenity BDD Reporter](/handbook/reporting/serenity-bdd-reporter/))
+
+:::tip Why use a Docker agent?
+Running tests inside a container eliminates environment drift between developer machines, Jenkins agents, and other CI environments.
+Browser versions, system dependencies, and font rendering all stay consistent — reducing flaky failures
+caused by infrastructure differences rather than product bugs.
+:::
+
+## Prerequisites
+
+Ensure the following Jenkins plugins are installed:
+- [Docker Pipeline](https://plugins.jenkins.io/docker-workflow/) — enables Docker-based build agents
+- [HTML Publisher](https://plugins.jenkins.io/htmlpublisher/) — publishes HTML reports in the Jenkins UI
+
+## Single-module project
+
+A single-module project has one test suite that runs in a single pipeline. This is the most common setup for small to medium projects.
+
+The [`HtmlReporter`](/handbook/reporting/html-reporter/) crew member handles both data collection and report generation automatically — no separate aggregation step is needed.
+
+### Basic pipeline
+
+<DynamicCodeBlock title="Jenkinsfile" lang="groovy">
+{`pipeline {
+    agent {
+        docker {
+            image 'ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute'
+            args '--ipc=host'
+        }
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+    }
+
+    post {
+        always {
+            publishHTML(target: [
+                reportName: 'Serenity Report',
+                reportDir: 'reports/serenity-js',
+                reportFiles: 'index.html',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: true,
+            ])
+        }
+    }
+}
+`}
+</DynamicCodeBlock>
+
+:::tip --ipc=host
+The `--ipc=host` argument prevents Chromium from running out of shared memory in containerised environments.
+Without it, browser tests may crash with "out of memory" errors on agents with limited `/dev/shm`.
+:::
+
+### Preserving trend history
+
+To enable trend analysis across builds, restore the previous report's `test-runs/` directory before running tests.
+The simplest approach is to archive the report and use the [Copy Artifact plugin](https://plugins.jenkins.io/copyartifact/) to restore it from the last successful build:
+
+<DynamicCodeBlock title="Jenkinsfile" lang="groovy">
+{`pipeline {
+    agent {
+        docker {
+            image 'ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute'
+            args '--ipc=host'
+        }
+    }
+
+    stages {
+        stage('Restore history') {
+            steps {
+                // Copy test-runs from the last successful build's archived report
+                copyArtifacts(
+                    projectName: env.JOB_NAME,
+                    selector: lastCompleted(),
+                    filter: 'reports/serenity-js/test-runs/**',
+                    optional: true,
+                    fingerprintArtifacts: false,
+                )
+            }
+        }
+
+        stage('Install') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts(
+                artifacts: 'reports/serenity-js/**',
+                allowEmptyArchive: true,
+            )
+            publishHTML(target: [
+                reportName: 'Serenity Report',
+                reportDir: 'reports/serenity-js',
+                reportFiles: 'index.html',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: true,
+            ])
+        }
+    }
+}
+`}
+</DynamicCodeBlock>
+
+**How trend history works:**
+
+1. The "Restore history" stage copies `test-runs/` from the last successful build into the workspace.
+2. When tests run, the `HtmlReporter` writes new data to `reports/serenity-js/test-runs/<runId>/` and aggregates all available runs into the final report.
+3. After tests complete, `archiveArtifacts` preserves the full report directory for the next build to restore.
+
+Use the [`maxHistory`](/handbook/reporting/html-reporter/#configuration-options) option to control how many runs are retained.
+
+:::note Copy Artifact plugin
+The "Restore history" stage requires the [Copy Artifact plugin](https://plugins.jenkins.io/copyartifact/).
+:::
+
+## Multi-module project
+
+A multi-module project runs tests across multiple parallel stages — for example, testing separate applications,
+browser variants, or sharded test suites. Each stage produces its own test data, and a final stage aggregates
+everything into one report.
+
+### Example: admin-ui and customer-ui
+
+Consider a monorepo with two UI modules, each with its own test suite:
+
+```
+my-project/
+├── modules/
+│   ├── admin-ui/
+│   │   ├── spec/
+│   │   └── playwright.config.ts
+│   └── customer-ui/
+│       ├── spec/
+│       └── playwright.config.ts
+└── package.json
+```
+
+### Step 1: Configure each module to archive data only
+
+In each module's `playwright.config.ts`, use `TestRunArchiver` instead of the full `HtmlReporter`:
+
+```ts title="modules/admin-ui/playwright.config.ts"
+import { defineConfig } from '@playwright/test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    testDir: './spec',
+
+    reporter: [
+        ['line'],
+        ['@serenity-js/playwright-test', {
+            crew: [
+                ['@serenity-js/html-reporter:TestRunArchiver', {
+                    outputDirectory: './reports/serenity-js',
+                    specDirectory: './spec',
+                }],
+            ]
+        }]
+    ],
+});
+```
+
+### Step 2: Run tests in parallel and aggregate
+
+Use Jenkins [parallel stages](https://www.jenkins.io/doc/book/pipeline/syntax/#parallel) to run modules concurrently,
+then aggregate in a final stage:
+
+<DynamicCodeBlock title="Jenkinsfile" lang="groovy">
+{`pipeline {
+    agent {
+        docker {
+            image 'ghcr.io/serenity-js/playwright:v`}<PlaywrightVersion />{`-resolute'
+            args '--ipc=host'
+        }
+    }
+
+    stages {
+        stage('Install') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Restore history') {
+            steps {
+                copyArtifacts(
+                    projectName: env.JOB_NAME,
+                    selector: lastCompleted(),
+                    filter: 'reports/serenity-js/test-runs/**',
+                    optional: true,
+                    fingerprintArtifacts: false,
+                )
+            }
+        }
+
+        stage('Test') {
+            parallel {
+                stage('admin-ui') {
+                    steps {
+                        dir('modules/admin-ui') {
+                            sh 'npx playwright test'
+                        }
+                    }
+                }
+                stage('customer-ui') {
+                    steps {
+                        dir('modules/customer-ui') {
+                            sh 'npx playwright test'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Aggregate report') {
+            steps {
+                sh """
+                    npx @serenity-js/html-reporter aggregate \\
+                        --input "modules/*/reports/serenity-js/test-runs/*,reports/serenity-js/test-runs/*" \\
+                        --output ./reports/serenity-js \\
+                        --title "My Project" \\
+                        --max-history 10
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts(
+                artifacts: 'reports/serenity-js/**',
+                allowEmptyArchive: true,
+            )
+            publishHTML(target: [
+                reportName: 'Serenity Report',
+                reportDir: 'reports/serenity-js',
+                reportFiles: 'index.html',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: true,
+            ])
+        }
+    }
+}
+`}
+</DynamicCodeBlock>
+
+**What happens:**
+
+1. Both modules run in parallel. Each produces a `test-runs/` directory in its own `reports/serenity-js/`.
+2. The "Aggregate report" stage combines all module data plus the restored historical data into a single report.
+3. The `post` block archives the combined report and publishes it via the HTML Publisher plugin.
+
+## Controlling report history
+
+The [`maxHistory`](/handbook/reporting/html-reporter/#configuration-options) option limits how many test runs are retained.
+Without it, the report grows indefinitely.
+
+```typescript
+['@serenity-js/html-reporter', {
+    outputDirectory: './reports/serenity-js',
+    maxHistory: 20,  // keep the last 20 runs
+}]
+```
+
+For the CLI `aggregate` command:
+
+```sh
+npx @serenity-js/html-reporter aggregate \
+  --input "..." \
+  --output ./reports/serenity-js \
+  --max-history 20
+```
+
+:::tip Choosing a maxHistory value
+A good starting value is the number of builds you'd realistically compare when investigating a regression.
+For most teams, 10–20 runs provides useful trend data without bloating artifact storage.
+:::
+
+## Generating JUnit reports
+
+Jenkins natively recognises [JUnit XML reports](https://plugins.jenkins.io/junit/) and surfaces test results
+in the build dashboard, including trend graphs and failure details.
+
+Serenity/JS integrates with the **native reporters** offered by all supported [test runners](/handbook/test-runners/),
+including those producing JUnit reports:
+- [Playwright Test JUnit reporter](https://playwright.dev/docs/test-reporters#junit-reporter)
+- [Cucumber.js JUnit formatter](https://github.com/cucumber/cucumber-js/blob/main/docs/formatters.md#junit)
+- [Mocha JUnit reporter](https://www.npmjs.com/package/mocha-junit-reporter)
+- [Jasmine JUnit reporter](https://www.npmjs.com/package/jasmine-reporters)
+- [WebdriverIO JUnit reporter](https://webdriver.io/docs/junit-reporter/)
+
+To surface test results in Jenkins, add a `junit` post step:
+
+```groovy title="Jenkinsfile"
+post {
+    always {
+        // highlight-start
+        junit(
+            testResults: 'reports/junit-results.xml',
+            allowEmptyResults: true,
+        )
+        // highlight-end
+        publishHTML(target: [
+            reportName: 'Serenity Report',
+            reportDir: 'reports/serenity-js',
+            reportFiles: 'index.html',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: true,
+        ])
+    }
+}
+```
+
+:::tip Content Security Policy
+By default, Jenkins blocks inline JavaScript in published HTML reports via its [Content Security Policy](https://www.jenkins.io/doc/book/security/configuring-content-security-policy/).
+The Serenity/JS HTML Report requires JavaScript to function. To allow it, configure the CSP header in
+**Manage Jenkins → Script Console**:
+
+```groovy
+System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
+```
+
+For a persistent fix, add this to your Jenkins startup arguments or use the
+[Permissive Script Security plugin](https://plugins.jenkins.io/permissive-script-security/).
+:::
+
+## Using Serenity BDD Reporter
+
+If you're using [`@serenity-js/serenity-bdd`](/handbook/reporting/serenity-bdd-reporter/) instead of the HTML Reporter,
+your pipeline needs a `serenity-bdd run` step after tests complete to generate the HTML report.
+
+The official [Serenity/JS Docker image](/handbook/integration/docker/) includes OpenJDK,
+so no additional Java setup is required.
+
+```groovy title="Jenkinsfile"
+stage('Test') {
+    steps {
+        sh 'npm test'
+        // package.json: "test": "failsafe clean test:execute test:report"
+        // where test:report runs: serenity-bdd run
+    }
+}
+
+post {
+    always {
+        publishHTML(target: [
+            reportName: 'Serenity BDD Report',
+            reportDir: 'target/site/serenity',
+            reportFiles: 'index.html',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: true,
+        ])
+    }
+}
+```
+
+See the [Serenity BDD Reporter documentation](/handbook/reporting/serenity-bdd-reporter/) for full configuration,
+or consider [migrating to the HTML Reporter](/handbook/reporting/html-reporter/#migrating-from-serenity-bdd-reporter)
+for a simpler CI setup with built-in trend analysis.
+
+## Learn more
+
+- [HTML Reporter](/handbook/reporting/html-reporter/) — configuration, CI integration patterns, migration from Serenity BDD
+- [Serenity/JS Docker images](/handbook/integration/docker/) — pre-configured container images for CI
+- [Serenity/JS Project Templates](/getting-started/project-templates/) — pre-configured starters with CI workflows
+- [Jenkins Pipeline documentation](https://www.jenkins.io/doc/book/pipeline/) — pipeline syntax and configuration reference
+- [Jenkins Docker Pipeline plugin](https://plugins.jenkins.io/docker-workflow/) — running builds inside Docker containers
