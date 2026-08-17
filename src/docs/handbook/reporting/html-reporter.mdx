@@ -555,6 +555,12 @@ For CI pipelines, you can use `TestRunArchiver` alone in parallel jobs, then run
 
 If you're currently using [`@serenity-js/serenity-bdd`](/handbook/reporting/serenity-bdd-reporter/), you can migrate to the HTML Reporter in stages — run both side by side first, then switch fully when you're comfortable.
 
+:::info Before you start
+Make sure all your `@serenity-js/*` packages are on the [latest version](/releases/).
+The HTML Reporter requires the same version as the rest of your Serenity/JS modules.
+See [Updating Serenity/JS](/releases/updating-serenity-js/) for step-by-step instructions.
+:::
+
 ### Running both reporters together
 
 Both reporters coexist in the same `crew` array. They write to different directories and don't conflict:
