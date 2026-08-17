@@ -664,6 +664,33 @@ No. The HTML Reporter is pure Node.js — no JRE, no JAR downloads, no `serenity
 
 Nothing — the report generates automatically at the end of the test run. For multi-job CI aggregation, use the [`aggregate` CLI command](#aggregate) instead.
 
+## FAQ
+
+### What if my report gets too large?
+
+The main levers for controlling report size:
+- **Reduce `maxHistory`** — fewer retained runs means less data in `test-runs/`. Start with 10–20 and adjust based on your deployment target's size limits.
+- **Use `TakePhotosOfFailures`** — capturing screenshots only on failure (rather than `TakePhotosOfInteractions`) significantly reduces artifact size.
+- **Disable video recording** — video files are the largest artifacts. Only enable them when actively debugging.
+
+### What about screenshots and videos growing over time?
+
+`maxHistory` prunes old runs automatically — when a run is pruned, its screenshots and videos are removed too. Within retained runs, the main levers are screenshot strategy and video settings.
+
+If your deployment target has strict size limits (e.g., GitHub Pages' 1GB soft limit), reduce `maxHistory` or deploy to external static hosting (S3, Azure Blob Storage, Netlify, Cloudflare Pages) instead.
+
+### What happens if a CI job crashes mid-run?
+
+The HTML Reporter uses a two-phase write pattern: it writes a placeholder `db.json` when the test run starts, then overwrites it with full data when the run finishes. If the process crashes between these two steps, the placeholder persists and the report surfaces it with a ⚠️ indicator — preventing "false green" results. Data from other modules is not affected.
+
+### Can I use Git LFS for report data?
+
+No. GitHub Pages and GitLab Pages serve files directly from the repository — they can't resolve LFS pointers. If you use LFS, the deployed report would contain pointer files instead of actual data. Keep report artifacts in regular Git storage, or deploy to external hosting.
+
+:::tip Have a question that's not answered here?
+Ask in the comments below — we'll answer and may add it to this guide.
+:::
+
 ## Learn more
 
 - [`@serenity-js/html-reporter` API documentation](/api/html-reporter)
