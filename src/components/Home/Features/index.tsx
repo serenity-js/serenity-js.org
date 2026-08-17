@@ -78,8 +78,7 @@ const TopFeatures: FeatureItem[][] = [
             Svg: require('@site/static/images/serenity-js-reporting.svg').default,
             description: (
                 <>
-                    Serenity/JS integrates with Serenity BDD to provide powerful <a id={"cta-homepage-handbook-reporting"} href={"/handbook/reporting/"}>living documentation and test reporting</a> that gives meaningful feedback to testers,
-                    business folks, and the team as a whole. Serenity/JS tells you not only what tests have been executed, but more importantly, what requirements have been tested.
+                    The <a id={"cta-homepage-handbook-reporting"} href={"/handbook/reporting/html-reporter/"}>Serenity/JS HTML Reporter</a> gives your whole team meaningful feedback — trend history across CI runs, flaky test detection, error clustering, and an interactive dashboard. No Java, no extra steps — the report generates automatically.
                 </>
             ),
         },
