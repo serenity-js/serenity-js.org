@@ -35,6 +35,16 @@ make clean verify report
 ```shell
 make install
 ```
+- Install browsers needed for integration tests (one-off, or after a Playwright/Chrome update):
+```shell
+make setup
+```
+  Or selectively, depending on the modules you're working on:
+```shell
+pnpm setup:playwright   # Playwright browsers + OS deps
+pnpm setup:protractor   # Chrome 129 + ChromeDriver (for Protractor tests)
+pnpm setup:webdriverio  # Chrome stable + ChromeDriver (for WebdriverIO tests)
+```
 - Verify your environment is set up correctly and all tests are passing:
 ```shell
 make clean test
@@ -69,6 +79,7 @@ For documentation-focused contributions, see the [Improving Documentation](/comm
 The build process is driven by the main [Makefile](https://github.com/serenity-js/serenity-js/blob/main/Makefile). Common commands:
 - `make` - runs install, clean, compile
 - `make install` - installs all mono-repo dependencies
+- `make setup` - installs browsers for integration tests (Playwright, Chrome for Protractor, Chrome for WebdriverIO)
 - `make cc` - clears Nx.js build cache
 - `make clean` - removes build artifacts
 - `make test` - runs unit tests in `packages/*/spec`
