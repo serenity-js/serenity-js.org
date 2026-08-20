@@ -22,7 +22,7 @@ Serenity/JS also offers **advanced reporting** that provides clear insights into
 helping both technical teams and business stakeholders understand the quality of the system under test.
 
 **Benefits of integrating Playwright Test with Serenity/JS:**
-- [Enhanced Reporting](/handbook/reporting/) - Gain visually rich reports and living documentation with [Serenity BDD](/handbook/reporting/serenity-bdd-reporter/).
+- [Enhanced Reporting](/handbook/reporting/) - Gain visually rich reports with the [HTML Reporter](/handbook/reporting/html-reporter/) — trends, flaky test detection, and an interactive dashboard.
 - [Reusable Code](/handbook/design/screenplay-pattern/) - Leverage the [Screenplay Pattern](/handbook/design/screenplay-pattern/) to write portable, maintainable tests that streamline collaboration.
 - [Integration Libraries](/api/) - Interact seamlessly with [REST APIs](/api/rest/), [local Node.js servers](/api/local-server/), and verify [complex workflows](/api/assertions/) with ready-to-use integration libraries.
 
@@ -127,7 +127,7 @@ For more information on compatibility with external tools, consult the [Serenity
 To add Serenity/JS to a WebdriverIO project, install the following modules:
 
 ```sh npm2yarn
-npm install --save-dev @serenity-js/core @serenity-js/console-reporter @serenity-js/webdriverio @serenity-js/rest @serenity-js/web @serenity-js/serenity-bdd
+npm install --save-dev @serenity-js/core @serenity-js/console-reporter @serenity-js/webdriverio @serenity-js/rest @serenity-js/web @serenity-js/html-reporter
 ```
 
 This command installs:
@@ -135,7 +135,7 @@ This command installs:
 - [`@serenity-js/console-reporter`](/api/console-reporter)
 - [`@serenity-js/rest`](/api/rest)
 - [`@serenity-js/web`](/api/web)
-- [`@serenity-js/serenity-bdd`](/api/serenity-bdd)
+- [`@serenity-js/html-reporter`](/api/html-reporter) — self-contained HTML report with trends, flaky test detection, and an interactive dashboard
 - [`@serenity-js/webdriverio`](/api/webdriverio) compatible with WebdriverIO 9 (replace with [`@serenity-js/webdriverio-8`](/api/webdriverio-8) if you're using WebdriverIO 8)
 
 #### Installing Serenity/JS test runner adapter
