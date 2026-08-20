@@ -676,14 +676,15 @@ To get familiar with debugging Serenity/JS test scenarios in Visual Studio Code,
 ## Test reporting
 
 Serenity frameworks are well-known for their state-of-the-art [reporting capabilities](/handbook/reporting/).
-Apart from the excellent [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter), however,
+The [Serenity/JS HTML Reporter](/handbook/reporting/html-reporter/) produces a self-contained report with
+trends, flaky test detection, and an interactive dashboard.
 Serenity/JS can also dramatically improve the standard [Playwright Test reports](/handbook/test-runners/playwright-test).
 Reports produced for Playwright Test scenarios that follow the [**Screenplay Pattern**](/handbook/design/screenplay-pattern)
 automatically include detailed information about actors' activities and much more thorough assertion error reports thanks
 to the dedicated [Serenity/JS assertions](/api/assertions) library.
 
 The [Serenity/JS + Playwright Test project template](https://github.com/serenity-js/serenity-js-playwright-test-template)
-you've been using in this tutorial is already set up to produce both the Serenity BDD and Playwright Test reports.
+you've been using in this tutorial is already set up to produce both the Serenity/JS HTML and Playwright Test reports.
 
 To explore them, run the full test suite by invoking `npm test` in your terminal:
 
@@ -692,16 +693,17 @@ To explore them, run the full test suite by invoking `npm test` in your terminal
     img={require('@site/static/images/web-testing/your-first-web-scenario/vs-code-test-reporting-npm-test.gif')}
 />
 
-When the test suite is finished, you'll find your [Serenity BDD reports](/handbook/reporting/serenity-bdd-reporter)
-generated under `target/site/serenity`, and served on port `8080` in GitHub Codespace:
+When the test suite is finished, you'll find your [Serenity/JS HTML Report](/handbook/reporting/html-reporter/)
+generated under `reports/serenity-js`, and served on port `8080` in GitHub Codespace:
 
 <Figure
-    caption='Serenity BDD reports'
-    img={require('@site/static/images/web-testing/your-first-web-scenario/vs-code-test-reporting-serenity-bdd.gif')}
+    caption='Serenity/JS HTML Report — scenario detail with activity tree'
+    img={require('@site/static/images/web-testing/your-first-web-scenario/html-reporter-scenario-detail.png')}
+    externalLink={'https://serenity-js.github.io/serenity-js-playwright-test-template/serenity-js/'}
 />
 
 [Playwright Test reports](/handbook/test-runners/playwright-test/reporting/) are generated
-under `playwright-report` and served on port `8181` in GitHub Codespace:
+under `reports/playwright`, and served on port `8181` in GitHub Codespace:
 
 <Figure
     caption='Enhanced Playwright Test reports'
@@ -717,8 +719,7 @@ or on demand using the interaction to [`TakeScreenshot`](/api/web/class/TakeScre
 
 To enable automatic screenshots, use your `playwright.config.ts` file to add the [`Photographer`](/api/web/class/Photographer/) to the Serenity/JS
 stage [`crew`](/api/playwright-test/interface/SerenityFixtures/#crew) available in Playwright Test [worker processes](https://playwright.dev/docs/test-parallel),
-and add the [`SerenityBDDReporter`](/api/serenity-bdd/class/SerenityBDDReporter/) and
-[`ArtifactArchiver`](/api/core/class/ArtifactArchiver/) to your reporter process:
+and add the [`HtmlReporter`](/api/html-reporter/class/HtmlReporter/) to your reporter process:
 
 ```typescript title="playwright.config.ts"
 import { defineConfig, devices } from '@playwright/test';
@@ -728,8 +729,7 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
   reporter: [
       [ '@serenity-js/playwright-test', {
           crew: [
-              '@serenity-js/serenity-bdd',
-              [ '@serenity-js/core:ArtifactArchiver', { outputDirectory: 'target/site/serenity' } ],
+              ['@serenity-js/html-reporter', { specDirectory: './spec' }],
           ]
           // other Serenity/JS config
       }]
@@ -749,8 +749,8 @@ export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
 
 :::tip Project-specific configuration
 Use [Playwright Projects](https://playwright.dev/docs/test-projects) to configure
-the `Photographer` differently for different environments, browsers, or test suites, while keeping the `SerenityBDDReporter`
-and `ArtifactArchiver` configuration the same across all of them.
+the `Photographer` differently for different environments, browsers, or test suites, while keeping the `HtmlReporter`
+configuration the same across all of them.
 :::
 
 Automatic screenshots are taken using the active actor's web browser when the desired conditions are met,
@@ -767,7 +767,7 @@ even when the actors [use different browsers](https://github.com/serenity-js/ser
 #### On-demand screenshots
 
 To take a screenshot on demand, use the interaction to [`TakeScreenshot`](/api/web/class/TakeScreenshot)
-and the `ArtifactArchiver` and `SerenityBDDReporter` will automatically add your screenshot to the report:
+and the `HtmlReporter` will automatically add your screenshot to the report:
 
 ```typescript title="spec/recording_items.spec.ts"
 import { TakeScreenshot } from '@serenity-js/web'
