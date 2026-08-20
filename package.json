@@ -84,7 +84,7 @@
   "overrides": {
     "@wdio/cli": "9.x",
     "webdriverio": "9.x",
-    "webpack": "5.98.0",
+    "webpack": "5.109.2",
     "@docusaurus/mdx-loader": "3.7.0"
   },
   "engines": {
