@@ -56,7 +56,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-markdown": "10.1.0",
-    "sass": "1.102.0",
+    "sass": "1.103.0",
     "tiny-types": "2.0.5",
     "typedoc": "0.27.6",
     "typedoc-plugin-mdn-links": "4.0.11",
