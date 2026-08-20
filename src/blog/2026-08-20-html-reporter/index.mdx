@@ -1,0 +1,155 @@
+---
+slug: html-reporter
+title: "Introducing the Serenity/JS HTML Reporter"
+authors: [jan-molak]
+tags:
+  - core
+  - html-reporter
+  - release
+  - open-source
+date: 2026-08-20
+---
+
+import Figure from '@site/src/components/Figure';
+
+Serenity/JS 3.45 introduces a built-in HTML Reporter — designed to help your team understand the quality of your system, not just whether tests passed or failed. No Java, no separate generation step, no external services.
+
+{/* truncate */}
+
+## Beyond pass and fail
+
+When automated tests fail, knowing *which assertion* failed is only the beginning. Before you raise the alarm with the wider team, you need to understand the impact. Is this an isolated failure, or something more widespread? Should it affect the release decision? Should the team down tools and focus on fixing? Or is the reported failure a flaky test that should be stabilised rather than investigated?
+
+And when tests *pass*, how much confidence should that give you? A green build after three retries is not the same as a green build on the first attempt. A suite where 20% of tests were skipped doesn't tell you the same thing as one where every test ran and passed.
+
+These questions are hard — if at all possible — to answer with common test reporting tools. Most tools tell you *what happened* in this one run. They don't help you understand *what it means* for your system, your release, or your team's next action.
+
+That's why we built the Serenity/JS HTML Reporter. Its job isn't just to report failures — it's to help your team improve the quality of your system by giving you the information you need to make good decisions.
+
+[📊 See a live example from the Serenity/JS test suite →](https://serenity-js.github.io/serenity-js/)
+
+## From coverage to confidence
+
+The question every team asks before a release is: *"Can we ship this system in its current state?"* The focal point of the report is the Dashboard, which aims to answer that question in under 30 seconds.
+
+Rather than leaving you to scan a list of test results and form a gut feeling, it calculates a **confidence score** that accounts for pass rate, test consistency, and completeness. A suite with 95% pass rate but 10 flaky tests gives you less confidence than one with 93% pass rate and zero flakiness — and the Dashboard reflects that.
+
+<Figure
+    caption='The Dashboard provides a confidence score, pass rate, consistency metrics, and trend chart across recent CI runs'
+    img={require('./html-reporter-dashboard.png')}
+/>
+
+The trend chart shows how these metrics evolve over time. A gradual decline in confidence becomes visible immediately — not after someone notices "tests have been unreliable lately."
+
+### Are these failures related?
+
+There's a difference between "we have 12 failing tests" and "we have one bug that affects 12 tests." The first sounds like chaos. The second is a single problem with a known blast radius.
+
+The Errors view makes this distinction for you. It normalises stack traces — stripping machine-specific paths and timestamps — and clusters failures that share the same underlying cause. You see the root cause once, with a count of affected tests.
+
+<Figure
+    caption='The Errors view clusters failures by root cause — one bug affecting 3 tests, not 3 separate problems'
+    img={require('./html-reporter-errors.png')}
+/>
+
+### Is this failure new, or has it been here for a while?
+
+A test that failed today needs different handling than one that's been failing for a week. The first might be your latest commit; the second means someone merged a broken change days ago and nobody noticed.
+
+In the Test Scenarios view, each scenario shows its execution history across recent runs, so you can see at a glance when a failure first appeared. Tests that were passing and are now consistently failing are surfaced explicitly as **degraded** — they don't get lost in the noise.
+
+<Figure
+    caption='Execution history shows how a test has behaved across recent runs — this one is flaky, passing only via retry'
+    img={require('./html-reporter-scenario-flaky.png')}
+/>
+
+### Is this test flaky?
+
+A flaky test that passes on retry is not the same as a reliable test that passes first time — but most CI dashboards show both as green. That erodes trust. When the team stops believing the build result, they stop acting on it.
+
+The Consistency view classifies tests automatically based on their behaviour over recent runs. A test that passes only via retry is marked as **flaky**. One whose outcome differs between runs is **inconsistent**. A test that was passing and is now consistently failing is **degraded**. And one that was failing but now passes cleanly — without retries — is **recovered**.
+
+No manual tagging, no external flaky-test database. The reporter detects the patterns from your CI history. And because the report includes [definitions of all these terms](https://serenity-js.github.io/serenity-js/#/about), they're easy to share with your team so everyone uses the same vocabulary when discussing test health.
+
+<Figure
+    caption='The Consistency view separates flaky tests from genuine failures — each test shows its outcome pattern across recent runs'
+    img={require('./html-reporter-consistency.png')}
+/>
+
+### What exactly went wrong?
+
+Once you know *which* test to look at, you need to understand *what happened*. Not just the assertion that failed — the full sequence of events that led there.
+
+When you click into a scenario, you see its full activity tree — every step with timing, inline screenshots, REST API exchanges, and video recordings when enabled. The tree auto-expands to the point of failure so you don't have to hunt for it. And because every view state is encoded in the URL, you can copy the link and send it to a colleague — they'll land directly on the same failure you're looking at.
+
+<Figure
+    caption='Scenario detail showing execution history, error diagnostics, and retry attempts'
+    img={require('./html-reporter-scenario-detail.png')}
+/>
+
+### Which tests slow us down?
+
+A 20-minute test suite where most tests finish in seconds but three take 2 minutes each looks very different from one where everything is uniformly slow. The fix is different too — the first is about optimising outliers, the second is an architectural problem.
+
+The Timeline view shows how your tests execute in parallel, making it easy to spot bottlenecks — the long-running tests that dominate your pipeline's wall-clock time.
+
+<Figure
+    caption='The Timeline view reveals which tests dominate your pipeline duration'
+    img={require('./html-reporter-timeline.png')}
+/>
+
+### How well is each capability covered?
+
+Beyond individual test results, teams and their business sponsors need to understand how well each area of the system is tested — and how much trust those tests deserve.
+
+The Capabilities view answers this by turning your test directory structure into a navigable requirements tree, where each node shows a confidence score that accounts for pass rate, consistency, and completeness. If you add `README.md` files alongside your specs, they render inline — so stakeholders can browse what the system does, how well each area is covered, and where the gaps are, without needing to read test code.
+
+<Figure
+    caption='The Capabilities view shows your test directory as a requirements tree with health indicators and inline README rendering'
+    img={require('./html-reporter-capabilities.png')}
+/>
+
+## Get started
+
+If you're new to Serenity/JS, you might be wondering whether using the HTML Reporter requires rearchitecting your test suite. It doesn't. The HTML Reporter works with your existing tests, and any of the [supported test runners](/handbook/test-runners/) — you don't need to adopt the Screenplay Pattern yet to benefit from confidence scoring, flaky test detection, or error clustering. Add the reporter, run your tests, and you'll have a report in seconds. Adopt other Serenity/JS features later, if and when they make sense for your team.
+
+```sh
+npm install --save-dev @serenity-js/core @serenity-js/web @serenity-js/playwright-test @serenity-js/html-reporter
+```
+
+If you're already using Serenity/JS, [update your dependencies](/releases/updating-serenity-js/) to 3.45 or later, then add `@serenity-js/html-reporter` to your crew configuration.
+
+```ts title="playwright.config.ts"
+reporter: [
+    ['@serenity-js/playwright-test', {
+        crew: [
+            ['@serenity-js/html-reporter', {
+                outputDirectory: './reports/serenity-js',
+                specDirectory: './spec',
+            }],
+        ]
+    }]
+],
+```
+
+Run your tests, then open the report:
+
+```sh
+npx @serenity-js/html-reporter serve --open
+```
+
+For full setup instructions, see the guide for your test runner:
+
+- [Playwright Test](/handbook/test-runners/playwright-test/)
+- [WebdriverIO](/handbook/test-runners/webdriverio/)
+- [Cucumber](/handbook/test-runners/cucumber/)
+- [Mocha](/handbook/test-runners/mocha/)
+- [Jasmine](/handbook/test-runners/jasmine/)
+
+## Learn more
+
+The [full documentation](/handbook/reporting/html-reporter/) covers CI integration for [GitHub Actions](/handbook/integration/github-actions/), [GitLab CI](/handbook/integration/gitlab-ci/), and [Jenkins](/handbook/integration/jenkins-ci/) — including parallel pipelines, trend history across deployments, and aggregating results from sharded test runs.
+
+If you're currently using `@serenity-js/serenity-bdd`, the [migration guide](/handbook/reporting/html-reporter/#migrating-from-serenity-bdd-reporter) shows how to run both reporters side by side, or switch whenever you're ready.
+
+Enjoy Serenity! 🎉

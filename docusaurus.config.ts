@@ -147,8 +147,8 @@ const config: Config = {
             },
         },
         announcementBar: {
-            id: 'announcement-bar',
-            content: 'New guide! <a href="/getting-started/">Get started with Serenity/JS</a> — add structured reporting and reusable test components to your project 🚀',
+            id: 'announcement-bar-html-reporter',
+            content: 'New! <a href="/blog/html-reporter/">Introducing the Serenity/JS HTML Reporter</a> — confidence scoring, flaky test detection, and error clustering for your test suite 📊',
             backgroundColor: '#FFE46E',
             isCloseable: false,
         },
