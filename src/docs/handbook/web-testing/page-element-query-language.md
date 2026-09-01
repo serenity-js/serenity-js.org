@@ -420,90 +420,101 @@ That's because even a small change to the structure of the UI might require you
 to fix multiple selectors in your test automation code. Not to mention the issue gets worse the more complex selectors you use.
 :::
 
-### Composing page elements using meta-questions
+### Locating child elements
 
-Serenity/JS [meta-questions](/api/core/interface/MetaQuestion) are "questions about questions",
-so questions that can be composed with other questions and answered in their context.
-In short, any Serenity/JS question that has a [`question.of(anotherQuestion)`](/api/core/interface/MetaQuestion/#of) API is
-a meta-question.
-
-Conveniently, [`PageElement`](/api/web/class/PageElement/) is a meta-question that can be
-composed with another `PageElement` using a declarative [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
-to dynamically model a descendant/ancestor (a.k.a. child/parent) relationship between the elements.
-
-To improve our code from the last example and avoid duplicating element selectors,
-we can introduce functions called `basketItem()` and `itemName()`
-and compose them together as `itemName().of(basketItem())`:
+To avoid duplicating element selectors, you can locate child elements within a parent using
+[`.element()`](/api/web/class/PageElement/#element) and [`.elements()`](/api/web/class/PageElement/#elements):
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
-import { By, PageElement } from '@serenity-js/web'
 import { Ensure, equals } from '@serenity-js/assertions'
+import { By, PageElement, Text } from '@serenity-js/web'
+
+const basket = () =>
+    PageElement.located(By.css('#basket'))
+        .describedAs('basket')
 
 const basketItem = () =>
-  PageElement.located(By.css('#basket .item')) // <- Note singular `PageElement` 
-    .describedAs('basket item')
+    basket().element(By.css('.item'))           // <- single child element within basket
+        .describedAs('basket item')
 
-const itemName = () =>                         
-  PageElement.located(By.css('.name'))         // <- Locator targeting  
-    .describedAs('name')                       //    just the .name element
+const basketItems = () =>
+    basket().elements(By.css('.item'))          // <- all child elements within basket
+        .describedAs('basket items')
 
 await actorCalled('Alice').attemptsTo(
-  Ensure.that(
-    Text.of(                                   // <- retrieve text of
-        itemName().of(basketItem())            //    composed page elements   
-    ),      
-    equals('apples')    
-  ),
+    Ensure.that(Text.of(basketItem()), equals('apples')),
+    Ensure.that(Text.ofAll(basketItems()), equals(['apples', 'bananas'])),
 )
 ```
 
-Just like `PageElement` is a meta-question, `PageElements` is a [`MetaList`](/api/core/class/MetaList)
-that can be composed with another `PageElement` using a declarative [`pageElements.of(pageElement)`](/api/core/class/MetaList/#of) API
-to dynamically model a descendants/ancestor (a.k.a. child/parent) relationship between the elements and their relative root element.
+The `.element()` and `.elements()` methods scope the selector to descendants of the parent element,
+so `basket().element(By.css('.item'))` finds the first `.item` inside `#basket` — not anywhere else on the page.
+
+Serenity/JS also supports a [`.of()`](/api/web/class/PageElement/#of) API, which serves a different purpose: **question composition**.
+Use `.of()` when you need to apply a [meta-question](/api/core/interface/MetaQuestion) like `Text.of()` or `Attribute.called().of()`
+to a dynamically-determined element:
 
 ```typescript
-import { actorCalled } from '@serenity-js/core'
 import { By, PageElement, Text } from '@serenity-js/web'
-import { Ensure, equals } from '@serenity-js/assertions'
 
-const basketItem = () =>
-  PageElement.located(By.css('#basket .item')) // <- Note singular `PageElement` 
-    .describedAs('basket item')
+const itemName = () =>
+    PageElement.located(By.css('.name'))
+        .describedAs('name')
 
-const itemNames = () =>                         
-  PageElements.located(By.css('.name'))        // <- Note plural `PageElements`  
-    .describedAs('name')
+// .of() for question composition — Text applied to a specific element
+Text.of(itemName().of(basketItem()))
 
-await actorCalled('Alice').attemptsTo(
-  Ensure.that(
-    Text.ofAll(                                // <- retrieve text of 
-        itemNames().of(basketItem())           //    ALL the item names in one go   
-    ),      
-    equals([
-        'apples',
-        'bananas',
-    ])    
-  ),
-)
+// .element() for child element access — locating within a parent
+basket().element(By.css('.item'))
 ```
 
 Serenity/JS lets you compose not just the page elements, but also their **descriptions**.
-In our example, the description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of
+For example, the description of `Text.of(itemName().of(basketItem()))` will be **derived from individual descriptions** of
 questions in the chain and reported as `text of name of basket item`.
-Of course, you can set your own description if you prefer using `.describedAs()`, too.
-
-You might have also noticed that the [`childElement.of(parentElement)`](/api/web/class/PageElement/#of) API
-works only with **individual elements**.
-To map **multiple elements** we need to use the `PageElements` [mapping API](/handbook/web-testing/page-element-query-language/#mapping-page-elements-in-a-collection), which we'll talk about next.
+You can set your own description if you prefer using `.describedAs()`, too.
 
 :::tip Serenity/JS PEQL helps you avoid code duplication
 Serenity/JS PEQL lets you **compose** and **reuse** page element definitions,
 helping you to avoid code duplication and reduce maintenance costs.
 
-Using **meta questions** to enable page element reuse can be a great productivity boost,
+Using `.element()` and `.elements()` for parent-child scoping can be a great productivity boost,
 especially when the system under test uses a consistent convention to name element identifiers and classes.
 :::
+
+### Deep chaining
+
+[`.elements()`](/api/web/class/PageElement/#elements) returns a collection with full PEQL support, so you can filter with `.where()`,
+narrow with `.first()`, and then drill deeper with another `.element()` or `.elements()` call — all in a single fluent chain.
+
+For example, to find the price of the first item whose name contains "apple":
+
+```typescript
+import { actorCalled } from '@serenity-js/core'
+import { Ensure, equals, includes } from '@serenity-js/assertions'
+import { By, PageElement, Text } from '@serenity-js/web'
+
+const basket = () =>
+    PageElement.located(By.css('#basket'))
+        .describedAs('basket')
+
+await actorCalled('Alice').attemptsTo(
+    Ensure.that(
+        basket()
+            .elements(By.css('.item'))
+            .where(Text.of(PageElement.located(By.css('.name'))), includes('apple'))
+            .first()
+            .element(By.css('.price'))
+            .text()
+            .trim(),
+        equals('£2.25'),
+    ),
+)
+```
+
+This works because `.first()` on a filtered collection returns a `PageElement` that supports further
+`.element()` and `.elements()` calls, letting you drill into nested UI structures without
+breaking the chain.
 
 ### Mapping page elements in a collection
 
@@ -712,16 +723,15 @@ I'm also going to introduce a couple of helper questions using the patterns and 
 from the earlier parts of this chapter:
 
 ```typescript
-import { By, PageElement, PageElements } from '@serenity-js/web'
+import { By, PageElement } from '@serenity-js/web'
 
 const shoppingList = () =>                              // Container element
     PageElement.located(By.id('shopping-list'))
         .describedAs('shopping list')
 
 const shoppingListItems = () =>                         // Shopping list item 
-    PageElements.located(By.css('.item'))               // widgets located within
-        .of(shoppingList())                             // the shopping list container
-        .describedAs('shopping list items')
+    shoppingList().elements(By.css('.item'))             // widgets located within
+        .describedAs('shopping list items')             // the shopping list container
 
 const toggleButton = () =>                              // Toggle button
     PageElement.located(By.css('.toggle'))
@@ -826,22 +836,31 @@ await actorCalled('Alice').attemptsTo(
 To find a sibling element, e.g. to find a destroy button for an item whose label contains a certain text:
 
 - find the container element whose descendant element meets your conditions,
-- locate the sibling element within that container element.
+- locate the sibling element within that container element using [`.element()`](/api/web/class/PageElement/#element).
 
 ```typescript
 import { actorCalled } from '@serenity-js/core'
-import { CssClasses, Click } from '@serenity-js/web'
-import { Ensure, contain, equals } from '@serenity-js/assertions'
+import { Click } from '@serenity-js/web'
+import { equals } from '@serenity-js/assertions'
 
 const itemCalled = (name: string) =>
-    shoppingListItems()                 // Container element where label
-        .where(label(), equals(name))   // has certain text
+    shoppingListItems()
+        .where(label(), equals(name))
         .first()
 
 await actorCalled('Alice').attemptsTo(
     Click.on(
-        destroyButton()
-            .of(itemCalled('oats'))
+        itemCalled('oats').element(By.css('.destroy'))
+    ),
+)
+```
+
+You can also use `.of()` when the destroy button is defined as a reusable [meta-question](/api/core/interface/MetaQuestion):
+
+```typescript
+await actorCalled('Alice').attemptsTo(
+    Click.on(
+        destroyButton().of(itemCalled('oats'))
     ),
 )
 ```
