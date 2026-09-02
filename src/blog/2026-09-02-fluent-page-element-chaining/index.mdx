@@ -1,0 +1,213 @@
+---
+slug: fluent-page-element-chaining
+title: "Introducing Interaction Objects and Fluent Element Chaining"
+authors: [jan-molak]
+tags:
+  - core
+  - web
+  - release
+  - open-source
+date: 2026-08-31
+---
+
+Serenity/JS 3.46 extends `PageElement` to enable fluent child element access and introduces a new design pattern — **Interaction Objects** — for modelling UI components through composable Questions and Tasks.
+
+Together, these features make it easier to structure your test code around what users can observe and do, rather than the underlying DOM structure.
+
+{/* truncate */}
+
+## Fluent child element access
+
+One of the most requested additions to the Serenity/JS [Page Element Query Language](/handbook/web-testing/page-element-query-language/) (PEQL) has been a way to locate child elements directly from a parent — navigating the DOM hierarchy parent-first, the way you naturally think about it.
+
+Until now, PEQL's powerful `.of()` composition provided a way to build reusable element definitions:
+
+```typescript
+const basket = () =>
+    PageElement.located(By.css('#basket'))
+        .describedAs('basket')
+
+const basketItems = () =>
+    PageElements.located(By.css('.item'))
+        .of(basket())
+        .describedAs('basket items')
+
+const itemPrice = () =>
+    PageElement.located(By.css('.price'))
+        .describedAs('price')
+
+const itemName = () =>
+    Text.of(PageElement.located(By.css('.name')))
+        .describedAs('item name')
+
+// Find the price of apples
+Text.of(
+    itemPrice().of(
+        basketItems()
+            .where(itemName(), includes('apple'))
+            .first()
+    )
+)
+```
+
+Serenity/JS 3.46 builds on this foundation with `.element()` and `.elements()`, providing a more direct way to express the same parent-child relationship:
+
+```typescript
+const basket = () =>
+    PageElement.located(By.css('#basket'))
+        .describedAs('basket')
+
+const itemName = () =>
+    Text.of(PageElement.located(By.css('.name')))
+        .describedAs('item name')
+
+// Find the price of apples
+basket()
+    .elements(By.css('.item'))
+    .where(itemName(), includes('apple'))
+    .first()
+    .element(By.css('.price'))
+    .text()
+```
+
+Both styles compose well. The difference is in what you're expressing:
+
+- `.element()` and `.elements()` **navigate the DOM hierarchy**, reading naturally from parent to child.
+- `.of()` **composes Questions**, letting you apply a reusable Question to an element determined elsewhere.
+
+This distinction becomes particularly useful when designing Interaction Objects.
+
+### Going deeper
+
+`.elements()` returns a PEQL collection, so you can filter, narrow, and continue drilling into the hierarchy:
+
+```typescript
+basket()
+    .elements(By.css('.item'))
+    .where(Text.of(PageElement.located(By.css('.name'))), includes('apple'))
+    .first()
+    .element(By.css('.price'))
+    .text()
+    .trim()
+```
+
+`.of()` remains the right tool when you want to apply a reusable Question — such as `Text.of()` or `Attribute.called().of()` — to a dynamically-determined element. The updated [PEQL guide](/handbook/web-testing/page-element-query-language/#locating-child-elements) goes into this distinction in more detail.
+
+## Introducing Interaction Objects
+
+Most Page Object implementations tend to reflect the structure of the component or page they represent, which can make them sensitive to changes in the markup.
+
+Interaction Objects take a different approach. Instead of modelling the *structure* of a component, they model its *behaviour* from the consumer's perspective — what can a user observe, and what can they do?
+
+- **Questions** describe observable state as nouns — `label()`, `outcome()`, `itemCount()`
+- **Tasks** describe user actions as verbs — `toggle()`, `remove()`, `open()`
+
+Because Questions and Tasks are first-class Screenplay citizens, they compose naturally with `Ensure.that()`, `Wait.until()`, `Check.whether()`, and every other Serenity/JS interaction — your component models get the same compositional architecture as the rest of your test suite.
+
+### A TodoMVC example
+
+Consider a todo list application. A `TodoItem` has observable state — its label, and whether it's completed or not — and actions a user can perform, such as toggling or removing it:
+
+```typescript title="spec/todo-list-app/TodoItem.ts"
+import { Task } from '@serenity-js/core'
+import type { QuestionAdapter } from '@serenity-js/core'
+import { By, Click, Hover } from '@serenity-js/web'
+import type { PageElementAdapter } from '@serenity-js/web'
+
+export class TodoItem {
+    constructor(private readonly rootElement: PageElementAdapter) {
+    }
+
+    private labelElement = () =>
+        this.rootElement.element(By.css('label'))
+
+    private toggleButton = () =>
+        this.rootElement.element(By.css('input.toggle'))
+
+    private destroyButton = () =>
+        this.rootElement.element(By.css('button.destroy'))
+
+    label = (): QuestionAdapter<string> =>
+        this.labelElement().text().trim()
+            .describedAs('todo item label')
+
+    isCompleted = () =>
+        this.toggleButton().isSelected()
+            .describedAs('whether the todo item is completed')
+
+    toggle = (): Task =>
+        Task.where('#actor toggles the todo item',
+            Click.on(this.toggleButton()),
+        )
+
+    remove = (): Task =>
+        Task.where('#actor removes the todo item',
+            Hover.over(this.rootElement),
+            Click.on(this.destroyButton()),
+        )
+}
+```
+
+Notice how `.element()` makes the internal wiring read naturally — `this.rootElement.element(By.css('label'))` says exactly what it means.
+
+The `TodoList` composes `TodoItem` instances and gives the test a way to find them by name. [`PageElement.createAdapter()`](/api/web/class/PageElement/#createAdapter) wraps the incoming element so that `.element()` and `.elements()` can be used for scoped child lookups:
+
+```typescript title="spec/todo-list-app/TodoList.ts"
+import type { Answerable } from '@serenity-js/core'
+import { includes } from '@serenity-js/assertions'
+import { By, PageElement, Text } from '@serenity-js/web'
+import type { PageElementAdapter } from '@serenity-js/web'
+
+export class TodoList {
+    private readonly rootElement: PageElementAdapter;
+
+    constructor(root: Answerable<PageElement>) {
+        this.rootElement = PageElement.createAdapter(root);
+    }
+
+    items = () =>
+        this.rootElement.elements(By.css('.todo-item'))
+            .describedAs('todo items')
+
+    itemCalled = (name: Answerable<string>): TodoItem =>
+        new TodoItem(
+            this.items()
+                .where(Text, includes(name))
+                .first()
+        )
+}
+```
+
+The test scenario describes what the user does and what they expect to see. No selectors, no DOM structure, no implementation details:
+
+```typescript title="spec/todo-list-app/managing-todos.spec.ts"
+const todoList = new TodoList(
+    PageElement.located(By.css('.todo-list'))
+)
+
+await actor.attemptsTo(
+    Ensure.that(todoList.itemCalled('Buy milk').isCompleted(), equals(false)),
+    todoList.itemCalled('Buy milk').toggle(),
+    Ensure.that(todoList.itemCalled('Buy milk').isCompleted(), equals(true)),
+)
+```
+
+When the markup changes, only the Interaction Object needs to change. The tests stay the same — because they were never coupled to the markup in the first place.
+
+## Better structure, better reports
+
+Interaction Objects produce well-named Questions and Tasks, so the [Serenity/JS HTML Reporter](/blog/html-reporter/) renders meaningful descriptions for each step. Instead of *Alice clicks on locator('input.toggle')*, you see *Alice toggles the todo item*.
+
+That may look like a small difference. But it matters when you're diagnosing a failing scenario — and it compounds across a test suite.
+
+## Getting started
+
+The updated [Organising Page Elements](/handbook/web-testing/page-objects-pattern/) guide walks through three progressive levels — from helper functions, through Lean Page Objects, to Interaction Objects — so you can adopt the level of structure that fits your project.
+
+The [Page Element Query Language](/handbook/web-testing/page-element-query-language/#locating-child-elements) guide covers `.element()`, `.elements()`, and [deep chaining](/handbook/web-testing/page-element-query-language/#deep-chaining).
+
+For a complete working example of Interaction Objects, explore the [TodoMVC example](https://github.com/serenity-js/serenity-js/tree/main/examples/playwright-test-todomvc) in the Serenity/JS monorepo.
+
+Both `.element()` and `.elements()` work with Playwright, WebdriverIO, and Protractor.
+
+Enjoy Serenity! 🎉

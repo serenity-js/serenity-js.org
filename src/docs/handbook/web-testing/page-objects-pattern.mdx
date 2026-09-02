@@ -2,99 +2,283 @@
 sidebar_position: 5
 ---
 
-# Lean Page Objects Pattern
+# Organising page elements
 
-While the [Screenplay Pattern](/handbook/design/screenplay-pattern) is a **behavioural pattern**,
-Lean Page Objects is a **structural pattern**. Contrary to the more [traditional definition of Page Objects](https://martinfowler.com/bliki/PageObject.html),
-Serenity/JS Lean Page Objects are minimalistic and focused only on grouping
-related [page elements](/handbook/web-testing/page-element-query-language).
+Serenity/JS offers several ways to organise your page elements, from plain helper functions
+to full interaction objects that model a UI component's observable state and behaviour.
+Which approach you choose depends on the complexity of your web interface and how much reuse you need
+across your test suite.
 
-Consider the below UI widget showing product search results for an imaginary online grocery store:
+All three approaches build on the [Page Element Query Language](/handbook/web-testing/page-element-query-language/) (PEQL) for locating, filtering, and composing page elements.
 
-```html
-<ul id="product-search-results">
-    <li class="product-search-result">
-        <span class="product-name">apples</span>
-        <span class="product-price">£2.25</span>
-    </li>
-    <li class="product-search-result">
-        <span class="product-name">bananas</span>
-        <span class="product-price">£1.50</span>
-    </li>
-</ul>
+To illustrate each approach, we'll use the same [todo list application](https://todo-app.serenity-js.org/) throughout:
+
+```html title="todo-app.html"
+<section class="todo-app">
+    <input class="new-todo" placeholder="What needs to be done?" />
+    <ul class="todo-list">
+        <li class="todo-item">
+            <input type="checkbox" class="toggle" />
+            <label>Buy milk</label>
+            <button class="destroy">×</button>
+        </li>
+        <li class="todo-item completed">
+            <input type="checkbox" class="toggle" checked />
+            <label>Walk the dog</label>
+            <button class="destroy">×</button>
+        </li>
+    </ul>
+</section>
 ```
 
-How would you approach writing a test scenario that checks the displayed product price of an arbitrary product?
+## Helper functions
 
-With Serenity/JS you could define a Lean Page Object describing the interesting page elements of the individual `.product-search-result`:
+For pages with a handful of elements, plain functions are enough:
 
-```typescript
+```typescript title="spec/todo-list-app/elements.ts"
 import { PageElement, By, Text } from '@serenity-js/web'
 
-class ProductSearchResult {
-    static name = () =>
-        Text.of(
-            PageElement.located(By.css('.product-name'))
-        ).describedAs('name')
+const todoList = () =>
+    PageElement.located(By.css('.todo-list'))
+        .describedAs('todo list')
 
-    static price = () =>
-        Text.of(
-            PageElement.located(By.css('.product-price'))
-        ).describedAs('price')
-}
+const todoItems = () =>
+    todoList().elements(By.css('.todo-item'))
+        .describedAs('todo items')
+
+const itemLabel = () =>
+    Text.of(PageElement.located(By.css('label')))
+        .describedAs('item label')
 ```
 
-Then, you could define another Lean Page Object to describe the container widget of `product-search-results`:
+With these helpers, you can filter, narrow, and assert:
 
-```typescript
-import { PageElement, PageElements, By } from '@serenity-js/web'
-
-class ProductSearch {
-    static widget = () =>
-        PageElement.located(By.id('product-search-results'))
-            .describedAs('product search results widget')
-
-    static results = () =>
-        PageElements.located(By.css('.product-search-result'))
-            .of(this.widget())
-            .describedAs('product search results')
-}
-```
-Finally, you could use Serenity/JS [Page Element Query Language](/handbook/web-testing/page-element-query-language)
-to define a method like `resultFor` that returned the required search result based on the product name:
-
-```typescript
-import { Answerable } from '@serenity-js/core'
-import { Text } from '@serenity-js/web'
-import { includes } from '@serenity-js/assertions'
-
-class ProductSearch {
-    static resultFor = (name: Answerable<string>) =>
-        this.results()
-            .where(ProductSearchResult.name(), includes(name))
-            .first()
-
-    // implementation of `results()` and `widget()` omitted for brevity
-}
-```
-
-Once you've created a handful of simple Lean Page Objects to help you identify the correct page elements,
-writing a test scenario to verify the displayed price becomes trivial:
-
-```typescript
+```typescript title="spec/todo-list-app/managing-todos.spec.ts"
 import { actorCalled } from '@serenity-js/core'
-import { Ensure, equals } from '@serenity-js/assertions'
+import type { Answerable } from '@serenity-js/core'
+import { Ensure, equals, includes } from '@serenity-js/assertions'
 
-await actorCalled('Leonora').attemptsTo(
+const itemCalled = (name: Answerable<string>) =>
+    todoItems()
+        .where(itemLabel(), includes(name))
+        .first()
+
+await actorCalled('Alice').attemptsTo(
     Ensure.that(
-        ProductSearchResult.price().of(
-            ProductSearch.resultFor('bananas')
-        ),
-        equals('£1.50')
-    )
+        itemLabel().of(itemCalled('Buy milk')),
+        equals('Buy milk'),
+    ),
 )
 ```
 
-This is just one of many possible ways to structure your Lean Page Objects.
-Once you get used to the Serenity/JS [Page Element Query Language](/handbook/web-testing/page-element-query-language),
-you'll likely find other page element structures that work for you and your project.
+Helper functions work well for simple pages. As the UI grows and the same elements appear in multiple spec files,
+grouping them into a class helps to keep related elements together and makes them easier to discover in your codebase.
+
+## Lean Page Objects
+
+A Lean Page Object groups related element definitions in a static class.
+Unlike [traditional Page Objects](https://martinfowler.com/bliki/PageObject.html),
+Lean Page Objects contain no actions or assertions — they describe structure only.
+This works well when you prefer a more functional programming style for your test suite,
+with tasks expressed as standalone functions that reference page elements statically:
+
+```typescript title="spec/todo-list-app/TodoListElements.ts"
+import type { Answerable } from '@serenity-js/core'
+import { includes } from '@serenity-js/assertions'
+import { By, PageElement, Text } from '@serenity-js/web'
+
+export class TodoListElements {
+    static list = () =>
+        PageElement.located(By.css('.todo-list'))
+            .describedAs('todo list')
+
+    static items = () =>
+        this.list().elements(By.css('.todo-item'))
+            .describedAs('todo items')
+
+    static newTodoInput = () =>
+        PageElement.located(By.css('.new-todo'))
+            .describedAs('new todo input')
+
+    static itemLabel = () =>
+        Text.of(PageElement.located(By.css('label')))
+            .describedAs('item label')
+
+    static itemCalled = (name: Answerable<string>) =>
+        this.items()
+            .where(this.itemLabel(), includes(name))
+            .first()
+}
+```
+
+Tasks are standalone functions that use the Lean Page Object for element references:
+
+```typescript title="spec/todo-list-app/tasks.ts"
+import type { Answerable } from '@serenity-js/core'
+import { Task, the } from '@serenity-js/core'
+import { By, Click, Enter, Key, Press } from '@serenity-js/web'
+
+import { TodoListElements } from './TodoListElements'
+
+export const numberOfItems = () =>
+    TodoListElements.items().count()
+        .describedAs('number of todo items')
+
+export const recordItem = (name: Answerable<string>): Task =>
+    Task.where(the`#actor records an item called ${ name }`,
+        Enter.theValue(name).into(TodoListElements.newTodoInput()),
+        Press.the(Key.Enter).in(TodoListElements.newTodoInput()),
+    )
+
+export const removeItem = (name: Answerable<string>): Task =>
+    Task.where(the`#actor removes an item called ${ name }`,
+        Click.on(
+            TodoListElements.itemCalled(name).element(By.css('.destroy'))
+        ),
+    )
+```
+
+In this programming style, the test reads as a sequence of actions and assertions composed from reusable functions:
+
+```typescript title="spec/todo-list-app/managing-todos.spec.ts"
+import { actorCalled } from '@serenity-js/core'
+import { Ensure, equals } from '@serenity-js/assertions'
+
+await actorCalled('Alice').attemptsTo(
+    recordItem('Buy oats'),
+    Ensure.that(numberOfItems(), equals(3)),
+    removeItem('Buy oats'),
+    Ensure.that(numberOfItems(), equals(2)),
+)
+```
+
+Lean Page Objects combined with a functional programming style result in compact, readable test scenarios where tasks and questions are imported and composed directly. This approach also makes it straightforward to share individual functions across spec files without importing an entire class hierarchy.
+
+When the number of related functions grows and you find yourself passing the same element references between them, it might be time to encapsulate both observable state and user actions in an interaction object.
+
+## Interaction objects
+
+An interaction object models a system interface from the consumer's perspective:
+what can a user **observe** (Questions) and what can they **do** (Tasks)?
+
+:::tip Beyond web UI
+While this guide focuses on web UI components, the same pattern applies to any interface your actors interact with — REST APIs, message queues, or databases.
+:::
+
+A `TodoItem` has observable state — its label, and whether it's completed or not — and actions a user can perform,
+such as toggling or removing it:
+
+```typescript title="spec/todo-list-app/TodoItem.ts"
+import { Task } from '@serenity-js/core'
+import type { QuestionAdapter } from '@serenity-js/core'
+import { By, Click, Hover } from '@serenity-js/web'
+import type { PageElementAdapter } from '@serenity-js/web'
+
+export class TodoItem {
+    constructor(private readonly rootElement: PageElementAdapter) {
+    }
+
+    private labelElement = () =>
+        this.rootElement.element(By.css('label'))
+
+    private toggleButton = () =>
+        this.rootElement.element(By.css('input.toggle'))
+
+    private destroyButton = () =>
+        this.rootElement.element(By.css('button.destroy'))
+
+    label = (): QuestionAdapter<string> =>
+        this.labelElement().text().trim()
+            .describedAs('todo item label')
+
+    isCompleted = () =>
+        this.toggleButton().isSelected()
+            .describedAs('whether the todo item is completed')
+
+    toggle = (): Task =>
+        Task.where('#actor toggles the todo item',
+            Click.on(this.toggleButton()),
+        )
+
+    remove = (): Task =>
+        Task.where('#actor removes the todo item',
+            Hover.over(this.rootElement),
+            Click.on(this.destroyButton()),
+        )
+}
+```
+
+A parent interaction object composes child objects and exposes parameterised access.
+[`PageElement.createAdapter()`](/api/web/class/PageElement/#createAdapter) wraps the incoming element
+so that `.element()` and `.elements()` can be used for scoped child lookups:
+
+```typescript title="spec/todo-list-app/TodoList.ts"
+import type { Answerable } from '@serenity-js/core'
+import { includes } from '@serenity-js/assertions'
+import { By, PageElement, Text } from '@serenity-js/web'
+import type { PageElementAdapter } from '@serenity-js/web'
+
+export class TodoList {
+    private readonly rootElement: PageElementAdapter;
+
+    constructor(root: Answerable<PageElement>) {
+        this.rootElement = PageElement.createAdapter(root);
+    }
+
+    items = () =>
+        this.rootElement.elements(By.css('.todo-item'))
+            .describedAs('todo items')
+
+    itemCalled = (name: Answerable<string>): TodoItem =>
+        new TodoItem(
+            this.items()
+                .where(Text, includes(name))
+                .first()
+        )
+}
+```
+
+The test scenario describes what the user does and what they expect to see. Selectors are private to the interaction objects
+and never appear in the test:
+
+```typescript title="spec/todo-list-app/managing-todos.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions'
+import { By, PageElement } from '@serenity-js/web'
+
+const todoList = new TodoList(
+    PageElement.located(By.css('.todo-list'))
+)
+
+await actor.attemptsTo(
+    Ensure.that(todoList.itemCalled('Buy milk').isCompleted(), equals(false)),
+    todoList.itemCalled('Buy milk').toggle(),
+    Ensure.that(todoList.itemCalled('Buy milk').isCompleted(), equals(true)),
+)
+```
+
+When the markup changes, only the interaction object needs to change. The tests stay the same — because they were never coupled to the markup in the first place.
+
+A few conventions make interaction objects predictable:
+
+- **Questions are nouns** — `label()`, `items()`, `isCompleted()`
+- **Tasks are verbs** — `toggle()`, `remove()`, `open()`
+- **Parameterised lookups follow the `thingCalled(name)` pattern** — `itemCalled('Buy milk')`
+- **Child interaction objects receive their root element from the parent** — `TodoItem` never decides where it lives in the DOM
+
+:::tip Simplifying instantiation with Playwright Test fixtures
+If you're using Playwright Test, you can define a [custom fixture](https://playwright.dev/docs/test-fixtures) that creates the root interaction object and makes it available to every test scenario — see [test-api.ts](https://github.com/serenity-js/serenity-js/blob/main/examples/playwright-test-todomvc/spec/test-api.ts) in the TodoMVC example.
+:::
+
+## When to use which
+
+| Approach | When to use | Trade-off |
+|---|---|---|
+| Helper functions | Simple pages, few elements | Quick to write, but hard to reuse across specs |
+| Lean Page Objects | Grouping related elements; functional programming style | Organised, but behaviour lives outside the page object |
+| Interaction objects | Components with state _and_ behaviour | Most structured; reusable across test suites, but requires instantiation |
+
+You can mix approaches in the same project. Start with helper functions, refactor to Lean Page Objects
+when you notice duplication, and introduce interaction objects when a component has both observable state
+and user actions worth encapsulating.
+
+For a complete working example of interaction objects, explore the [TodoMVC example](https://github.com/serenity-js/serenity-js/tree/main/examples/playwright-test-todomvc) in the Serenity/JS monorepo.
