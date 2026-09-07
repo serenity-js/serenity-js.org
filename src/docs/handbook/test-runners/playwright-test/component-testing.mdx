@@ -1,0 +1,298 @@
+---
+sidebar_position: 7
+---
+
+# Component testing
+
+Serenity/JS works with Playwright's built-in [component testing](https://playwright.dev/docs/test-components) to let you test UI components in isolation — with the same Screenplay Pattern interactions, reporting, and assertions you use in end-to-end tests.
+
+Component tests run against a **story gallery** page served by your own dev server. Each test mounts a single component in a specific scenario, interacts with it through Serenity/JS, and verifies what the user would observe. Tests are fast (no full app boot), isolated (each mount navigates fresh), and expressive (the same `actor.attemptsTo(...)` flow as your e2e tests).
+
+## How it works
+
+- A **story** is a function that renders your component in one scenario — with specific props, providers, and state. Stories live next to the component in `*.story.tsx` files; each named export is one scenario.
+- The **gallery** is a page served by your dev server that exposes `window.mount()` and `window.unmount()`. You implement it once for your framework.
+- The built-in **`mount` fixture** from `@playwright/test` navigates to the gallery, renders the requested story, and returns a `Locator` for the root element.
+
+## Setup
+
+### 1. Install dependencies
+
+You need Vite (or your existing dev server) to serve the gallery, plus the Serenity/JS Playwright Test integration:
+
+```sh npm2yarn
+npm install --save-dev @serenity-js/core @serenity-js/assertions @serenity-js/web @serenity-js/playwright @serenity-js/playwright-test vite @vitejs/plugin-react
+```
+
+### 2. Create the gallery
+
+The gallery is a small page that discovers your stories and renders them on demand. Playwright ships an [agent skill](https://playwright.dev/docs/test-components#step-1-point-your-coding-agent-at-the-skill) that generates one for your framework:
+
+```bash
+npx playwright init-skills
+```
+
+Then ask your coding agent to set it up. Alternatively, create it by hand — the whole thing is a few dozen lines. Here's a React example:
+
+```html title="playwright/gallery/index.html"
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+</body>
+</html>
+```
+
+```tsx title="playwright/gallery/main.tsx"
+import { flushSync } from 'react-dom';
+import { createRoot, type Root } from 'react-dom/client';
+
+const stories = import.meta.glob('../../src/**/*.story.{tsx,jsx}');
+const id = (f: string) => f.replace(/^(\.\.\/)+src\//, '').replace(/\.story\.\w+$/, '');
+
+async function resolve(storyId: string) {
+    const sep = storyId.lastIndexOf('/');
+    const [path, name] = [storyId.slice(0, sep), storyId.slice(sep + 1)];
+    const file = Object.keys(stories).find(f => id(f) === path || id(f).endsWith('/' + path));
+    const mod = (file && await stories[file]()) as Record<string, any> | undefined;
+    return mod?.[name] ?? mod?.default;
+}
+
+const rootEl = document.getElementById('root')!;
+let root: Root | undefined;
+
+(window as any).mount = async ({ story, props }: { story: string; props?: Record<string, any> }) => {
+    const Story = await resolve(story);
+    if (!Story) throw new Error(`Unknown story: ${story}`);
+    root ??= createRoot(rootEl);
+    flushSync(() => root!.render(<Story {...props} />));
+};
+
+(window as any).unmount = async () => {
+    root?.unmount();
+    root = undefined;
+};
+```
+
+Import your global CSS in the gallery's HTML or entry file so components render with the correct styles.
+
+### 3. Configure Playwright
+
+Add a `components` project to your Playwright config with `baseURL` pointing at the gallery:
+
+```ts title="playwright.config.ts"
+import { defineConfig, devices } from '@playwright/test';
+import { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+const galleryUrl = 'http://localhost:5173/playwright/gallery/index.html';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    projects: [
+        {
+            name: 'e2e',
+            testDir: './tests',
+            use: { ...devices['Desktop Chrome'] },
+        },
+        {
+            name: 'components',
+            testDir: './src/components',
+            testMatch: ['**/*.story.spec.ts'],
+            use: {
+                ...devices['Desktop Chrome'],
+                baseURL: galleryUrl,
+                serviceWorkers: 'block',
+                reuseContext: true,
+            },
+        },
+    ],
+    webServer: {
+        command: 'npm run dev',
+        url: galleryUrl,
+        reuseExistingServer: !process.env.CI,
+    },
+    reporter: [
+        ['line'],
+        ['@serenity-js/playwright-test', {
+            crew: [
+                '@serenity-js/console-reporter',
+                ['@serenity-js/html-reporter', { outputDirectory: './reports/serenity' }],
+            ],
+        }],
+    ],
+});
+```
+
+`reuseContext: true` shares the browser context across tests in a worker — a significant speedup for component suites. `serviceWorkers: 'block'` prevents cached responses from interfering with `page.route()` mocks.
+
+## Writing stories
+
+Stories live next to the component they exercise. Each named export is one scenario.
+
+### Simple passthrough
+
+Most components need a single `Default` export that passes props through:
+
+```tsx title="src/components/Button.story.tsx"
+import { Button, type ButtonProps } from './Button';
+
+export const Default = (props: ButtonProps) => <Button {...props} />;
+
+export const Disabled = () => <Button title="Submit" disabled />;
+```
+
+Tests mount a story by path: `mount('components/Button/Default', { title: 'Submit' })`.
+
+### Recording callbacks
+
+Components take callbacks; tests want to assert they fired. Instead of marshalling functions across the Node.js/browser boundary, **the story owns the state and records the outcome** into a hidden form element:
+
+```tsx title="src/components/Expandable.story.tsx"
+import { useState } from 'react';
+import { Expandable } from './Expandable';
+
+export const Stateful = () => {
+    const [expanded, setExpanded] = useState(false);
+    return <>
+        <Expandable expanded={expanded} setExpanded={setExpanded} title="Title">
+            Details
+        </Expandable>
+        <form hidden>
+            <input data-testid="expanded" readOnly value={String(expanded)} />
+        </form>
+    </>;
+};
+```
+
+The test reads the recorded value from the DOM:
+
+```ts
+await actor.attemptsTo(
+    Click.on(expandButton),
+    Ensure.that(Value.of(expandedField()), equals('true')),
+);
+```
+
+This is the [pattern recommended by Playwright](https://playwright.dev/docs/test-components#record-state-for-assertions). Each recorded value gets its own `data-testid` input. `Value.of()` retries automatically until the value lands.
+
+## Writing tests with Serenity/JS
+
+### Creating the fixture
+
+Set up a fixture that wraps Playwright's built-in `mount` with a Serenity/JS Interaction Object:
+
+```ts title="src/components/story-fixtures.ts"
+import type { Answerable } from '@serenity-js/core';
+import { useFixtures } from '@serenity-js/playwright-test';
+import { By, PageElement } from '@serenity-js/web';
+
+type IOConstructor<IO> = new (rootElement: Answerable<PageElement>) => IO;
+
+export const {
+    describe,
+    it,
+    test,
+    expect,
+} = useFixtures<{
+    interactionObject: <IO>(io: IOConstructor<IO>, storyPath: string, options?: { props?: Record<string, any> }) => Promise<IO>;
+}>({
+
+    interactionObject: async ({ mount }, use) => {
+        async function mountStory<IO>(io: IOConstructor<IO>, storyPath: string, options: { props?: Record<string, any> } = {}): Promise<IO> {
+            await mount(storyPath, options.props);
+
+            const rootElement = PageElement.located(By.css('#root > *'))
+                .describedAs('mounted component');
+
+            return new io(rootElement);
+        }
+
+        await use(mountStory);
+    },
+});
+```
+
+### Writing a component test
+
+```ts title="src/components/UserCard.story.spec.ts"
+import { Ensure, equals, includes } from '@serenity-js/assertions';
+import { UserCard } from './UserCard.io';
+import { describe, it } from './story-fixtures';
+
+describe('UserCard', () => {
+
+    it('displays the user name', async ({ interactionObject, actor }) => {
+        const card = await interactionObject(
+            UserCard,
+            'components/UserCard/Default',
+            { props: { name: 'Alice', role: 'admin' } },
+        );
+
+        await actor.attemptsTo(
+            Ensure.that(card.name(), equals('Alice')),
+            Ensure.that(card.role(), includes('admin')),
+        );
+    });
+});
+```
+
+The test reads exactly like an end-to-end Serenity/JS test — `actor.attemptsTo(...)` with `Ensure.that(...)` assertions. The only difference is that the component is mounted in isolation instead of navigated to as part of a full application.
+
+### Using raw Playwright locators
+
+For implementation contract tests (CSS classes, ARIA attributes, keyboard navigation), use the built-in `mount` fixture directly:
+
+```ts title="src/components/ThemeToggle.story.spec.ts"
+import { describe, expect, it } from './story-fixtures';
+import { minimalProps } from './test-helpers';
+
+describe('ThemeToggle', () => {
+
+    it('uses a radio group with roving tabindex', async ({ mount, page }) => {
+        await mount('components/ThemeToggle/Default', minimalProps());
+
+        const group = page.locator('[role="radiogroup"]');
+        await expect(group).toBeVisible();
+
+        const checked = group.locator('[aria-checked="true"]');
+        await expect(checked).toHaveAttribute('tabindex', '0');
+    });
+});
+```
+
+Both patterns — Interaction Objects and raw Playwright locators — can coexist in the same test suite.
+
+## Co-locating files
+
+Stories and specs live next to the component they test:
+
+```
+src/components/
+├── UserCard.tsx                # component
+├── UserCard.story.tsx          # story (one export per scenario)
+├── UserCard.story.spec.ts      # test
+├── UserCard.io.ts              # Interaction Object
+├── Expandable.tsx
+├── Expandable.story.tsx
+├── Expandable.story.spec.ts
+└── ...
+```
+
+Renames and refactors touch one directory. The Playwright config discovers `*.story.spec.ts` files automatically via `testMatch`.
+
+## Running tests
+
+```bash
+npx playwright test --project=components
+```
+
+Serenity/JS reports show component test activities with the same detail as end-to-end tests — every interaction, assertion, and screenshot in the activity tree.
+
+## Tips
+
+- **One story export per scenario.** Prefer named exports (`Primary`, `Disabled`, `WithLongTitle`) over parameterising a single export. Stories double as reviewable documentation of component states.
+- **Keep props serializable.** `mount()` sends props through `page.evaluate()`. Pass plain data; put callbacks inside the story.
+- **Use `reuseContext: true`** for component projects — it reuses the browser context across tests, giving a large speedup.
+- **Import global CSS** in the gallery's HTML or entry file so components render with correct styles.
+- **Browse stories manually** by opening the gallery URL in a browser and calling `await window.mount({ story: 'components/Button/Primary' })` from DevTools.
