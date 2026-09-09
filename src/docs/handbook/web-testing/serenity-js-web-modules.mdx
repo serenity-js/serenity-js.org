@@ -1,12 +1,113 @@
 ---
 sidebar_position: 6
+title: Serenity/JS web modules
 ---
 
 # Serenity/JS web modules
 
-Serenity/JS offers an integration library-agnostic, unified abstraction layer on top of popular web integration libraries,
-such as [Playwright](/api/playwright), [WebdriverIO](/api/webdriverio), and even [Selenium 3/Protractor](/api/protractor).
+A sign-in journey can be useful in several places: as a fast check of an isolated component, as part of an end-to-end scenario, or as a scheduled check against the deployed application. It can also outlive the browser tool that first drove it. When that journey is written directly in Playwright or WebdriverIO APIs, however, its user-facing behaviour becomes intertwined with the way a particular tool finds elements, controls pages, and manages browser sessions.
 
-In this article, I'll walk you through how Serenity/JS web modules work and how to use them in your test scenarios.
+[`@serenity-js/web`](/api/web/) separates those concerns. It gives your test suite a consistent way to describe what a user sees and does, while integration modules such as [`@serenity-js/playwright`](/api/playwright/) and [`@serenity-js/webdriverio`](/api/webdriverio/) take responsibility for how a browser carries out those instructions. The result is web test code that can be shared across testing contexts and remains largely unchanged when the underlying integration changes.
 
-<ArticleComingSoon />
+## One web language, different browser tools
+
+The parts of a test that describe the application are usually the parts you want to keep. They include the elements that make up the interface, the workflows users perform, and the checks that establish whether the application responded correctly. Browser sessions and driver configuration are necessary too, but they do not describe the application's behaviour and should not leak into Tasks or Questions.
+
+Serenity/JS keeps those responsibilities in separate layers:
+
+| Layer | Responsibility | Packages |
+|---|---|---|
+| Portable web test code | Describe the page, perform web Interactions, ask web Questions, and verify Expectations | [`@serenity-js/web`](/api/web/), [`@serenity-js/core`](/api/core/), [`@serenity-js/assertions`](/api/assertions/) |
+| Browser integration | Create browser sessions and provide an Actor with the Ability to browse the web | [`@serenity-js/playwright`](/api/playwright/) or [`@serenity-js/webdriverio`](/api/webdriverio/) |
+
+The portable layer builds on the abstract [`BrowseTheWeb`](/api/web/class/BrowseTheWeb/) Ability. It provides [Page](/api/web/class/Page/) and [Page Element](/api/web/class/PageElement/) models, as well as Screenplay Pattern APIs such as [`Navigate`](/api/web/class/Navigate/), [`Click`](/api/web/class/Click/), [`Enter`](/api/web/class/Enter/), [`Text`](/api/web/class/Text/), and expectations like [`isVisible`](/api/web/function/isVisible/). The [Page Element Query Language](/handbook/web-testing/page-element-query-language/) belongs here too, so the element definitions that describe your interface are not tied to a tool-specific selector API.
+
+Each browser integration fulfils the same `BrowseTheWeb` contract in its own way. [`BrowseTheWebWithPlaywright`](/api/playwright/class/BrowseTheWebWithPlaywright/) adapts Playwright, while [`BrowseTheWebWithWebdriverIO`](/api/webdriverio/class/BrowseTheWebWithWebdriverIO/) adapts WebdriverIO. An Actor receives one of those concrete Abilities when the test is configured, then uses the portable web APIs for the rest of the scenario.
+
+## Express web behaviour with the Screenplay Pattern
+
+This boundary becomes most useful when you express reusable, domain-specific sequences of activities as Tasks—for example, signing in, finding a product, or making a payment. The Task below describes signing in through a form, but it knows nothing about the tool that will drive the browser. It relies only on portable Page Elements and Interactions:
+
+```ts title="spec/sign-in/SignIn.ts"
+import type { Answerable } from '@serenity-js/core'
+import { Masked, Task, the } from '@serenity-js/core'
+import { By, Click, Enter, PageElement } from '@serenity-js/web'
+
+const SignInForm = {
+    emailAddress: () =>
+        PageElement.located(By.role('textbox', { name: 'Email address' }))
+            .describedAs('email address field'),
+
+    password: () =>
+        PageElement.located(By.role('textbox', { name: 'Password' }))
+            .describedAs('password field'),
+
+    submitButton: () =>
+        PageElement.located(By.role('button', { name: 'Sign in' }))
+            .describedAs('sign-in button'),
+}
+
+export const SignIn = (emailAddress: Answerable<string>, password: Answerable<string>) =>
+    Task.where(the`#actor signs in as ${ emailAddress }`,
+        Enter.theValue(emailAddress).into(SignInForm.emailAddress()),
+        Enter.theValue(Masked.valueOf(password)).into(SignInForm.password()),
+        Click.on(SignInForm.submitButton()),
+    )
+```
+
+The same Task can follow navigation in an end-to-end scenario or provide the core of a synthetic check that exercises the sign-in journey against a deployed environment. It can also be composed with an [Interaction Object](/handbook/web-testing/page-objects-pattern/#interaction-objects) that represents the form in a component test. In every case, the browser tool remains an implementation detail of the Actor's Ability.
+
+That is how the [Screenplay Pattern](/handbook/design/screenplay-pattern/) applies to web testing. An Actor uses an Ability to perform reusable Interactions, which compose into Tasks that express a user goal. Questions retrieve page state without changing it, and Expectations verify what the user can observe. The scenario remains concerned with the journey, while Page Elements and browser sessions provide its implementation details.
+
+## Reuse one UI model at different levels
+
+A component often needs quick feedback in isolation before it is exercised as part of the running application. Without a shared abstraction, the component test and the end-to-end scenario can easily become two separate implementations of the same behaviour, each with its own selectors and browser operations. Interaction Objects avoid that duplication by exposing the stable, user-observable API of the interface rather than the details of its markup or driver.
+
+The execution context changes, but the web behaviour you model can remain the same:
+
+| Test context | What changes | What you can reuse |
+|---|---|---|
+| [Component test](/handbook/test-runners/playwright-test/component-testing/) | A story or component mount supplies the Page Element root | Interaction Objects, Page Element queries, web Interactions, Questions, Expectations |
+| End-to-end scenario | The Actor navigates through the running application | Tasks for user workflows, Interaction Objects, Page Element queries, Questions, Expectations |
+| Synthetic check | A scheduler runs a focused journey against a deployed environment | The same focused Tasks and Questions that verify the journey end to end |
+
+For example, an Interaction Object can model a sign-in form in a component test and then represent that same form in an end-to-end scenario. The component test gives fast feedback about the form's observable behaviour, while the end-to-end scenario verifies that the form works with authentication, routing, and the rest of the application. Both use the same public Interaction Object API because neither needs to know how the browser is controlled.
+
+A synthetic check is still a test scenario. Scheduling, alerting, and the target environment belong to your chosen runner and deployment platform; the Task and Questions that describe the journey can be the same ones used before deployment.
+
+## Change the integration without rewriting web behaviour
+
+Browser tools evolve, and teams sometimes need to run the same suite with more than one integration while they migrate. The portable layer is designed for that situation: the choice of browser tool belongs where Actors receive their Abilities, not in your test scenarios—and certainly not in the Tasks, Questions, or Page Element definitions that describe the application.
+
+With Playwright, an Actor receives `BrowseTheWebWithPlaywright`; with WebdriverIO, it receives `BrowseTheWebWithWebdriverIO`:
+
+```ts title="Playwright Actor configuration"
+import { actorCalled } from '@serenity-js/core'
+import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
+
+await actorCalled('Wendy').whoCan(
+    BrowseTheWebWithPlaywright.using(browser),
+)
+```
+
+```ts title="WebdriverIO Actor configuration"
+import { actorCalled } from '@serenity-js/core'
+import { BrowseTheWebWithWebdriverIO } from '@serenity-js/webdriverio'
+import { browser } from '@wdio/globals'
+
+await actorCalled('Wendy').whoCan(
+    BrowseTheWebWithWebdriverIO.using(browser),
+)
+```
+
+Changing the integration at this boundary leaves the Tasks, Questions, and Page Element definitions intact. The same rule applies to custom web Interactions and Questions: retrieve the generic [`BrowseTheWeb`](/api/web/class/BrowseTheWeb/) Ability from the Actor instead of a tool-specific implementation, and your code remains portable between the supported integrations.
+
+Portability does not mean every browser feature is identical. When a scenario depends on a capability that is specific to one integration tool, use that tool's module deliberately and keep the dependency close to the integration boundary. The portable layer covers the common web behaviour you want to share; the concrete layer remains available when you need a tool's distinctive features.
+
+## Related guides
+
+- [Screenplay Pattern](/handbook/design/screenplay-pattern/) — understand Actors, Abilities, Tasks, Interactions, and Questions.
+- [Page Element Query Language](/handbook/web-testing/page-element-query-language/) — locate, filter, and compose Page Elements.
+- [Organising page elements](/handbook/web-testing/page-objects-pattern/) — choose helper functions, Lean Page Objects, or Interaction Objects.
+- [Component testing](/handbook/test-runners/playwright-test/component-testing/) — use Interaction Objects with isolated UI components.
+- [Playwright Test](/handbook/test-runners/playwright-test/) and [WebdriverIO](/handbook/test-runners/webdriverio/) — configure Serenity/JS with a specific test runner and browser integration.
