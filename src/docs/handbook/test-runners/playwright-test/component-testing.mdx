@@ -23,19 +23,13 @@ A component project needs the same Serenity/JS and Playwright foundation as an i
 
 ### Install dependencies
 
-1. Install the Serenity/JS Playwright integration, Playwright Test, and the Screenplay modules used by your Interaction Objects. These dependencies are framework-independent:
-
-```sh npm2yarn title="Install Serenity/JS component-testing dependencies"
-npm install --save-dev @playwright/test @serenity-js/assertions @serenity-js/console-reporter @serenity-js/core @serenity-js/html-reporter @serenity-js/playwright @serenity-js/playwright-test @serenity-js/web
-```
-
-2. Install the UI framework and tooling that serves your story gallery. This example uses a React gallery with Vite; other frameworks need their own equivalents:
+Install and configure the Serenity/JS Playwright Test integration as described in [Installation](/handbook/test-runners/playwright-test/installation/). Component testing then requires the UI framework and tooling that serve your story gallery. This example uses a React gallery with Vite; other frameworks need their own equivalents:
 
 ```sh npm2yarn title="Install React gallery dependencies"
 npm install --save-dev @vitejs/plugin-react react react-dom vite
 ```
 
-If your project already uses Playwright Test and Serenity/JS, add only the gallery dependencies and any Serenity/JS modules your component tests do not yet use.
+If your project already has the Serenity/JS Playwright Test integration, add only the gallery dependencies.
 
 ### Create a story gallery
 

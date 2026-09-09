@@ -4,11 +4,17 @@ sidebar_position: 2
 
 # Configuration
 
-Playwright Test uses the [`playwright.config.ts` file](https://playwright.dev/docs/test-configuration) to configure test scenarios, workers, and reporters.
-Since Playwright [runs tests in parallel](https://playwright.dev/docs/test-parallel) across multiple Node.js processes,
-reporters must be configured separately from test scenarios in the configuration file.
+Serenity/JS configuration lives alongside the rest of your Playwright Test configuration in [`playwright.config.ts`](https://playwright.dev/docs/test-configuration). Use the [`reporter`](https://playwright.dev/docs/test-reporters) option to register `@serenity-js/playwright-test` and the reporting Crew Members that publish results after a run. Configure the Actors and services available in test scenarios via [`use`](https://playwright.dev/docs/test-use-options).
 
-This section provides a step-by-step guide to the complete configuration setup.
+| Configure | Where | Use it for |
+|---|---|---|
+| Reporting | `reporter` | Register the Serenity/JS reporter and reporting Crew Members, such as the Console Reporter and HTML Reporter. |
+| Actor and scenario services | `use` | Configure the default Actor name, automatic screenshots, browser context options, extra Abilities, or a custom Cast. |
+| Global `use` | Top-level `use` in `playwright.config.ts` | Apply configuration to every test scenario. |
+| Project `use` | Project-level `use` in `playwright.config.ts` | Apply configuration to every scenario in a Playwright project; overrides global settings. |
+| Per-scenario configuration | `test.use` in spec files | Apply configuration to a scenario or group of scenarios; overrides project and global settings. |
+
+This guide covers reporting and automatic screenshots. See [Customising actors](/handbook/test-runners/playwright-test/customising-actors/) for Actor configuration, [Reporting](/handbook/test-runners/playwright-test/reporting/) to choose report formats, and the [fixture API reference](/api/playwright-test/interface/SerenityFixtures/) for scenario-level configuration.
 
 ## Integrating Serenity/JS reporting
 
@@ -58,10 +64,7 @@ If you prefer Serenity BDD's multi-page report format, see the [Serenity BDD Rep
 Serenity/JS offers automatic screenshot capture for test scenarios using the [Screenplay Pattern](/handbook/design/screenplay-pattern/).
 This is handled by the [Photographer service](/handbook/reporting/photographer/), which takes screenshots based on interactions and assertion failures performed by the Serenity/JS actors.
 
-**Quick setup:** Add `['@serenity-js/web:Photographer', { strategy: 'TakePhotosOfFailures' }]` to the `crew` array in your config's `use` section.
-
-To enable automatic screenshot capture, add the `@serenity-js/web:Photographer` service to the [`crew`](/api/playwright-test/interface/SerenityFixtures/#crew) array
-in the appropriate `use` section of your [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) configuration file.
+To capture screenshots automatically, add the `@serenity-js/web:Photographer` service to the [`crew`](/api/playwright-test/interface/SerenityFixtures/#crew) array in the appropriate `use` section of your [`playwright.config.ts`](https://playwright.dev/docs/test-configuration) configuration file. Use `TakePhotosOfFailures` for a focused failure record, or `TakePhotosOfInteractions` when you need an audit trail.
 
 There are three available scopes for configuring the Photographer:
 - [`testConfig.use`](https://playwright.dev/docs/api/class-testconfig#test-config-use) - Global scope for all test scenarios.
