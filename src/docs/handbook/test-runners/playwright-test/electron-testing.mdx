@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5.5
+sidebar_position: 7
 ---
 
 # Testing Electron apps
@@ -18,6 +18,8 @@ Serenity/JS offers two ways to integrate with Electron apps via [`BrowseTheWebWi
 | [**Self-launching**](#self-launching-electron-app) | You want Serenity/JS to manage the app | Launched and closed automatically |
 | [**Externally-managed**](#externally-managed-electron-app) | You manage the app yourself (e.g. via fixtures) | You control launch and teardown |
 
+Choose self-launching unless a fixture must coordinate the app lifecycle or deliberately share one app instance across tests.
+
 ## Self-launching Electron app
 
 The simplest approach — Serenity/JS launches a fresh Electron app instance for each test and closes it automatically when the actor is dismissed.
@@ -27,7 +29,7 @@ This ensures complete isolation between tests with no shared state.
 import { Ensure, equals } from '@serenity-js/assertions'
 import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
 import { describe, it, test } from '@serenity-js/playwright-test'
-import { Click, Text } from '@serenity-js/web'
+import { By, PageElement, Text } from '@serenity-js/web'
 import path from 'path'
 
 const electronAppPath = path.resolve(__dirname, '../../my-electron-app')
@@ -73,7 +75,7 @@ The app persists for the lifetime of the worker, so state carries over between t
 import { Ensure, equals } from '@serenity-js/assertions'
 import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
 import { beforeAll, describe, it, test } from '@serenity-js/playwright-test'
-import { Click, Text } from '@serenity-js/web'
+import { By, Click, PageElement, Text } from '@serenity-js/web'
 import path from 'path'
 
 const electronAppPath = path.resolve(__dirname, '../../my-electron-app')
@@ -133,7 +135,7 @@ When you need full control over the Electron app lifecycle — for example, to l
 import { Ensure, equals } from '@serenity-js/assertions'
 import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright'
 import { describe, it, test } from '@serenity-js/playwright-test'
-import { Click, Text } from '@serenity-js/web'
+import { By, Click, PageElement, Text } from '@serenity-js/web'
 import path from 'path'
 import * as playwright from 'playwright'
 
@@ -256,4 +258,4 @@ The [`ElectronLaunchOptions`](/api/playwright/#ElectronLaunchOptions) type mirro
 
 ## Next step
 
-Learn how to [customise actor abilities](/handbook/test-runners/playwright-test/customising-actors/) for more advanced configurations, or explore [reporting](/handbook/test-runners/playwright-test/reporting/) to see your Electron test results in Serenity BDD reports.
+Learn how to [customise actor abilities](/handbook/test-runners/playwright-test/customising-actors/) for more advanced configurations, or explore [reporting](/handbook/test-runners/playwright-test/reporting/) to choose Serenity/JS and Playwright reports for your Electron tests.

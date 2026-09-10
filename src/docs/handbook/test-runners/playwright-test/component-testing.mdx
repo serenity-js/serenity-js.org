@@ -1,0 +1,463 @@
+---
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Component testing
+
+Running every UI check through the full application makes feedback slow and obscures failures in an individual component. Component tests mount one component in isolation, while Serenity/JS turns that mounted component into an **Interaction Object** so the test uses the same Screenplay Pattern Tasks, Questions, assertions, and reports as your integration tests.
+
+Use component tests for fast feedback on a component's behaviour. Use integration tests to verify that the same components work together in the running application. The Interaction Object is the contract shared by both levels.
+
+## How it works
+
+Mounting a component without starting the application still needs a browser page, a mount mechanism, and a way to select a meaningful component state. [Playwright Component Testing](https://playwright.dev/docs/test-components) provides that infrastructure: a [`mount` fixture](https://playwright.dev/docs/api/class-fixtures#fixtures-mount), a browser page, and a story gallery served by your development server. A story renders one component state with given props, providers, and local state.
+
+Serenity/JS adds the [`story` fixture](/api/playwright-test/interface/SerenityFixtures/#story) from `@serenity-js/playwright-test`. It mounts a story through Playwright, exposes its root as a Page Element, and lets you wrap it in an [Interaction Object](/handbook/web-testing/page-objects-pattern/#interaction-objects). The gallery handles framework-specific rendering; the Interaction Object keeps selectors and UI mechanics out of tests at either level.
+
+## Setup
+
+A component project needs the same Serenity/JS and Playwright foundation as an integration project, plus a gallery that can render isolated component states. The gallery tooling depends on your UI framework; the Serenity/JS test structure does not.
+
+### Install dependencies
+
+Install and configure the Serenity/JS Playwright Test integration as described in [Installation](/handbook/test-runners/playwright-test/installation/). Component testing then requires the UI framework and tooling that serve your story gallery. This example uses a React gallery with Vite; other frameworks need their own equivalents:
+
+```sh npm2yarn title="Install React gallery dependencies"
+npm install --save-dev @vitejs/plugin-react react react-dom vite
+```
+
+If your project already has the Serenity/JS Playwright Test integration, add only the gallery dependencies.
+
+### Create a story gallery
+
+Playwright needs a small browser page that can find a requested story, render it, and unmount it after the test. Create a story gallery that exposes `window.mount()` and `window.unmount()`; Playwright documents this contract and provides an [agent skill for generating framework-specific setup](https://playwright.dev/docs/test-components#step-1-point-your-coding-agent-at-the-skill).
+
+The gallery is the only framework-specific piece. The examples below use React, but the same approach works with Vue, Svelte, Solid, or any framework your dev server can render. The Playwright [component testing guide](https://playwright.dev/docs/test-components) includes Vue examples alongside React, and the gallery contract is small enough to implement for any rendering library. Everything after mounting — the `story` fixture, Interaction Objects, and test structure — is framework-independent.
+
+The following React gallery follows that contract. Its HTML page provides the mount point:
+
+```html title="playwright/gallery/index.html"
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Component gallery</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./entry.tsx"></script>
+</body>
+</html>
+```
+
+Its entry point discovers `*.story.tsx` files and renders a named export selected by the story path:
+
+```tsx title="playwright/gallery/entry.tsx"
+import type { ComponentType } from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot, type Root } from 'react-dom/client';
+
+type Story = ComponentType<Record<string, unknown>>;
+type MountOptions = { story: string; props?: Record<string, unknown> };
+
+declare global {
+    interface Window {
+        mount(options: MountOptions): Promise<void>;
+        unmount(): Promise<void>;
+    }
+}
+
+const stories = import.meta.glob('../../src/**/*.story.{ts,tsx,js,jsx}');
+const id = (file: string) => file.replace(/^(\.\.\/)+src\//, '').replace(/\.story\.\w+$/, '');
+
+const rootElement = document.getElementById('root')!;
+let root: Root | undefined;
+
+async function resolve(storyId: string): Promise<Story | undefined> {
+    const separator = storyId.lastIndexOf('/');
+    const path = storyId.slice(0, separator);
+    const name = storyId.slice(separator + 1);
+    const file = Object.keys(stories).find(candidate => id(candidate) === path || id(candidate).endsWith(`/${ path }`));
+    const module = file ? await stories[file]() : undefined;
+
+    return (module as Record<string, Story> | undefined)?.[name];
+}
+
+window.mount = async ({ story, props }) => {
+    const Story = await resolve(story);
+
+    if (! Story) {
+        throw new Error(`Unknown story: ${ story }`);
+    }
+
+    root ??= createRoot(rootElement);
+    flushSync(() => root!.render(<Story { ...(props ?? {}) } />));
+};
+
+window.unmount = async () => {
+    root?.unmount();
+    root = undefined;
+};
+```
+
+Import your application's global CSS from the gallery entry point, or add it to the gallery HTML, so that components render with their production styles.
+
+### Configure Playwright
+
+Component tests need a dedicated mount target and server configuration without changing how your end-to-end suite runs. Create a `components` project whose `baseURL` points at the gallery page, and configure `webServer` to start the server that serves it:
+
+```ts title="playwright.config.ts"
+import { defineConfig, devices } from '@playwright/test';
+import type { SerenityFixtures, SerenityWorkerFixtures } from '@serenity-js/playwright-test';
+
+const galleryUrl = 'http://localhost:5173/playwright/gallery/index.html';
+
+export default defineConfig<SerenityFixtures, SerenityWorkerFixtures>({
+    projects: [
+        {
+            name: 'e2e',
+            testDir: './tests',
+            use: { ...devices['Desktop Chrome'] },
+        },
+        {
+            name: 'components',
+            testDir: './src/components',
+            testMatch: ['**/*.spec.ts'],
+            use: {
+                ...devices['Desktop Chrome'],
+                baseURL: galleryUrl,
+                reuseContext: true,
+                serviceWorkers: 'block',
+            },
+        },
+    ],
+    webServer: {
+        command: 'npm run dev',
+        url: galleryUrl,
+        reuseExistingServer: ! process.env.CI,
+    },
+    reporter: [
+        ['line'],
+        ['@serenity-js/playwright-test', {
+            crew: [
+                '@serenity-js/console-reporter',
+                ['@serenity-js/html-reporter', { outputDirectory: './reports/serenity' }],
+            ],
+        }],
+    ],
+});
+```
+
+In the listing above:
+- `reuseContext: true` retains a browser context between tests in a worker, reducing component-suite startup time.
+- `serviceWorkers: 'block'` prevents service-worker caches from bypassing `page.route()` mocks when your tests use them.
+
+## Writing stories
+
+A component rarely has only one meaningful state, and a test name alone does not show which state it mounts. Capture each state as a named story export in a story file beside the component. Give each export one purpose, such as `Default`, `Disabled`, or `WithInitialValue`; use callback-state stories when the component needs to report state changes.
+
+### File naming conventions
+
+As a component gains stories, an Interaction Object, and specs, related files become harder to find. Use the component name as the base name for each related file:
+
+| Purpose | File name |
+|---|---|
+| Component | `<component>.ts` or `<component>.tsx` |
+| Story | `<component>.story.ts` or `<component>.story.tsx` |
+| Interaction Object | `<component>.serenity.ts` |
+| Component test | `<component>.spec.ts` |
+
+For example, `UppercaseInput.story.tsx` belongs with `UppercaseInput.tsx`. The component project above runs the corresponding `UppercaseInput.spec.ts` file.
+
+### Component states
+
+Use a separate story for each state that props can set directly. The `UppercaseInput` example has a default state and a state with an initial value; callback-driven state needs the recording pattern in the next section:
+
+<Tabs>
+<TabItem value="story" label="Story" default>
+
+```tsx title="src/UppercaseInput.story.tsx"
+import UppercaseInput from './UppercaseInput';
+
+export const Default = () => <UppercaseInput />;
+
+export const WithInitialValue = ({ initialValue = '' }: { initialValue?: string }) =>
+    <UppercaseInput initialValue={initialValue} />;
+```
+
+</TabItem>
+<TabItem value="component" label="Component">
+
+```tsx title="src/UppercaseInput.tsx"
+import React, { ChangeEvent, useState } from 'react';
+
+const UppercaseInput = ({ initialValue = '' }: { initialValue?: string }): React.JSX.Element => {
+    const [ inputText, setInputText ] = useState(initialValue);
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setInputText(event.target.value);
+    };
+
+    return (
+        <div className={'example-input'}>
+            <input type="text" value={ inputText } onChange={ handleChange } />
+            <p className={'output'}>{ inputText.toUpperCase() }</p>
+        </div>
+    );
+};
+
+export default UppercaseInput;
+```
+
+</TabItem>
+</Tabs>
+
+The `UppercaseInput.story.tsx` file above provides the `UppercaseInput/Default` and `UppercaseInput/WithInitialValue` stories.
+
+### Callback state
+
+When a component reports changes through callbacks, let the story own the callback and record the observable result in the DOM. Playwright recommends this [record-state pattern](https://playwright.dev/docs/test-components#record-state-for-assertions):
+
+<Tabs>
+<TabItem value="story" label="Story" default>
+
+```tsx title="src/Expandable.story.tsx"
+import { useState } from 'react';
+
+import { Expandable } from './Expandable';
+
+export const Stateful = () => {
+    const [expanded, setExpanded] = useState(false);
+
+    return <>
+        <Expandable expanded={expanded} setExpanded={setExpanded} title="Order details">
+            Your order will arrive on Friday.
+        </Expandable>
+        <form hidden>
+            <input data-testid="expanded" readOnly value={String(expanded)} />
+        </form>
+    </>;
+};
+```
+
+</TabItem>
+<TabItem value="component" label="Component">
+
+```tsx title="src/Expandable.tsx"
+import type { ReactNode } from 'react';
+
+type ExpandableProps = {
+    expanded: boolean;
+    setExpanded: (expanded: boolean) => void;
+    title: string;
+    children: ReactNode;
+};
+
+export const Expandable = ({ expanded, setExpanded, title, children }: ExpandableProps) => <>
+    <button aria-expanded={expanded} onClick={() => setExpanded(! expanded)}>
+        { title }
+    </button>
+    { expanded && <div>{ children }</div> }
+</>;
+```
+
+</TabItem>
+</Tabs>
+
+The test can query the hidden input as ordinary browser state. This avoids passing a function from the Node.js test process into the browser.
+
+## Writing tests with Serenity/JS
+
+### Model the component as an Interaction Object
+
+Tests that use raw locators couple user behaviour to a component's DOM structure, so the same test language cannot move from an isolated story to the running application. Model the component as an [Interaction Object](/handbook/web-testing/page-objects-pattern/#interaction-objects): it receives the component root, keeps locators private, and exposes Questions for what a user observes and Tasks for what they do. `UppercaseInput` uses [`PageElement.createAdapter()`](/api/web/class/PageElement/#createAdapter) so its root can be either a mounted story or an element from the full application:
+
+```ts title="src/UppercaseInput.serenity.ts"
+import type { Answerable, QuestionAdapter } from '@serenity-js/core';
+import { Task, the } from '@serenity-js/core';
+import { By, Enter, PageElement, PageElementAdapter, Text, Value } from '@serenity-js/web';
+
+export class UppercaseInput<NET> {
+
+    private readonly rootElement: PageElementAdapter<NET>;
+    private readonly inputField: PageElementAdapter<NET>;
+    private readonly output: PageElementAdapter<NET>;
+
+    constructor(rootElement: Answerable<PageElement<NET>>) {
+        this.rootElement = PageElement.createAdapter(rootElement);
+        this.inputField = this.rootElement.element(By.css('input')).describedAs('text input');
+        this.output = this.rootElement.element(By.css('.output')).describedAs('uppercase output');
+    }
+
+    inputValue = (): QuestionAdapter<string> =>
+        Value.of(this.inputField)
+            .describedAs('input value');
+
+    outputText = (): QuestionAdapter<string> =>
+        Text.of(this.output);
+
+    enterText = (text: Answerable<string>): Task =>
+        Task.where(the`#actor enters ${ text } into the uppercase input`,
+            Enter.theValue(text).into(this.inputField),
+        );
+}
+```
+
+### Mount a story with the `story` fixture
+
+Once the component has an Interaction Object, the test needs to give it the root of the intended state without exposing the gallery's rendering mechanics. Use the Screenplay-oriented `story` fixture: call `story(path, props)` and use `.as(Constructor)` to construct an Interaction Object around the mounted root:
+
+```ts title="src/UppercaseInput.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions';
+import { describe, it } from '@serenity-js/playwright-test';
+
+import { UppercaseInput } from './UppercaseInput.serenity';
+
+describe('UppercaseInput', () => {
+    it('converts entered text to uppercase', async ({ actor, story }) => {
+        const input = story('UppercaseInput/WithInitialValue', {
+            initialValue: 'Hello',
+        }).as(UppercaseInput);
+
+        await actor.attemptsTo(
+            Ensure.that(input.inputValue(), equals('Hello')),
+            Ensure.that(input.outputText(), equals('HELLO')),
+            input.enterText('world'),
+            Ensure.that(input.outputText(), equals('WORLD')),
+        );
+    });
+});
+```
+
+The optional props object contains serializable values passed to the story. The fixture mounts lazily when the Actor first resolves the Interaction Object and keeps that mount for the rest of the test.
+
+For complex Interaction Objects that need additional constructor arguments, construct the Interaction Object directly. The [HTML Reporter component test suite](https://github.com/serenity-js/serenity-js/tree/main/packages/html-reporter/src/serenity) uses `ScenariosView`, a view Interaction Object that accepts navigation and configuration dependencies as well as its root:
+
+```ts title="src/ScenariosView.spec.ts"
+const view = new ScenariosView(
+    story('components/scenarios/ScenariosView/Default', reportData),
+    navigation,
+    interactionObjectOptions,
+);
+```
+
+The `story` fixture returns an Answerable Page Element, so Serenity/JS mounts it lazily when the Actor first resolves the Interaction Object.
+
+### Use raw Playwright when it fits
+
+Not every component check describes reusable user behaviour. For a focused browser-level contract—such as ARIA attributes, CSS classes, or keyboard navigation—use the built-in `mount` fixture and Playwright locators without introducing an Interaction Object:
+
+```ts title="src/UppercaseInput.spec.ts"
+import { describe, expect, it } from '@serenity-js/playwright-test';
+
+describe('UppercaseInput', () => {
+    it('works with Playwright component locators', async ({ mount }) => {
+        const component = await mount('UppercaseInput/Default');
+        const input = component.locator('input');
+        const output = component.locator('.output');
+
+        await expect(input).toHaveValue('');
+        await input.fill('Hello');
+        await expect(output).toHaveText('HELLO');
+    });
+});
+```
+
+Both approaches belong in the same suite. Prefer an Interaction Object when the test describes user behaviour that you will also exercise elsewhere; use raw Playwright for a focused DOM or accessibility contract.
+
+## Reusing Interaction Objects across test levels
+
+A component can pass isolated tests and still fail when navigation, state, and neighbouring components meet in the full application. Conversely, a full integration suite is too slow to be your only feedback loop. Reusing an Interaction Object gives both levels the same user-facing contract.
+
+The [Serenity/JS HTML Reporter](/handbook/reporting/html-reporter/) demonstrates this pattern. [`ScenariosView.serenity.ts`](https://github.com/serenity-js/serenity-js/blob/main/packages/html-reporter/src/serenity/scenarios/ScenariosView.serenity.ts) is exercised by its [component test](https://github.com/serenity-js/serenity-js/blob/main/packages/html-reporter/spec/app/scenarios/ScenariosView.spec.ts) and by the [HTML Reporter integration test](https://github.com/serenity-js/serenity-js/blob/main/integration/html-reporter/spec/scenarios/finding-scenarios.spec.ts).
+
+The component test mounts the view with fixture data and checks its local behaviour. The integration test navigates the report, applies the same filter and search operations, and checks the same `scenarioCalled()` Question. Neither test needs to know how the view locates a filter chip or a scenario row.
+
+Both tests use the same Interaction Object API. The component test exercises it against an isolated story; the integration test exercises it against the corresponding view in the application.
+
+### Expose shared Interaction Objects as test fixtures
+
+When several higher-level tests use the same Interaction Object, each test can end up repeating its production locator and constructor dependencies. That setup makes the tests harder to read and lets the definitions drift apart.
+
+Define the Interaction Object once as a custom fixture, then inject the ready-to-use object into each test. The [HTML Reporter test API](https://github.com/serenity-js/serenity-js/blob/main/integration/html-reporter/src/index.ts) defines view-level interaction object fixtures like this:
+
+```ts title="integration/html-reporter/src/index.ts"
+import type { InteractionObjectOptions } from '@serenity-js/html-reporter/serenity';
+import { Navigation, ScenariosView } from '@serenity-js/html-reporter/serenity';
+import { useFixtures } from '@serenity-js/playwright-test';
+import { By, PageElement } from '@serenity-js/web';
+
+interface TestFixtures {
+    interactionObjectOptions: InteractionObjectOptions;
+    navigation: Navigation;
+    scenariosView: ScenariosView;
+}
+
+export const { describe, it, test } = useFixtures<TestFixtures>({
+    interactionObjectOptions: async ({ page }, use) => {
+        const viewport = page.viewportSize();
+        const isMobile = viewport.width <= 768;
+
+        await use({ mobile: isMobile });
+    },
+
+    navigation: async ({ }, use) => {
+        await use(new Navigation());
+    },
+
+    scenariosView: async ({ interactionObjectOptions, navigation }, use) => {
+        const rootElement = PageElement.located(By.css('[data-testid="tests"]'))
+            .describedAs('scenarios view');
+
+        await use(new ScenariosView(rootElement, navigation, interactionObjectOptions));
+    },
+});
+```
+
+Tests import `describe`, `it`, and `test` from this API, then receive `scenariosView` alongside `actor`.
+
+Use this pattern for higher-level tests, such as integration tests, that exercise a view in the running application. A component test instead constructs its Interaction Object around the story it mounts, so it does not need a shared fixture with a production locator. To apply this pattern, learn how to [create custom fixtures with `useFixtures`](/handbook/test-runners/playwright-test/customising-actors/#overriding-abilities-via-usefixtures).
+
+This division gives you fast component-level feedback, full-application confidence, and one place to evolve the automation code when the UI changes.
+
+## Co-locating files
+
+Separating a component from its stories, Interaction Object, and specs makes its supported states and test contract harder to discover. Keep the related files in a folder named after the component, such as `src/components/UppercaseInput/`:
+
+```text title="src/components/"
+src/components/
+├── UppercaseInput/
+│   ├── UppercaseInput.tsx
+│   ├── UppercaseInput.story.tsx
+│   ├── UppercaseInput.spec.ts
+│   └── UppercaseInput.serenity.ts
+└── Expandable/
+    ├── Expandable.tsx
+    ├── Expandable.story.tsx
+    └── Expandable.spec.ts
+```
+
+The folder and file names make related files easy to find. Named story exports document the supported component states alongside the component itself.
+
+## Running tests
+
+A full multi-project run slows the feedback loop when you are changing one component. Run only the component project while developing that component:
+
+```sh title="Run component tests"
+npx playwright test --project=components
+```
+
+The Serenity/JS reporter records Screenplay activities from component tests in the same way it records integration-test activities. Your report can therefore show the Interaction, Task, and assertion that produced a component failure.
+
+## Tips
+
+- **Give each story one purpose.** Prefer named exports such as `Default`, `Disabled`, and `WithLongTitle` over a single story with many unrelated modes.
+- **Keep story props serializable.** The mount infrastructure transfers them into the browser. Put callback behaviour and state recording inside the story.
+- **Use `reuseContext: true` for component projects.** It avoids creating a new browser context for every test in a worker.
+- **Load global styles in the gallery.** Component tests should render the CSS that users see.
+- **Use the `story` fixture for user behaviour.** It keeps Interaction Objects reusable; reserve raw `mount` and locators for narrow browser-level checks.
+
+Next, learn how to implement [multi-actor scenarios](/handbook/test-runners/playwright-test/multi-actor-scenarios/) or [customise actors](/handbook/test-runners/playwright-test/customising-actors/) for advanced test scenarios.

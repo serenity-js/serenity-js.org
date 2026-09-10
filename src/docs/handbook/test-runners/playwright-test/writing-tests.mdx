@@ -4,10 +4,7 @@ sidebar_position: 3
 
 # Writing tests
 
-Serenity/JS is designed to integrate seamlessly with your existing Playwright Test codebase, even if you are not using the [Screenplay Pattern](/handbook/design/screenplay-pattern/) yet.
-Additionally, the framework enables you to **mix Screenplay and non-Screenplay scenarios** within the same codebase, helping your team gradually adopt the pattern where appropriate.
-
-In this section, you will learn how to write test scenarios using Playwright Test and Serenity/JS APIs and how to leverage actors to structure your test interactions.
+Serenity/JS integrates with Playwright Test and adds Screenplay Pattern APIs to your scenarios. Playwright Test continues to provide the test runner and browser fixtures; Serenity/JS provides Actors, Tasks, and Questions that you can use alongside the existing APIs. This guide explains how to organise scenarios and use those APIs.
 
 ## Defining a test scenario
 
@@ -70,7 +67,7 @@ describe('Todo App', () => {
             // ...
         })
 
-        it('should be able to record a new todo', async ({ page }) => {)
+        it('should be able to record a new todo', async ({ page }) => {
             // ...
         })
     })
@@ -124,7 +121,7 @@ If your test scenario requires a single actor, inject the default instance using
 
 ```ts title="./spec/todo_app.spec.ts"
 import { describe, it, expect } from '@serenity-js/playwright-test'
-import { Navigate, Text, PageElements, By } from '@serenity-js/web'
+import { Navigate } from '@serenity-js/web'
 import { Ensure, equals } from '@serenity-js/assertions'
 
 import { TodoApp } from './screenplay/TodoApp'
@@ -134,10 +131,6 @@ describe('Todo App', () => {
     describe('Guest user', () => {
 
         it('should start with an empty todo list', async ({ page, actor }) => {
-
-            const recordedItems = () =>
-                Text.ofAll(PageElements.located(By.css('.todo-list li')))
-                    .describedAs('displayed items');
 
             await actor.attemptsTo(
                 Navigate.to('https://todo-app.serenity-js.org/#/'),
@@ -238,4 +231,4 @@ To try this example out, check out the [Serenity/JS Playwright Test Template](ht
 
 ## Next step
 
-Learn how to implement [multi-actor scenarios](/handbook/test-runners/playwright-test/multi-actor-scenarios/) or jump to [customising actors](/handbook/test-runners/playwright-test/customising-actors/).
+Next, learn how to [test components in isolation](/handbook/test-runners/playwright-test/component-testing/). Then explore [multi-actor scenarios](/handbook/test-runners/playwright-test/multi-actor-scenarios/) and [customising actors](/handbook/test-runners/playwright-test/customising-actors/).

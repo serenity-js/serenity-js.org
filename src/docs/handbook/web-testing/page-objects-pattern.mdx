@@ -267,6 +267,26 @@ A few conventions make interaction objects predictable:
 
 :::tip Simplifying instantiation with Playwright Test fixtures
 If you're using Playwright Test, you can define a [custom fixture](https://playwright.dev/docs/test-fixtures) that creates the root interaction object and makes it available to every test scenario — see [test-api.ts](https://github.com/serenity-js/serenity-js/blob/main/examples/playwright-test-todomvc/spec/test-api.ts) in the TodoMVC example.
+
+For [component testing](/handbook/test-runners/playwright-test/component-testing/), the built-in `story` fixture mounts a component and lets you construct an interaction object directly:
+```ts
+import { Ensure, equals } from '@serenity-js/assertions'
+import { describe, it } from '@serenity-js/playwright-test'
+
+describe('Managing todo list', () => {
+
+    it('allows for an item to be marked as completed', async ({ actor, story }) => {
+        const todoList = story('components/TodoList/Default').as(TodoList)
+
+        await actor.attemptsTo(
+            Ensure.that(todoList.itemCalled('Buy milk').isCompleted(), equals(false)),
+            todoList.itemCalled('Buy milk').toggle(),
+            Ensure.that(todoList.itemCalled('Buy milk').isCompleted(), equals(true)),
+        )
+    })
+})
+```
+
 :::
 
 ## When to use which

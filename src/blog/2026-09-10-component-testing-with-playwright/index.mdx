@@ -1,0 +1,127 @@
+---
+slug: component-testing-with-playwright
+title: "Serenity/JS 3.47: component testing with Playwright"
+authors: [jan-molak]
+tags:
+  - playwright-test
+  - core
+  - web
+  - release
+  - open-source
+date: 2026-09-10
+---
+
+Serenity/JS 3.47 brings web UI component testing into the same Screenplay Pattern architecture as the rest of your suite. The new `story` fixture mounts a Playwright component story, and the newly introduced `Question.as(Constructor)` lets you turn it into an Interaction Object.
+
+That means the interaction model you use to exercise the component in isolation can be the same one your end-to-end scenarios use when exercising the running application.
+
+This release also introduces new guides to help you set up [component testing](/handbook/test-runners/playwright-test/component-testing/) and keep your web test code portable with [Serenity/JS web modules](/handbook/web-testing/serenity-js-web-modules/).
+
+{/* truncate */}
+
+## Test components using the same language
+
+A component test needs to mount a desired UI state and interact with it at a lower level than an end-to-end test, but this should not force you to abandon the Tasks, Questions, and Interaction Objects that make the rest of your test suite readable.
+If a component test uses raw locators while an end-to-end scenario uses a domain model, those tests duplicate both selectors and intent.
+
+Serenity/JS 3.47 adds the [`story` fixture](/api/playwright-test/interface/SerenityFixtures/#story) to [`@serenity-js/playwright-test`](/api/playwright-test/), leveraging the new [component testing mechanism](https://playwright.dev/docs/test-components) available in Playwright Test 1.63.
+Give it the path of a component story and any serialisable props, then use `.as()` to construct an [Interaction Object](/handbook/web-testing/page-objects-pattern/#interaction-objects) around the mounted root:
+
+```ts title="src/UserCard.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions';
+import { describe, it } from '@serenity-js/playwright-test';
+
+import { UserCard } from './UserCard.serenity';
+
+describe('UserCard', () => {
+    it('displays the user name', async ({ actor, story }) => {
+        const card = story('components/UserCard/Default', { name: 'Alice' })
+            .as(UserCard);
+
+        await actor.attemptsTo(
+            Ensure.that(card.name(), equals('Alice')),
+        );
+    });
+});
+```
+
+The fixture mounts the story only when the Actor first resolves it and keeps that mount for the test. The Interaction Object owns the selectors and UI mechanics; the scenario remains a description of the behaviour under test.
+
+## Wrap Question answers in domain models
+
+The [`story` fixture](/api/playwright-test/interface/SerenityFixtures/#story) builds on a new constructor overload of [`Question.as()`](/api/core/class/Question/#as) in [`@serenity-js/core`](/api/core/). `Question.as()` has long been able to map an answer through a function. It can now also pass a resolved answer to a class constructor, making it easy to map DOM elements to Interaction Objects, or JSON API responses to domain models.
+
+For example, an API can return a user profile as JSON while your test works with a domain model instead. Define the response shape, then use a constructor to expose operations that make sense in your domain:
+
+```ts title="spec/user-profile.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions';
+import { actorCalled } from '@serenity-js/core';
+import { CallAnApi, GetRequest, LastResponse, Send } from '@serenity-js/rest';
+
+interface UserDetails {
+    id: string;
+    first_name: string;
+    last_name: string;
+    roles: string[];
+}
+
+class UserProfile {
+    constructor(private readonly details: UserDetails) {
+    }
+
+    displayName(): string {
+        return `${ this.details.first_name } ${ this.details.last_name }`;
+    }
+
+    canManageUsers(): boolean {
+        return this.details.roles.includes('user-admin');
+    }
+}
+
+const userProfile = () =>
+    LastResponse.body<UserResponse>().as(UserProfile);
+
+await actorCalled('Apisitt')
+    .whoCan(CallAnApi.at('https://api.example.org/'))
+    .attemptsTo(
+        Send.a(GetRequest.to('/users/42')),
+        Ensure.that(userProfile().displayName(), equals('Alice Smith')),
+        Ensure.that(userProfile().canManageUsers(), isTrue()),
+    );
+```
+
+`LastResponse.body<UserResponse>()` remains a Question, and `.as(UserProfile)` defers the JSON-to-domain mapping until the Actor needs the answer. The resulting adapter exposes `UserProfile` operations such as `displayName()` and `canManageUsers()` as Questions, while preserving the composable `QuestionAdapter` API that Screenplay code relies on.
+
+That same constructor mapping is what lets a mounted Page Element become an Interaction Object without special component-test plumbing.
+
+## Keep the same component model at every level
+
+Testing a component in isolation should not create a second model of the same UI. When component tests use raw locators while integration scenarios use different Tasks and selectors, the two descriptions drift and a markup change can leave one level of the suite behind.
+
+Serenity/JS gives you the tools and patterns to avoid that duplication: wrap the root of a mounted story in the same Interaction Object your integration tests use. The Interaction Object exposes the component's public, user-observable API as Questions and Tasks, while keeping selectors and UI mechanics inside the model.
+
+Component tests then give fast feedback on the behaviour of a desired state, and integration scenarios confirm that the same model works with the running application. Because both levels exercise the same public API, they validate exactly the contract your end-to-end journeys depend on.
+
+The new [component testing guide](/handbook/test-runners/playwright-test/component-testing/) shows how to create a story gallery, organise stories and Interaction Objects, and mount stories with the `story` fixture. It also explains when a focused browser-level contract is better served by Playwright's `mount` fixture and locators than by an Interaction Object.
+
+## Make web behaviour portable too
+
+Browser integration tools evolve, and a move from one to another should not force you to rewrite the user journeys your suite already describes. When Tasks, Questions, and Page Elements use a browser tool's APIs directly, that migration spreads through the code that models your application instead of remaining a change to its browser integration layer.
+
+[`@serenity-js/web`](/api/web/) separates those responsibilities. It provides portable Page Elements, web Interactions, Questions, and Expectations, while integration modules such as [`@serenity-js/playwright`](/api/playwright/) and [`@serenity-js/webdriverio`](/api/webdriverio/) give an Actor the concrete Ability to control a browser.
+
+The choice of browser tool belongs where Actors receive their Abilities, not in test scenarios—and certainly not in the Tasks, Questions, or Page Element definitions that describe the application. That boundary lets the same sign-in or checkout Task serve a component test, an end-to-end scenario, or a synthetic check, and keeps that application-facing code largely unchanged as you change browser integrations.
+
+The [Serenity/JS web modules guide](/handbook/web-testing/serenity-js-web-modules/) explains how to establish this boundary in your own suite.
+
+## Getting started
+
+If you're using Playwright Test, start with the [component testing guide](/handbook/test-runners/playwright-test/component-testing/).
+
+Mount a meaningful component state with the [`story` fixture](/api/playwright-test/interface/SerenityFixtures/#story), then expose that state through the same [Interaction Object](/handbook/web-testing/page-objects-pattern/#interaction-objects) your integration and end-to-end tests use.
+
+If your suite spans more than one browser integration, or you want to keep the option of migrating in the future, take a look at the [Serenity/JS web modules guide](/handbook/web-testing/serenity-js-web-modules/). It shows how to keep browser-specific choices at the Actor Ability boundary.
+
+The goal is simple: **test components in isolation without isolating them from the language of your application**.
+
+Enjoy Serenity! 🎉
