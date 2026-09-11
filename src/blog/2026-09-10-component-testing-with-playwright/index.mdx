@@ -45,54 +45,7 @@ describe('UserCard', () => {
 });
 ```
 
-The fixture mounts the story only when the Actor first resolves it and keeps that mount for the test. The Interaction Object owns the selectors and UI mechanics; the scenario remains a description of the behaviour under test.
-
-## Wrap Question answers in domain models
-
-The [`story` fixture](/api/playwright-test/interface/SerenityFixtures/#story) builds on a new constructor overload of [`Question.as()`](/api/core/class/Question/#as) in [`@serenity-js/core`](/api/core/). `Question.as()` has long been able to map an answer through a function. It can now also pass a resolved answer to a class constructor, making it easy to map DOM elements to Interaction Objects, or JSON API responses to domain models.
-
-For example, an API can return a user profile as JSON while your test works with a domain model instead. Define the response shape, then use a constructor to expose operations that make sense in your domain:
-
-```ts title="spec/user-profile.spec.ts"
-import { Ensure, equals } from '@serenity-js/assertions';
-import { actorCalled } from '@serenity-js/core';
-import { CallAnApi, GetRequest, LastResponse, Send } from '@serenity-js/rest';
-
-interface UserDetails {
-    id: string;
-    first_name: string;
-    last_name: string;
-    roles: string[];
-}
-
-class UserProfile {
-    constructor(private readonly details: UserDetails) {
-    }
-
-    displayName(): string {
-        return `${ this.details.first_name } ${ this.details.last_name }`;
-    }
-
-    canManageUsers(): boolean {
-        return this.details.roles.includes('user-admin');
-    }
-}
-
-const userProfile = () =>
-    LastResponse.body<UserResponse>().as(UserProfile);
-
-await actorCalled('Apisitt')
-    .whoCan(CallAnApi.at('https://api.example.org/'))
-    .attemptsTo(
-        Send.a(GetRequest.to('/users/42')),
-        Ensure.that(userProfile().displayName(), equals('Alice Smith')),
-        Ensure.that(userProfile().canManageUsers(), isTrue()),
-    );
-```
-
-`LastResponse.body<UserResponse>()` remains a Question, and `.as(UserProfile)` defers the JSON-to-domain mapping until the Actor needs the answer. The resulting adapter exposes `UserProfile` operations such as `displayName()` and `canManageUsers()` as Questions, while preserving the composable `QuestionAdapter` API that Screenplay code relies on.
-
-That same constructor mapping is what lets a mounted Page Element become an Interaction Object without special component-test plumbing.
+The fixture mounts the story only when the Actor first resolves it and keeps that mount for the test. The `as(UserCard)` call uses the constructor form of [`Question.as()`](/api/core/class/Question/#as) to map the mounted root Page Element to the Interaction Object. The Interaction Object owns the selectors and UI mechanics; the scenario remains a description of the behaviour under test.
 
 ## Keep the same component model at every level
 

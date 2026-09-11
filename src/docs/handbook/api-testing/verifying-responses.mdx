@@ -58,3 +58,46 @@ await actorCalled('Apisitt')
     })),
   )
 ```
+
+## Mapping response bodies to domain models
+
+A response body often has a transport-specific JSON shape that is not the model your test needs to work with. Use the constructor form of [`Question.as()`](/api/core/class/Question/#as) to map [`LastResponse.body<T>()`](/api/rest/class/LastResponse/#body) to a domain model and expose operations in your application's language.
+
+```ts title="spec/user-profile.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions';
+import { actorCalled } from '@serenity-js/core';
+import { CallAnApi, GetRequest, LastResponse, Send } from '@serenity-js/rest';
+
+interface UserDetails {
+    id: string;
+    first_name: string;
+    last_name: string;
+    roles: string[];
+}
+
+class UserProfile {
+    constructor(private readonly details: UserDetails) {
+    }
+
+    displayName(): string {
+        return `${ this.details.first_name } ${ this.details.last_name }`;
+    }
+
+    canManageUsers(): boolean {
+        return this.details.roles.includes('user-admin');
+    }
+}
+
+const userProfile = () =>
+    LastResponse.body<UserDetails>().as(UserProfile);
+
+await actorCalled('Apisitt')
+    .whoCan(CallAnApi.at('https://api.example.org/'))
+    .attemptsTo(
+        Send.a(GetRequest.to('/users/42')),
+        Ensure.that(userProfile().displayName(), equals('Alice Smith')),
+        Ensure.that(userProfile().canManageUsers(), equals(true)),
+    );
+```
+
+`LastResponse.body<UserDetails>()` remains a Question, and `.as(UserProfile)` defers the JSON-to-domain mapping until the Actor needs the answer. The resulting adapter exposes `UserProfile` operations such as `displayName()` and `canManageUsers()` as Questions, while preserving the composable `QuestionAdapter` API that Screenplay code relies on.
