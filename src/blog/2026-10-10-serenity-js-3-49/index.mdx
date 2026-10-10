@@ -1,0 +1,289 @@
+---
+slug: serenity-js-3-49
+title: "Serenity/JS 3.49: faster scenarios, patient interactions, and native getByRole"
+description: "Serenity/JS 3.49 removes a fixed delay after every activity, lets web interactions wait for list items to appear, and makes By.role match elements exactly like Playwright's getByRole."
+authors: [jan-molak]
+tags:
+  - core
+  - web
+  - playwright
+  - release
+  - open-source
+date: 2026-10-10
+---
+
+Serenity/JS 3.49 makes your scenarios faster without you changing a line of code. Actors used to spend at least 10 milliseconds after every Interaction and Task waiting for background work, such as taking screenshots, even when there wasn't any. Now they move on as soon as the work is done, or straight away when there's nothing to wait for. The more activities a scenario performs, the more time it saves.
+This release also teaches web Interactions such as `Click` and `Enter` to wait for list items that haven't been rendered yet,
+and makes [`By.role()`](/api/web/class/By/#role) in `@serenity-js/playwright` match exactly the same elements as Playwright's own `getByRole()`.
+
+Two of these changes can affect existing test suites, so read the [upgrade notes](/blog/serenity-js-3-49/#upgrading-to-serenityjs-349) before you update.
+
+{/* truncate */}
+
+## Why do Actors wait after each activity?
+
+Serenity/JS reporting is event-driven. When an Actor finishes an Interaction or a Task, it announces that fact to the Stage, and the Stage passes it on to every [Stage Crew Member](/api/core/interface/StageCrewMember/) you've configured.
+Some Crew Members react to that event with work of their own.
+The [Photographer](/api/web/class/Photographer/) takes a screenshot of the browser. The [Artifact Archiver](/api/core/class/ArtifactArchiver/) writes the screenshot to disk.
+
+That work is asynchronous, and it has to finish before the Actor carries on.
+Picture the Photographer capturing the result of `Click.on(saveButton)` while the Actor has already moved on to the next page: the screenshot would show the wrong page, attached to the wrong step of your report.
+
+So after every activity, the Actor waits for its *cue* from the Stage.
+The Stage gives the cue once all the work its Crew Members have started is complete, or reports an error if any of it fails or takes longer than the [cue timeout](/api/core/class/SerenityConfig/#cueTimeout).
+That's by design, and it's what keeps your reports accurate.
+
+## Where did the time go?
+
+The problem was in *how* the Stage checked whether the work was done.
+It polled every 10 milliseconds, and the first check only happened after the first 10 milliseconds had passed, *even when there was nothing to wait for*.
+That's the case for most activities: Tasks, Interactions that don't take screenshots, and every activity in a suite that doesn't use the Photographer.
+
+So every activity cost at least 10ms on top of its own duration. That's not much for a single click.
+But it adds up: a scenario that performs 500 activities, counting both Interactions and the Tasks that group them, paid at least 5 seconds for nothing.
+That's an illustration, not a benchmark — your savings depend on how many activities your scenarios perform.
+
+In Serenity/JS 3.49, the Stage gives the cue immediately when no work is in progress, and only polls when there's something to wait for.
+Your screenshots are still taken at the right moment. Your Actors just stop waiting for work that isn't there.
+
+The faster path required one more change. At the end of a scene, the Stage dismisses the Actors, which [discards](/api/core/class/Discardable/) their Abilities, for example by closing their browsers.
+Serenity/JS now registers that work before anything else can happen, so it still waits for the Actors to leave the stage.
+
+## What if the list isn't there yet?
+
+An Actor that no longer waits reaches its next Interaction sooner, sometimes before the page has caught up.
+Ten milliseconds isn't long, but between two activities it was often enough for a web app to finish rendering a list of search results or a table of orders.
+
+For most Page Elements, that's not a problem.
+When you locate an element directly, for example with `PageElement.located(By.css('.basket'))`, Serenity/JS hands its selector to Playwright or WebdriverIO, and they wait for the element to appear before interacting with it.
+
+Lists work differently.
+When you filter [`PageElements`](/api/web/class/PageElements/) with `.where()` and pick an item with `.first()`, Serenity/JS retrieves the elements that are on the page *right now*, filters them, and then picks one.
+If the page hasn't rendered the item yet, there's nothing to hand over to the browser.
+
+Consider a search page that renders its results asynchronously. You might model the results with the [Page Element Query Language](/handbook/web-testing/page-element-query-language/) like this:
+
+```typescript title="spec/search/SearchPage.ts"
+import { includes } from '@serenity-js/assertions'
+import type { Answerable } from '@serenity-js/core'
+import { By, PageElement, PageElements, Text } from '@serenity-js/web'
+
+export const searchBox = () =>
+    PageElement.located(By.role('searchbox', { name: 'Search the catalogue', exact: true }))
+        .describedAs('search box')
+
+export const searchResults = () =>
+    PageElements.located(By.css('[data-testid="search-result"]'))
+        .describedAs('search results')
+
+export const searchResultCalled = (name: Answerable<string>) =>
+    searchResults()
+        .where(Text, includes(name))
+        .first()
+```
+
+When an Actor tried to click on that result before the page rendered it, `.first()` found no matching item and the Interaction failed straight away with a [`ListItemNotFoundError`](/api/core/class/ListItemNotFoundError/).
+Until now, you had to tell the Actor to wait for the item before interacting with it:
+
+```typescript title="spec/search/searching-the-catalogue.spec.ts (before 3.49)"
+import { isPresent } from '@serenity-js/assertions'
+import { actorCalled, Wait } from '@serenity-js/core'
+import { Click, Enter, Key, Press } from '@serenity-js/web'
+
+import { searchBox, searchResultCalled } from './SearchPage'
+
+await actorCalled('Alice').attemptsTo(
+    Enter.theValue('noise cancelling headphones').into(searchBox()),
+    Press.the(Key.Enter).in(searchBox()),
+    Wait.until(searchResultCalled('Noise Cancelling Headphones'), isPresent()),
+    Click.on(searchResultCalled('Noise Cancelling Headphones')),
+)
+```
+
+In Serenity/JS 3.49, `Click`, `DoubleClick`, `RightClick`, `Hover`, `Enter`, `Press` and `Clear` retry resolving their target when it comes from a list of `PageElements` and no matching item exists yet.
+The retries come from [`PageElementInteraction`](/api/web/class/PageElementInteraction/), the base class these Interactions share, so your own Interactions built on it benefit too. More on that [below](#what-about-custom-interactions).
+The Actor can click on the result as soon as it appears:
+
+```typescript title="spec/search/searching-the-catalogue.spec.ts"
+import { actorCalled } from '@serenity-js/core'
+import { Click, Enter, Key, Press } from '@serenity-js/web'
+
+import { searchBox, searchResultCalled } from './SearchPage'
+
+await actorCalled('Alice').attemptsTo(
+    Enter.theValue('noise cancelling headphones').into(searchBox()),
+    Press.the(Key.Enter).in(searchBox()),
+    Click.on(searchResultCalled('Noise Cancelling Headphones')),
+)
+```
+
+Here's how it works:
+
+- The Interaction retries quickly at first, then backs off exponentially, up to one attempt every 500ms.
+- It keeps trying until the [interaction timeout](/api/core/class/SerenityConfig/#interactionTimeout) expires. That's 5 seconds by default.
+- If the item still isn't there, the Interaction fails with the original `ListItemNotFoundError`, so the error tells you which list was empty and what you were looking for.
+- Once the item exists, Playwright or WebdriverIO takes over and waits for the element to become actionable, as before.
+
+Questions and `Ensure.that()` are not affected. They still evaluate once, which is what you want from an assertion about the current state of the page.
+To assert on something that will appear, use [`Ensure.eventually()`](/api/assertions/class/Ensure/#eventually) or [`Wait.until()`](/api/core/class/Wait/#until).
+
+### What about custom Interactions?
+
+The retries live in `PageElementInteraction.resolve()`.
+Any Interaction that extends `PageElementInteraction` and resolves its target with `this.resolve()` waits for list items the same way the built-in ones do.
+
+For example, here's an Interaction that expands a collapsible section, unless it's expanded already:
+
+```typescript title="spec/screenplay/Expand.ts"
+import type { Answerable, AnswersQuestions, Interaction, UsesAbilities } from '@serenity-js/core'
+import { the } from '@serenity-js/core'
+import type { PageElement } from '@serenity-js/web'
+import { PageElementInteraction } from '@serenity-js/web'
+
+export class Expand extends PageElementInteraction {
+    static the(section: Answerable<PageElement>): Interaction {
+        return new Expand(section)
+    }
+
+    protected constructor(private readonly section: Answerable<PageElement>) {
+        super(the`#actor expands ${ section }`)
+    }
+
+    async performAs(actor: UsesAbilities & AnswersQuestions): Promise<void> {
+        // waits for the section if it comes from a list that's still rendering
+        const section = await this.resolve(actor, this.section)
+
+        if (await section.attribute('aria-expanded') !== 'true') {
+            await section.click()
+        }
+    }
+}
+```
+
+`Expand.the(faqEntryCalled('Returns'))` now waits for the matching FAQ entry to appear, just like `Click.on()` would.
+
+An Interaction that answers the element itself, for example with `actor.answer(element)` inside [`Interaction.where()`](/api/core/class/Interaction/#where), evaluates the list once and won't retry.
+If you'd rather not extend `PageElementInteraction`, compose the built-in Interactions in a Task instead, for example `Task.where('#actor opens the result', Click.on(searchResultCalled(name)))`.
+
+## By.role compatibility with Playwright
+
+If you've written Playwright tests, you've probably used `page.getByRole()`, Playwright's recommended way to locate elements the way your users and assistive technologies perceive them.
+In Serenity/JS 3.49, [`By.role()`](/api/web/class/By/#role) delegates to that very method. Your role-based Page Elements now find exactly the same elements as `getByRole()` does, and future improvements to Playwright's role locators reach your scenarios without waiting for a Serenity/JS release.
+
+For most Page Elements, nothing changes. The difference shows up when one accessible name is part of another. Here's a form with two buttons whose names share a word:
+
+```html title="Draft editor"
+<form aria-label="Edit article">
+    <button type="submit">Save</button>
+    <button type="button">Save draft</button>
+</form>
+```
+
+And here's a Page Element that locates the first one by its role and accessible name:
+
+```typescript title="spec/editor/ArticleEditor.ts"
+import { By, PageElement } from '@serenity-js/web'
+
+export const saveButton = () =>
+    PageElement.located(By.role('button', { name: 'Save' }))
+        .describedAs('save button')
+```
+
+Playwright's `getByRole()` matches a string `name` as a **case-insensitive substring**, and that's also how the [`ByRoleSelectorOptions.name`](/api/web/interface/ByRoleSelectorOptions/#name) documentation describes `By.role()`.
+Until now, though, `@serenity-js/playwright` translated `By.role()` into a selector for Playwright's `role=` engine, using a hand-maintained copy of Playwright's internal selector utilities.
+That engine matches the **whole** accessible name, ignoring case. So in Serenity/JS 3.48, `saveButton()` located only the "Save" button.
+
+In Serenity/JS 3.49, `By.role()` delegates to Playwright's own `getByRole()`. `saveButton()` now matches both "Save" and "Save draft", same as `page.getByRole('button', { name: 'Save' })` would.
+
+That's the documented behaviour, so this change ships as a fix rather than a breaking change. It does mean that some suites will need a one-line change.
+If a Page Element relied on whole-name matching, Interactions such as `Click.on(saveButton())` now fail with Playwright's *strict mode violation* error, because the locator resolves to more than one element.
+Lists located with `PageElements.located(By.role(...))` may also contain more items than before.
+
+To match the whole name, set [`exact: true`](/api/web/interface/ByRoleSelectorOptions/#exact):
+
+```typescript title="spec/editor/ArticleEditor.ts"
+import { By, PageElement } from '@serenity-js/web'
+
+export const saveButton = () =>
+    PageElement.located(By.role('button', { name: 'Save', exact: true }))
+        .describedAs('save button')
+```
+
+:::tip Migrating role-based Page Elements
+- `{ name: 'Save', exact: true }` matches the whole name, **case-sensitively**. That's the option we recommend.
+- `{ name: /^save$/i }` matches the whole name, ignoring case. That's what Serenity/JS 3.48 did with `{ name: 'Save' }`.
+- `{ name: 'Save' }` matches any button whose name contains "save", in any case.
+:::
+
+This change affects `@serenity-js/playwright` only. WebdriverIO always matches a string `name` exactly and case-sensitively, so if your Page Elements need to work with both integration tools, set `exact: true`.
+
+## What else is fixed?
+
+- **WebdriverIO and iframes.** In WebDriver BiDi sessions, WebdriverIO could run the next command in the frame the browser had just left, after [`Switch.to(frame).and(...)`](/api/web/class/Switch/) switched back to the parent frame. `@serenity-js/webdriverio` now switches back in a way that WebdriverIO completes before the next command runs. We've also proposed a [fix in WebdriverIO itself](https://github.com/webdriverio/webdriverio/pull/15948), so that every WebdriverIO user benefits, not only those using Serenity/JS.
+- **HTML Reporter deep links.** When a [Serenity/JS HTML report](/blog/html-reporter/) navigated to a deep link straight after it loaded, it could ignore the link and show the default view. The report now picks up the link.
+
+## Upgrading to Serenity/JS 3.49
+
+Update all your `@serenity-js/*` modules to the same version. For example, in a Playwright Test project:
+
+```sh npm2yarn
+npm install --save-dev @serenity-js/core@^3.49.0 @serenity-js/assertions@^3.49.0 @serenity-js/web@^3.49.0 @serenity-js/playwright@^3.49.0 @serenity-js/playwright-test@^3.49.0
+```
+
+The [updating Serenity/JS guide](/releases/updating-serenity-js/) covers other ways to keep your dependencies up to date.
+
+## Post-upgrade verification
+
+Once you've upgraded, run your test suite. Most suites pass without changes, but two kinds of tests might need your attention.
+
+### Tests that relied on the pause between activities
+
+Removing the 10ms delay exposed tests in our own suites that only passed because of it. They acted or asserted on the page before the system under test had finished updating it, and the pause gave it just enough time.
+
+For example, this scenario checks a status message straight after saving a draft:
+
+```typescript title="spec/editor/saving-drafts.spec.ts (fragile)"
+import { Ensure, equals } from '@serenity-js/assertions'
+import { actorCalled } from '@serenity-js/core'
+import { Click, Text } from '@serenity-js/web'
+
+import { saveDraftButton, statusMessage } from './ArticleEditor'
+
+await actorCalled('Alice').attemptsTo(
+    Click.on(saveDraftButton()),
+    Ensure.that(Text.of(statusMessage()), equals('Draft saved')),
+)
+```
+
+`Ensure.that()` checks the message once. If the application updates it a few milliseconds after the click, the assertion fails.
+Make the scenario say what it's waiting for instead:
+
+```typescript title="spec/editor/saving-drafts.spec.ts"
+import { Ensure, equals } from '@serenity-js/assertions'
+import { actorCalled } from '@serenity-js/core'
+import { Click, Text } from '@serenity-js/web'
+
+import { saveDraftButton, statusMessage } from './ArticleEditor'
+
+await actorCalled('Alice').attemptsTo(
+    Click.on(saveDraftButton()),
+    Ensure.eventually(Text.of(statusMessage()), equals('Draft saved')),
+)
+```
+
+Use [`Ensure.eventually()`](/api/assertions/class/Ensure/#eventually) when the expected state is the point of the test, and [`Wait.until()`](/api/core/class/Wait/#until) when it's a precondition for the next activity, such as waiting for a spinner to disappear.
+If the next activity is an Interaction with an item in a list, you might not need either, thanks to the [new list item retries](#what-if-the-list-isnt-there-yet).
+The [waiting and synchronisation guide](/handbook/design/waiting-and-synchronisation/) explains the difference in more detail.
+
+### Role-based Page Elements with Playwright
+
+Search your code for `By.role(` calls with a string `name`. If your tests fail with a *strict mode violation*, or a list located by role contains unexpected items, add `exact: true` as described [above](#byrole-compatibility-with-playwright).
+
+## Thank you
+
+A special thank you to [Timber Kerkvliet](https://github.com/timberkerkvliet), who spotted the 10ms delay, removed it, and identified the race condition with actor dismissal that the delay had been hiding.
+His contribution is the reason your scenarios got faster in this release.
+
+If you have an idea for making Serenity/JS better, [open a discussion](https://github.com/orgs/serenity-js/discussions) or send a pull request, like Timber did. We'd love to hear from you.
+
+Enjoy Serenity! 🎉
