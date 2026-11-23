@@ -43,7 +43,7 @@
     "@serenity-js/playwright-test": "3.49.1",
     "@serenity-js/protractor": "3.49.1",
     "@serenity-js/rest": "3.49.1",
-    "@serenity-js/serenity-bdd": "3.49.0",
+    "@serenity-js/serenity-bdd": "3.49.1",
     "@serenity-js/web": "3.49.1",
     "@serenity-js/webdriverio": "3.49.1",
     "@serenity-js/webdriverio-8": "3.49.1",
